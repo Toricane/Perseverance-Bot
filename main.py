@@ -75,7 +75,7 @@ def delete_encouragment(index):
     db["encouragements"] = encouragements
 
 
-# ^ VIDEO CODE THINGIE
+# ^ VIDEO CODE THINGIE, need to change to commands
 
 async def get_quote():
   async with aiohttp.ClientSession() as session:
