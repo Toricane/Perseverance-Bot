@@ -54,17 +54,11 @@ sad_words = ["sad", "depressed", "unhappy", "angry", "miserable", "depressing"]
 starter_encouragements = [
   "Cheer up!",
   "Hang in there.",
-  "You are a great person / bot!"
+  "You are a great person!"
 ]
 
 if "responding" not in db.keys():
   db["responding"] = True
-
-def get_quote():
-  response = requests.get("https://zenquotes.io/api/random")
-  json_data = json.loads(response.text)
-  quote = json_data[0]['q'] + " -" + json_data[0]['a']
-  return(quote)
 
 def update_encouragements(encouraging_message):
   if "encouragements" in db.keys():
