@@ -130,7 +130,7 @@ async def on_message(message):
 
     if value.lower() == "true":
       db["responding"] = True
-      await message.channel.send("Responding is on.")
+      await message.reply("Responding is on.")
     else:
       db["responding"] = False
       await message.channel.send("Responding is off.")
@@ -147,7 +147,7 @@ async def on_message(message):
 async def inspire(ctx):
   quote = await get_quote()
   print(f'quote is {quote}')
-  await ctx.send(quote)
+  await ctx.reply(quote)
 
 @client.command()
 async def hi(ctx):
