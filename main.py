@@ -90,10 +90,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-  replies = {'stupid':'no u','π':copypasta,'omg':'OMG!','lol':'LOL!','wow':'Wow okay..!','haha':'HAHAHA!', 'f':'Everyone press "F" to pay your respect!'}
-  found_replies = [x for x in replies.keys() if x in message.content.lower().split(" ")]
-  if message.author == client.user:
-    return
+  if db["responding"] == True:
+    replies = {'stupid':'no u','π':copypasta,'omg':'OMG!','lol':'LOL!','wow':'Wow okay..!','haha':'HAHAHA!', 'f':'Everyone press "F" to pay your respect!'}
+    found_replies = [x for x in replies.keys() if x in message.content.lower().split(" ")]
+    if message.author == client.user:
+      return
   # VIDEO CODE THINGIE:
 
   msg = message.content
