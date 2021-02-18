@@ -138,7 +138,7 @@ async def on_message(message):
 
 
   # ^ VIDEO CODE THINGIE
-  elif len(found_replies) >= 1:
+  if len(found_replies) >= 1:
     for found_reply in found_replies:
       await message.reply(replies[found_reply])
 
