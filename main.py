@@ -104,12 +104,12 @@ async def on_message(message):
       options = options + db["encouragements"]
 
     if any(word in msg for word in sad_words):
-      await message.channel.send(random.choice(options))
+      await message.reply(random.choice(options))
 
   if msg.startswith("$new"):
     encouraging_message = msg.split("$new ",1)[1]
     update_encouragements(encouraging_message)
-    await message.channel.send("New encouraging message added.")
+    await message.reply("New encouraging message added.")
 
   if msg.startswith("$del"):
     encouragements = []
@@ -117,13 +117,13 @@ async def on_message(message):
       index = int(msg.split("$del",1)[1])
       delete_encouragment(index)
       encouragements = db["encouragements"]
-    await message.channel.send(encouragements)
+    await message.reply(encouragements)
 
   if msg.startswith("$list"):
     encouragements = []
     if "encouragements" in db.keys():
       encouragements = db["encouragements"]
-    await message.channel.send(encouragements)
+    await message.reply(encouragements)
 
   if msg.startswith("$responding"):
     value = msg.split("$responding ",1)[1]
@@ -133,7 +133,7 @@ async def on_message(message):
       await message.reply("Responding is on.")
     else:
       db["responding"] = False
-      await message.channel.send("Responding is off.")
+      await message.reply("Responding is off.")
 
 
   # ^ VIDEO CODE THINGIE
