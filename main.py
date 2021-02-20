@@ -158,5 +158,9 @@ async def hi(ctx):
 async def bye(ctx):
   await ctx.reply('Bye!')
 
+@client.command()
+async def ping(ctx):
+  await ctx.reply('Pong!')
+
 keep_alive()
 client.run(os.getenv('TOKEN'))
