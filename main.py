@@ -95,6 +95,9 @@ async def on_message(message):
     found_replies = [x for x in replies.keys() if x in message.content.lower().split(" ")]
     if message.author == client.user:
       return
+    elif len(found_replies) >= 1:
+      for found_reply in found_replies:
+        await message.reply(replies[found_reply])
   # VIDEO CODE THINGIE:
 
   msg = message.content
@@ -138,9 +141,6 @@ async def on_message(message):
 
 
   # ^ VIDEO CODE THINGIE
-  if len(found_replies) >= 1:
-    for found_reply in found_replies:
-      await message.reply(replies[found_reply])
 
   await client.process_commands(message)
 
