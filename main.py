@@ -1,4 +1,3 @@
-import discord
 import os
 import aiohttp
 import json
@@ -48,119 +47,131 @@ We're done! Was that fun?
 Learning random digits
 So that you can brag to your friends"""
 
-# From VIDEO CODE THINGIE:
 sad_words = ["sad", "depressed", "unhappy", "angry", "miserable", "depressing"]
 
 starter_encouragements = [
-  "Cheer up!",
-  "Hang in there.",
-  "You are a great person!"
+    "Cheer up!", "Hang in there.", "You are a great person!"
 ]
 
 if "responding" not in db.keys():
-  db["responding"] = True
+    db["responding"] = True
+
 
 def update_encouragements(encouraging_message):
-  if "encouragements" in db.keys():
-    encouragements = db["encouragements"]
-    encouragements.append(encouraging_message)
-    db["encouragements"] = encouragements
-  else:
-    db["encouragements"] = [encouraging_message]
+    if "encouragements" in db.keys():
+        encouragements = db["encouragements"]
+        encouragements.append(encouraging_message)
+        db["encouragements"] = encouragements
+    else:
+        db["encouragements"] = [encouraging_message]
+
 
 def delete_encouragment(index):
-  encouragements = db["encouragements"]
-  if len(encouragements) > index:
-    del encouragements[index]
-    db["encouragements"] = encouragements
+    encouragements = db["encouragements"]
+    if len(encouragements) > index:
+        del encouragements[index]
+        db["encouragements"] = encouragements
 
-
-# ^ VIDEO CODE THINGIE, need to change to commands
 
 async def get_quote():
-  async with aiohttp.ClientSession() as session:
-    async with session.get('https://zenquotes.io/api/random') as resp:
-      json_data = json.loads(await resp.text())
-      quote = json_data[0]['q'] + " - " + json_data[0]['a']
-      return(quote)
+    async with aiohttp.ClientSession() as session:
+        async with session.get('https://zenquotes.io/api/random') as resp:
+            json_data = json.loads(await resp.text())
+            quote = json_data[0]['q'] + " - " + json_data[0]['a']
+            return (quote)
+
 
 @client.event
 async def on_ready():
-  print('We have logged in as {0.user}'.format(client))
+    print('We have logged in as {0.user}'.format(client))
+
 
 @client.event
 async def on_message(message):
-  if db["responding"] == True:
-    replies = {'stupid':'no u','π':copypasta,'omg':'OMG!','lol':'LOL!','wow':'Wow okay..!','haha':'HAHAHA!', 'f':'Everyone press "F" to pay your respect!'}
-    found_replies = [x for x in replies.keys() if x in message.content.lower().split(" ")]
-    if message.author == client.user:
-      return
-    elif len(found_replies) >= 1:
-      for found_reply in found_replies:
-        await message.reply(replies[found_reply])
-  # VIDEO CODE THINGIE:
+    if db["responding"] == True:
+        replies = {
+            'stupid': 'no u',
+            'π': copypasta,
+            'omg': 'OMG!',
+            'lol': 'LOL!',
+            'wow': 'Wow okay..!',
+            'haha': 'HAHAHA!',
+            'f': 'Everyone press "F" to pay your respect!'
+        }
+        found_replies = [
+            x for x in replies.keys()
+            if x in message.content.lower().split(" ")
+        ]
+        if message.author == client.user:
+            return
+        elif len(found_replies) >= 1:
+            for found_reply in found_replies:
+                await message.reply(replies[found_reply])
 
-  msg = message.content
+    msg = message.content
 
-  if db["responding"]:
-    options = starter_encouragements
-    if "encouragements" in db.keys():
-      options = options + db["encouragements"]
+    if db["responding"]:
+        options = starter_encouragements
+        if "encouragements" in db.keys():
+            options = options + db["encouragements"]
 
-    if any(word in msg for word in sad_words):
-      await message.reply(random.choice(options))
+        if any(word in msg for word in sad_words):
+            if "$" not in msg:
+                await message.reply(random.choice(options))
 
-  if msg.startswith("$new"):
-    encouraging_message = msg.split("$new ",1)[1]
-    update_encouragements(encouraging_message)
-    await message.reply("New encouraging message added.")
-
-  if msg.startswith("$del"):
-    encouragements = []
-    if "encouragements" in db.keys():
-      index = int(msg.split("$del",1)[1])
-      delete_encouragment(index)
-      encouragements = db["encouragements"]
-    await message.reply(encouragements)
-
-  if msg.startswith("$list"):
-    encouragements = []
-    if "encouragements" in db.keys():
-      encouragements = db["encouragements"]
-    await message.reply(encouragements)
-
-  if msg.startswith("$responding"):
-    value = msg.split("$responding ",1)[1]
-
-    if value.lower() == "true":
-      db["responding"] = True
-      await message.reply("Responding is on.")
-    else:
-      db["responding"] = False
-      await message.reply("Responding is off.")
+    await client.process_commands(message)
 
 
-  # ^ VIDEO CODE THINGIE
-
-  await client.process_commands(message)
-
-@client.command() 
+@client.command()
 async def inspire(ctx):
-  quote = await get_quote()
-  print(f'quote is {quote}')
-  await ctx.reply(quote)
+    quote = await get_quote()
+    print(f'quote is {quote}')
+    await ctx.reply(quote)
+
 
 @client.command()
 async def hi(ctx):
-  await ctx.reply('Hello!')
+    await ctx.reply('Hello!')
+
 
 @client.command()
 async def bye(ctx):
-  await ctx.reply('Bye!')
+    await ctx.reply('Bye!')
+
 
 @client.command()
-async def ping(ctx):
-  await ctx.reply('Pong!')
+async def responding(ctx):
+    db["responding"] = not db["responding"]
+    if db["responding"] == True:
+        await ctx.reply("Responding is on.")
+    else:
+        await ctx.reply("Responding is off.")
+
+
+@client.command()
+async def list(ctx):
+    encouragements = []
+    if "encouragements" in db.keys():
+        encouragements = db["encouragements"]
+    await ctx.reply(encouragements)
+
+
+@client.command()
+async def delete(ctx, arg):
+    encouragements = []
+    if "encouragements" in db.keys():
+        index = int(arg)
+        delete_encouragment(index)
+        encouragements = db["encouragements"]
+    await ctx.reply(encouragements)
+
+
+@client.command()
+async def new(ctx, arg):
+    encouraging_message = arg.replace("-", " ")
+    update_encouragements(encouraging_message)
+    await ctx.reply(f'New encouraging message added: {encouraging_message}')
+
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
