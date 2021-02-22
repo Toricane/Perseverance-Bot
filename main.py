@@ -68,7 +68,8 @@ async def on_message(message):
               if "not" not in msg:
                 if "n't" not in msg:
                   if "aint" not in msg:
-                    await message.reply(random.choice(options))
+                    if "never" not in msg:
+                      await message.reply(random.choice(options))
 
     await client.process_commands(message)
 
