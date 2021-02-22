@@ -64,6 +64,7 @@ async def on_message(message):
 
         if any(word in msg for word in sad_words):
             if "$" not in msg:
+              if "not" not in msg:
                 await message.reply(random.choice(options))
 
     await client.process_commands(message)
