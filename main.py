@@ -13,42 +13,6 @@ logging.basicConfig(level=logging.INFO)
 client = commands.Bot(command_prefix='$')
 client.remove_command('help')
 
-copypasta = """And now
-AsapSCIENCE presents-
-100 digits of π
-3.14159, this is π
-Followed by 2-6-5-3-5-8-9
-Circumference over diameter
-7-9, then 3-2-3
-OMG! Can't you see?
-8-4-6-2-6-4-3
-And now we're on a spree
-38 and 32, now we're blue
-Oh, who knew?
-7, 950 and then a two
-88 and 41, so much fun
-Now a run
-9-7-1-6-9-3-9-9
-Then 3-7, 51
-Half way done!
-0-5-8, now don't be late
-2-0-9, where's the wine?
-7-4, it's on the floor
-Then 9-4-4-5-9
-2-3-0, we gotta go
-7-8, we can't wait
-1-6-4-0-6-2-8
-We're almost near the end, keep going
-62, we're getting through
-0-8-9-9, on time
-8-6-2-8-0-3-4
-There's only a few more!
-8-2, then 5-3
-42, 11, 7-0 and 67
-We're done! Was that fun?
-Learning random digits
-So that you can brag to your friends"""
-
 sad_words = ["sad", "depressed", "unhappy", "angry", "miserable", "depressing"]
 
 starter_encouragements = [
@@ -171,6 +135,12 @@ async def new(ctx, arg):
 async def hello(ctx, arg):
     if arg.lower() == "there":
         await ctx.reply("General Kenobi!")
+    else:
+        arg = arg.replace('"', '')
+        textx = arg.lower()
+        texty = textx.capitalize()
+        await ctx.channel.send(f"Hello {texty}!")
+        await ctx.message.delete()
 
 
 @client.command()
@@ -187,7 +157,6 @@ async def ping(ctx):
 
 @client.command(pass_context=True)
 async def help(ctx):
-    author = ctx.message.author
 
     embed = discord.Embed(colour=discord.Colour.orange())
 
@@ -221,6 +190,11 @@ async def help(ctx):
     embed.add_field(name='$repeat "text"',
                     value='Repeats your text.',
                     inline=False)
+    embed.add_field(
+        name='$hello nameOfSomeone',
+        value=
+        'Returns "Hello nameOfSomeone! (replace nameOfSomeone with name)"',
+        inline=False)
 
     await ctx.send(embed=embed)
 
