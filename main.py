@@ -174,13 +174,13 @@ async def delete(ctx, arg):
 @client.command()
 async def new(ctx, arg):
     if "-" in arg:
-        encouraging_message = arg.replace("-", " ")
+        encouraging_message = arg.replace("_", " ")
         update_encouragements(encouraging_message)
         await ctx.reply(f'New encouraging message added: {encouraging_message}'
                         )
     else:
         await ctx.reply(
-            "Please try again, and replace the spaces with '-'.\n\nIf you want to make it one word ling, please try adding '-' at the end of the message. \n\nExample: $new hello-"
+            "Please try again, and replace the spaces with '_'.\n\nIf you want to make it one word ling, please try adding '-' at the end of the message. \n\nExample: $new hello_"
         )
 
 
