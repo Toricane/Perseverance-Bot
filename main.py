@@ -241,7 +241,7 @@ async def help(ctx):
                     value='Repeats your text.',
                     inline=False)
 
-    await author.send(embed=embed)
+    await ctx.send(embed=embed)
 
 
 keep_alive()
