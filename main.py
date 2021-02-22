@@ -7,6 +7,7 @@ import random
 from replit import db
 from keep_alive import keep_alive
 
+
 logging.basicConfig(level=logging.INFO)
 
 client = commands.Bot(command_prefix='$')
@@ -77,7 +78,7 @@ async def get_quote():
     async with aiohttp.ClientSession() as session:
         async with session.get('https://zenquotes.io/api/random') as resp:
             json_data = json.loads(await resp.text())
-            quote = json_data[0]['q'] + " - " + json_data[0]['a']
+            quote = '"' + json_data[0]['q'] + '" - ' + json_data[0]['a']
             return (quote)
 
 
@@ -140,12 +141,17 @@ async def bye(ctx):
 
 
 @client.command()
-async def responding(ctx):
-    db["responding"] = not db["responding"]
-    if db["responding"] == True:
-        await ctx.reply("Responding is on.")
-    else:
-        await ctx.reply("Responding is off.")
+async def responding(ctx, arg):
+
+  if arg.lower() == "true" or arg.lower() == "on":
+    db["responding"] = True
+  else:
+    db["responding"] = False
+
+  if db["responding"] == True or db["responding"]:
+      await ctx.reply("Responding is on.")
+  else:
+      await ctx.reply("Responding is off.")
 
 
 @client.command()
@@ -168,9 +174,12 @@ async def delete(ctx, arg):
 
 @client.command()
 async def new(ctx, arg):
+  if "-" in arg:
     encouraging_message = arg.replace("-", " ")
     update_encouragements(encouraging_message)
     await ctx.reply(f'New encouraging message added: {encouraging_message}')
+  else:
+    await ctx.reply("Please try again, and replace the spaces with '-'.\n\nIf you want to make it one word ling, please try adding '-' at the end of the message. \n\nExample: $new hello-")
 
 
 keep_alive()
