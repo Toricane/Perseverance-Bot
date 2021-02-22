@@ -77,7 +77,6 @@ async def on_message(message):
 @client.command()
 async def inspire(ctx):
     quote = await get_quote()
-    print(f'quote is {quote}')
     await ctx.reply(quote)
 
 
@@ -125,7 +124,7 @@ async def delete(ctx, arg):
 
 @client.command()
 async def new(ctx, arg):
-    if "-" in arg:
+    if '"' in arg:
         encouraging_message = arg.replace('"', '')
         update_encouragements(encouraging_message)
         await ctx.reply(f'New encouraging message added: {encouraging_message}'
@@ -149,7 +148,7 @@ async def hello(ctx, arg):
 
 
 @client.command()
-async def repeat(ctx, arg):
+async def say(ctx, arg):
     text = arg.replace('"', '')
     await ctx.channel.send(text)
     await ctx.message.delete()
@@ -192,7 +191,7 @@ async def help(ctx):
     embed.add_field(name='$hello there',
                     value='Returns "General Kenobi!"',
                     inline=False)
-    embed.add_field(name='$repeat "text"',
+    embed.add_field(name='$say "text"',
                     value='Repeats your text.',
                     inline=False)
     embed.add_field(
