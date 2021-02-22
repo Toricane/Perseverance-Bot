@@ -63,6 +63,7 @@ async def on_message(message):
             options = options + db["encouragements"]
 
         if any(word in msg for word in sad_words):
+          if "!" not in msg:
             if "$" not in msg:
               if "not" not in msg:
                 await message.reply(random.choice(options))
