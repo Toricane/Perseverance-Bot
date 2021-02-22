@@ -66,7 +66,9 @@ async def on_message(message):
           if "!" not in msg:
             if "$" not in msg:
               if "not" not in msg:
-                await message.reply(random.choice(options))
+                if "n't" not in msg:
+                  if "aint" not in msg:
+                    await message.reply(random.choice(options))
 
     await client.process_commands(message)
 
