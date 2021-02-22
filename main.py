@@ -1,6 +1,7 @@
 import os
 import aiohttp
 import json
+import discord
 from discord.ext import commands
 import logging
 import random
@@ -10,6 +11,7 @@ from keep_alive import keep_alive
 logging.basicConfig(level=logging.INFO)
 
 client = commands.Bot(command_prefix='$')
+client.remove_command('help')
 
 copypasta = """And now
 AsapSCIENCE presents-
@@ -165,7 +167,7 @@ async def list(ctx):
 async def delete(ctx, arg):
     encouragements = []
     if "encouragements" in db.keys():
-        index = int(arg)
+        index = int(arg) - 1
         delete_encouragment(index)
         encouragements = db["encouragements"]
     await ctx.reply(encouragements)
@@ -174,14 +176,72 @@ async def delete(ctx, arg):
 @client.command()
 async def new(ctx, arg):
     if "-" in arg:
-        encouraging_message = arg.replace("_", " ")
+        encouraging_message = arg.replace('"', '')
         update_encouragements(encouraging_message)
         await ctx.reply(f'New encouraging message added: {encouraging_message}'
                         )
     else:
         await ctx.reply(
-            "Please try again, and replace the spaces with '_'.\n\nIf you want to make it one word ling, please try adding '-' at the end of the message. \n\nExample: $new hello_"
+            'Please try again, and put your text inside of quotation marks (").\n\nExample: $new "Hello World!"'
         )
+
+
+@client.command()
+async def hello(ctx, arg):
+    if arg.lower() == "there":
+        await ctx.reply("General Kenobi!")
+
+
+@client.command()
+async def repeat(ctx, arg):
+    text = arg.replace('"', '')
+    await ctx.channel.send(text)
+    await ctx.message.delete()
+
+
+@client.command()
+async def ping(ctx):
+    await ctx.reply('Pong!')
+
+
+@client.command(pass_context=True)
+async def help(ctx):
+    author = ctx.message.author
+
+    embed = discord.Embed(colour=discord.Colour.orange())
+
+    embed.set_author(name='Help')
+    embed.add_field(name='$help', value='Shows this message', inline=False)
+    embed.add_field(name='$ping', value='Returns "Pong!"', inline=False)
+    embed.add_field(name='$inspire',
+                    value='Send a random quote from https://zenquotes.io/',
+                    inline=False)
+    embed.add_field(name='$hi', value='Returns "Hello!"', inline=False)
+    embed.add_field(name='$bye', value='Returns "Bye!"', inline=False)
+    embed.add_field(
+        name='$responding on/off',
+        value=
+        'Toggles between replying to certain words or phrases automatically.',
+        inline=False)
+    embed.add_field(name='$new "text"',
+                    value='Adds more encouraging messages.',
+                    inline=False)
+    embed.add_field(
+        name='$list',
+        value='Only lists the encouragements that have been added from $new.',
+        inline=False)
+    embed.add_field(
+        name='$delete number',
+        value='Deletes the corresponding encouraging message listed in $list.',
+        inline=False)
+    embed.add_field(name='$hello there',
+                    value='Returns "General Kenobi!"',
+                    inline=False)
+    embed.add_field(name='$repeat "text"',
+                    value='Repeats your text.',
+                    inline=False)
+
+    await author.send(embed=embed)
 
 
 keep_alive()
