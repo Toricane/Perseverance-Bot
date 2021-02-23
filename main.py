@@ -63,13 +63,8 @@ async def on_message(message):
             options = options + db["encouragements"]
 
         if any(word in msg for word in sad_words):
-            if "!" not in msg:
-                if "$" not in msg:
-                    if "not" not in msg:
-                        if "n't" not in msg:
-                            if "aint" not in msg:
-                                if "never" not in msg:
-                                    await message.reply(random.choice(options))
+            if "!" not in msg and "$" not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
+                await message.reply(random.choice(options))
 
     await client.process_commands(message)
 
@@ -191,14 +186,10 @@ async def help(ctx):
     embed.add_field(name='$hello there',
                     value='Returns "General Kenobi!"',
                     inline=False)
-    embed.add_field(name='$say "text"',
-                    value='Repeats your text.',
+    embed.add_field(name='$say "text"', value='Says your text.', inline=False)
+    embed.add_field(name='$hello name',
+                    value='Returns "Hello Name!"',
                     inline=False)
-    embed.add_field(
-        name='$hello nameOfSomeone',
-        value=
-        'Returns "Hello nameOfSomeone! (replace nameOfSomeone with name)"',
-        inline=False)
 
     await ctx.send(embed=embed)
 
