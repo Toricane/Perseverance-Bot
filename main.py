@@ -189,6 +189,7 @@ async def say(ctx, arg):
 @client.command()
 async def ping(ctx):
     await ctx.reply(f'Pong! {round(client.latency * 1000)}ms')
+    await client.change_presence(activity=discord.Game(name='$help'))
 
 
 @client.command(aliases=['8ball'])
