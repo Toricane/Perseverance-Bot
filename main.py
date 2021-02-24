@@ -7,13 +7,24 @@ import logging
 import random
 from replit import db
 from keep_alive import keep_alive
+import asyncio
 
 logging.basicConfig(level=logging.INFO)
 
 client = commands.Bot(command_prefix='$')
 client.remove_command('help')
 
-sad_words = ["sad", "depressed", "unhappy", "angry", "miserable", "depressing","bitter","dismal","heartbroken","melancholy","mournful","pessimistic","somber","sorrowful","sorry","wistful","bereaved","blue","cheerless","dejected","despairing","despondent","disconsolate","distressed","doleful","down","down in dumps","down in mouth","downcast","forlorn","gloomy","glum","grief-stricken","grieved","heartsick","heavyhearted","hurting","in doldrums","in grief","in the dumps","languishing","low","low-spirited","lugubrious","morbid","morose","out of sorts","pensive","sick at heart","troubled","weeping","woebegone"]
+sad_words = [
+    "sad", "depressed", "unhappy", "angry", "miserable", "depressing",
+    "bitter", "dismal", "heartbroken", "melancholy", "mournful", "pessimistic",
+    "somber", "sorrowful", "sorry", "wistful", "bereaved", "blue", "cheerless",
+    "dejected", "despairing", "despondent", "disconsolate", "distressed",
+    "doleful", "down", "down in dumps", "down in mouth", "downcast", "forlorn",
+    "gloomy", "glum", "grief-stricken", "grieved", "heartsick", "heavyhearted",
+    "hurting", "in doldrums", "in grief", "in the dumps", "languishing", "low",
+    "low-spirited", "lugubrious", "morbid", "morose", "out of sorts",
+    "pensive", "sick at heart", "troubled", "weeping", "woebegone"
+]
 
 starter_encouragements = [
     "Cheer up!", "Hang in there.", "You are a great person!"
@@ -141,8 +152,12 @@ async def new(ctx, arg):
 
 
 @client.command()
+@commands.has_permissions(manage_messages=True)  
 async def clear(ctx, amount=5):
     await ctx.channel.purge(limit=amount + 1)
+    await ctx.send(f"Removed {amount} messages.")
+    await asyncio.sleep(3)
+    await ctx.channel.purge(limit=1)
 
 
 @client.command()
