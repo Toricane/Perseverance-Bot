@@ -152,12 +152,19 @@ async def new(ctx, arg):
 
 
 @client.command()
-@commands.has_permissions(manage_messages=True)  
+@commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=5):
     await ctx.channel.purge(limit=amount + 1)
     await ctx.send(f"Removed {amount} messages.")
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
+
+
+@client.command()
+@commands.has_permissions(kick_members=True)
+async def kick(ctx, member: discord.Member, *, reason=None):
+    await member.kick(reason=reason)
+    await ctx.send(f"Kicked {member} because {reason}.")
 
 
 @client.command()
