@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 client = commands.Bot(command_prefix='$')
 client.remove_command('help')
 
-sad_words = ["sad", "depressed", "unhappy", "angry", "miserable", "depressing"]
+sad_words = ["sad", "depressed", "unhappy", "angry", "miserable", "depressing","bitter","dismal","heartbroken","melancholy","mournful","pessimistic","somber","sorrowful","sorry","wistful","bereaved","blue","cheerless","dejected","despairing","despondent","disconsolate","distressed","doleful","down","down in dumps","down in mouth","downcast","forlorn","gloomy","glum","grief-stricken","grieved","heartsick","heavyhearted","hurting","in doldrums","in grief","in the dumps","languishing","low","low-spirited","lugubrious","morbid","morose","out of sorts","pensive","sick at heart","troubled","weeping","woebegone"]
 
 starter_encouragements = [
     "Cheer up!", "Hang in there.", "You are a great person!"
