@@ -61,6 +61,7 @@ async def get_quote():
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    await client.change_presence(activity=discord.Game(name='$help'))
 
 
 @client.event
@@ -182,7 +183,6 @@ async def say(ctx, arg):
 @client.command()
 async def ping(ctx):
     await ctx.reply(f'Pong! {round(client.latency * 1000)}ms')
-    await client.change_presence(activity=discord.Game(name='$help'))
 
 
 @client.command(aliases=['8ball'])
