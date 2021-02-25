@@ -159,14 +159,29 @@ async def clear(ctx, amount=5):
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason=None):
     await member.kick(reason=reason)
-    await ctx.send(f"Kicked {member} because {reason}.")
+    await ctx.reply(f"Kicked {member} because {reason}.")
 
 
 @client.command()
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason=None):
     await member.ban(reason=reason)
-    await ctx.send(f"Banned {member} because {reason}.")
+    await ctx.reply(f"Banned {member.mention} because {reason}.")
+
+
+@client.command()
+@commands.has_permissions(ban_members=True)
+async def unban(ctx, *, member):
+    banned_users = await ctx.guild.bans()
+    member_name, member_discriminator = member.split('#')
+    for ban_entry in banned_users:
+        user = ban_entry.user
+        if (user.name, user.discriminator) == (member_name,
+                                               member_discriminator):
+            await ctx.guild.unban(user)
+            person = f"{user.name}#{user.discriminator}"
+            await ctx.reply(f"Unbanned {person}.")
+            return
 
 
 @client.command()
@@ -278,7 +293,11 @@ async def help(ctx, *, arg=None):
             name='/ban',
             value='Bans a member. NOTE: requires Ban Members permission.',
             inline=False)
-        embed.add_field(name='/clear//purge number',
+        embed.add_field(
+            name='/unban',
+            value='Unbans a member. NOTE: requires Ban Members permission.',
+            inline=False)
+        embed.add_field(name='/clear or /purge number',
                         value='Deletes the number of messages. Default is 5.',
                         inline=False)
         embed.add_field(name='/perseverance',
