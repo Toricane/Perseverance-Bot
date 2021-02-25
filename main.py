@@ -19,9 +19,9 @@ sad_words = [
     "bitter", "dismal", "heartbroken", "melancholy", "mournful", "pessimistic",
     "somber", "sorrowful", "sorry", "wistful", "bereaved", "blue", "cheerless",
     "dejected", "despairing", "despondent", "disconsolate", "distressed",
-    "doleful", "down", "down in dumps", "down in mouth", "downcast", "forlorn",
+    "doleful", "down in dumps", "down in mouth", "downcast", "forlorn",
     "gloomy", "glum", "grief-stricken", "grieved", "heartsick", "heavyhearted",
-    "hurting", "in doldrums", "in grief", "in the dumps", "languishing", "low",
+    "hurting", "in doldrums", "in grief", "in the dumps", "languishing",
     "low-spirited", "lugubrious", "morbid", "morose", "out of sorts",
     "pensive", "sick at heart", "troubled", "weeping", "woebegone"
 ]
@@ -139,16 +139,10 @@ async def delete(ctx, arg):
 
 
 @client.command()
-async def new(ctx, arg):
-    if '"' in arg:
-        encouraging_message = arg.replace('"', '')
-        update_encouragements(encouraging_message)
-        await ctx.reply(f'New encouraging message added: {encouraging_message}'
-                        )
-    else:
-        await ctx.reply(
-            'Please try again, and put your text inside of quotation marks (").\n\nExample: $new "Hello World!"'
-        )
+async def new(ctx, *, arg):
+    encouraging_message = arg
+    update_encouragements(encouraging_message)
+    await ctx.reply(f'New encouraging message added: {encouraging_message}')
 
 
 @client.command()
@@ -168,11 +162,10 @@ async def kick(ctx, member: discord.Member, *, reason=None):
 
 
 @client.command()
-async def hello(ctx, arg):
+async def hello(ctx, *, arg):
     if arg.lower() == "there":
         await ctx.reply("General Kenobi!")
     else:
-        arg = arg.replace('"', '')
         textx = arg.lower()
         texty = textx.capitalize()
         await ctx.channel.send(f"Hello {texty}!")
