@@ -174,8 +174,8 @@ async def hello(ctx, *, arg):
 
 
 @client.command()
-async def say(ctx, arg):
-    text = arg.replace('"', '')
+async def say(ctx, *, arg):
+    text = arg
     await ctx.channel.send(text)
     await ctx.message.delete()
 
