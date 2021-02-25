@@ -163,6 +163,13 @@ async def kick(ctx, member: discord.Member, *, reason=None):
 
 
 @client.command()
+@commands.has_permissions(ban_members=True)
+async def ban(ctx, member: discord.Member, *, reason=None):
+    await member.ban(reason=reason)
+    await ctx.send(f"Banned {member} because {reason}.")
+
+
+@client.command()
 async def hello(ctx, *, arg):
     if arg.lower() == "there":
         await ctx.reply("General Kenobi!")
