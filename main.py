@@ -239,5 +239,10 @@ async def help(ctx):
     await ctx.send(embed=embed)
 
 
+@client.command()
+async def perseverance(ctx):
+  await ctx.reply(file=discord.File('perseverance.jpeg'))
+
+
 keep_alive()
 client.run(os.getenv('TOKEN'))
