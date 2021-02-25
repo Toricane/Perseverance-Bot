@@ -11,7 +11,7 @@ import asyncio
 
 logging.basicConfig(level=logging.INFO)
 
-client = commands.Bot(command_prefix='$')
+client = commands.Bot(command_prefix='/')
 client.remove_command('help')
 
 sad_words = [
@@ -61,7 +61,7 @@ async def get_quote():
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    await client.change_presence(activity=discord.Game(name='$help'))
+    await client.change_presence(activity=discord.Game(name='/help'))
 
 
 @client.event
@@ -75,7 +75,7 @@ async def on_message(message):
             options = options + db["encouragements"]
 
         if any(word in msg for word in sad_words):
-            if "!" not in msg and "$" not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
+            if "!" not in msg and "/" not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
                 await message.reply(random.choice(options))
 
     await client.process_commands(message)
@@ -146,7 +146,7 @@ async def new(ctx, *, arg):
     await ctx.reply(f'New encouraging message added: {encouraging_message}')
 
 
-@client.command()
+@client.command(aliases=['purge'])
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=5):
     await ctx.channel.purge(limit=amount + 1)
@@ -207,48 +207,90 @@ async def _8ball(ctx, *, question):
 
 
 @client.command(pass_context=True)
-async def help(ctx):
-
+async def help(ctx, *, arg=None):
     embed = discord.Embed(colour=discord.Colour.orange())
+    arg = str(arg).lower()
+    if arg == "ping":
+        embed.set_author(name='Help for /ping')
+        embed.add_field(name='/ping', value='Returns "Pong!"', inline=False)
+        await ctx.send(embed=embed)
 
-    embed.set_author(name='Help')
-    embed.add_field(name='$help', value='Shows this message', inline=False)
-    embed.add_field(name='$ping', value='Returns "Pong!"', inline=False)
-    embed.add_field(name='$inspire',
-                    value='Send a random quote from https://zenquotes.io/',
-                    inline=False)
-    embed.add_field(name='$hi', value='Returns "Hello!"', inline=False)
-    embed.add_field(name='$bye', value='Returns "Bye!"', inline=False)
-    embed.add_field(
-        name='$responding on/off',
-        value=
-        'Toggles between replying to certain words or phrases automatically.',
-        inline=False)
-    embed.add_field(name='$new "text"',
-                    value='Adds more encouraging messages.',
-                    inline=False)
-    embed.add_field(
-        name='$list',
-        value='Only lists the encouragements that have been added from $new.',
-        inline=False)
-    embed.add_field(
-        name='$delete number',
-        value='Deletes the corresponding encouraging message listed in $list.',
-        inline=False)
-    embed.add_field(name='$hello there',
-                    value='Returns "General Kenobi!"',
-                    inline=False)
-    embed.add_field(name='$say "text"', value='Says your text.', inline=False)
-    embed.add_field(name='$hello name',
-                    value='Returns "Hello Name!"',
-                    inline=False)
+    elif arg == "inspire":
+        embed.add_field(name='/inspire',
+                        value='Send a random quote from https://zenquotes.io/',
+                        inline=False)
+        await ctx.send(embed=embed)
 
-    await ctx.send(embed=embed)
+    elif arg == "hi":
+        embed.add_field(name='/hi', value='Returns "Hello!"', inline=False)
+        await ctx.send(embed=embed)
+
+    elif arg == "bye":
+        embed.add_field(name='/bye', value='Returns "Bye!"', inline=False)
+        await ctx.send(embed=embed)
+
+    else:
+        embed.set_author(name='Help')
+        embed.add_field(name='/help', value='Shows this message', inline=False)
+        embed.add_field(name='/ping', value='Returns "Pong!"', inline=False)
+        embed.add_field(name='/inspire',
+                        value='Send a random quote from https://zenquotes.io/',
+                        inline=False)
+        embed.add_field(name='/hi', value='Returns "Hello!"', inline=False)
+        embed.add_field(name='/bye', value='Returns "Bye!"', inline=False)
+        embed.add_field(
+            name='/responding on/off',
+            value=
+            'Toggles between replying to certain words or phrases automatically.',
+            inline=False)
+        embed.add_field(name='/new "text"',
+                        value='Adds more encouraging messages.',
+                        inline=False)
+        embed.add_field(
+            name='/list',
+            value=
+            'Only lists the encouragements that have been added from /new.',
+            inline=False)
+        embed.add_field(
+            name='/delete number',
+            value=
+            'Deletes the corresponding encouraging message listed in /list.',
+            inline=False)
+        embed.add_field(name='/hello there',
+                        value='Returns "General Kenobi!"',
+                        inline=False)
+        embed.add_field(name='/say "text"',
+                        value='Says your text.',
+                        inline=False)
+        embed.add_field(name='/hello name',
+                        value='Returns "Hello Name!"',
+                        inline=False)
+        embed.add_field(
+            name='/8ball question',
+            value=
+            'Returns whether or not your question\'s answer is yes or no.',
+            inline=False)
+        embed.add_field(
+            name='/kick',
+            value='Kicks a member. NOTE: requires Kick Members permission.',
+            inline=False)
+        embed.add_field(
+            name='/ban',
+            value='Bans a member. NOTE: requires Ban Members permission.',
+            inline=False)
+        embed.add_field(name='/clear//purge number',
+                        value='Deletes the number of messages. Default is 5.',
+                        inline=False)
+        embed.add_field(name='/perseverance',
+                        value='Shows a picture of Perseverance.',
+                        inline=False)
+
+        await ctx.send(embed=embed)
 
 
 @client.command()
 async def perseverance(ctx):
-  await ctx.reply(file=discord.File('perseverance.jpeg'))
+    await ctx.reply(file=discord.File('perseverance.jpeg'))
 
 
 keep_alive()
