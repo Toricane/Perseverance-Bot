@@ -172,6 +172,14 @@ async def clear(ctx, amount=5):
     await ctx.channel.purge(limit=1)
 
 
+@clear.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.reply("You do not have the manage messages permission.")
+        await asyncio.sleep(5)
+        await ctx.channel.purge(limit=1)
+
+
 @client.command()
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason=None):
