@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 
 client = commands.Bot(command_prefix='/')
 client.remove_command('help')
-status = cycle(['/help', 'your messages'])
+status = cycle(['/help', 'your messages', '/help', 'Never Gonna Give You Up'])
 
 sad_words = [
     "sad", "depressed", "unhappy", "angry", "miserable", "depressing",
