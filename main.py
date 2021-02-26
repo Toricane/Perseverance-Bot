@@ -67,6 +67,12 @@ async def on_ready():
 
 
 @client.event
+async def on_command_error(ctx, error):
+  if isinstance(error, commands.CommandNotFound):
+    await ctx.reply('Command was not found. Be sure you did not make a typo and try again.')
+
+
+@client.event
 async def on_message(message):
 
     msg = message.content
