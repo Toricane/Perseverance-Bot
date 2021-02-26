@@ -72,6 +72,8 @@ async def on_command_error(ctx, error):
         await ctx.reply(
             'Command was not found. Be sure you did not make a typo and try again.'
         )
+        await asyncio.sleep(3)
+        await ctx.channel.purge(limit=2)
 
 
 @client.event
@@ -176,8 +178,8 @@ async def clear(ctx, amount=5):
 async def clear_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
         await ctx.reply("You do not have the manage messages permission.")
-        await asyncio.sleep(5)
-        await ctx.channel.purge(limit=1)
+        await asyncio.sleep(3)
+        await ctx.channel.purge(limit=2)
 
 
 @client.command()
