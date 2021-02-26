@@ -2,17 +2,19 @@ import os
 import aiohttp
 import json
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import logging
 import random
 from replit import db
 from keep_alive import keep_alive
 import asyncio
+from itertools import cycle
 
 logging.basicConfig(level=logging.INFO)
 
 client = commands.Bot(command_prefix='/')
 client.remove_command('help')
+status = cycle(['/help', 'your messages'])
 
 sad_words = [
     "sad", "depressed", "unhappy", "angry", "miserable", "depressing",
@@ -60,8 +62,8 @@ async def get_quote():
 
 @client.event
 async def on_ready():
+    change_status.start()
     print('We have logged in as {0.user}'.format(client))
-    await client.change_presence(activity=discord.Game(name='/help'))
 
 
 @client.event
@@ -219,6 +221,11 @@ async def _8ball(ctx, *, question):
         "My sources say no.", "Outlook not so good.", "Very doubtful."
     ]
     await ctx.reply(f'{random.choice(responses)}')
+
+
+@tasks.loop(seconds=10)
+async def change_status():
+  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=next(status)))
 
 
 @client.command(pass_context=True)
