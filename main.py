@@ -68,8 +68,10 @@ async def on_ready():
 
 @client.event
 async def on_command_error(ctx, error):
-  if isinstance(error, commands.CommandNotFound):
-    await ctx.reply('Command was not found. Be sure you did not make a typo and try again.')
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.reply(
+            'Command was not found. Be sure you did not make a typo and try again.'
+        )
 
 
 @client.event
@@ -131,8 +133,9 @@ async def responding(ctx, arg):
 
 @responding.error
 async def responding_error(ctx, error):
-  if isinstance(error, commands.MissingRequiredArgument):
-    await ctx.reply('Please specify whether you want responding to be on or off.')
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.reply(
+            'Please specify whether you want responding to be on or off.')
 
 
 @client.command()
@@ -237,7 +240,29 @@ async def _8ball(ctx, *, question):
 
 @tasks.loop(seconds=10)
 async def change_status():
-  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=next(status)))
+    await client.change_presence(activity=discord.Activity(
+        type=discord.ActivityType.watching, name=next(status)))
+
+
+@client.command(aliases=['credit'])
+async def credits(ctx):
+    embed = discord.Embed(colour=discord.Colour.orange())
+    embed.set_author(name='Credits')
+    embed.add_field(name='Created by Toricane#6391',
+                    value='"Thank you for using my bot!" - Toricane',
+                    inline=False)
+    embed.add_field(name='Hosted by Repl.it',
+                    value='https://repl.it/@Toricane/Perseverance-Bot#main.py',
+                    inline=False)
+    embed.add_field(name='Saved in GitHub',
+                    value='https://github.com/Toricane/Perseverance-Bot/',
+                    inline=False)
+    embed.add_field(
+        name='Tutorials Used:',
+        value=
+        'https://youtu.be/SPTfmiYiuok\nhttps://youtube.com/playlist?list=PLW3GfRiBCHOhfVoiDZpSz8SM_HybXRPzZ',
+        inline=False)
+    await ctx.send(embed=embed)
 
 
 @client.command(pass_context=True)
@@ -266,6 +291,9 @@ async def help(ctx, *, arg=None):
     else:
         embed.set_author(name='Help')
         embed.add_field(name='/help', value='Shows this message', inline=False)
+        embed.add_field(name='/credit or /credits',
+                        value='Shows the credits.',
+                        inline=False)
         embed.add_field(name='/ping', value='Returns "Pong!"', inline=False)
         embed.add_field(name='/inspire',
                         value='Send a random quote from https://zenquotes.io/',
