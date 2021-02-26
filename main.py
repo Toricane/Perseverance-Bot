@@ -10,11 +10,12 @@ from keep_alive import keep_alive
 import asyncio
 from itertools import cycle
 
+
 logging.basicConfig(level=logging.INFO)
 
-client = commands.Bot(command_prefix='/')
+client = commands.Bot(command_prefix='.')
 client.remove_command('help')
-status = cycle(['/help', 'your messages', '/help', 'Never Gonna Give You Up'])
+status = cycle(['.help', 'your messages', '.help', 'Never Gonna Give You Up'])
 
 sad_words = [
     "sad", "depressed", "unhappy", "angry", "miserable", "depressing",
@@ -87,7 +88,7 @@ async def on_message(message):
             options = options + db["encouragements"]
 
         if any(word in msg for word in sad_words):
-            if "!" not in msg and "/" not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
+            if "!" not in msg and "." not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
                 await message.reply(random.choice(options))
 
     await client.process_commands(message)
@@ -280,84 +281,84 @@ async def help(ctx, *, arg=None):
     embed = discord.Embed(colour=discord.Colour.orange())
     arg = str(arg).lower()
     if arg == "ping":
-        embed.set_author(name='Help for /ping')
-        embed.add_field(name='/ping', value='Returns "Pong!"', inline=False)
+        embed.set_author(name='Help for .ping')
+        embed.add_field(name='.ping', value='Returns "Pong!"', inline=False)
         await ctx.send(embed=embed)
 
     elif arg == "inspire":
-        embed.add_field(name='/inspire',
+        embed.add_field(name='.inspire',
                         value='Send a random quote from https://zenquotes.io/',
                         inline=False)
         await ctx.send(embed=embed)
 
     elif arg == "hi":
-        embed.add_field(name='/hi', value='Returns "Hello!"', inline=False)
+        embed.add_field(name='.hi', value='Returns "Hello!"', inline=False)
         await ctx.send(embed=embed)
 
     elif arg == "bye":
-        embed.add_field(name='/bye', value='Returns "Bye!"', inline=False)
+        embed.add_field(name='.bye', value='Returns "Bye!"', inline=False)
         await ctx.send(embed=embed)
 
     else:
         embed.set_author(name='Help')
-        embed.add_field(name='/help', value='Shows this message', inline=False)
-        embed.add_field(name='/credit or /credits',
+        embed.add_field(name='.help', value='Shows this message', inline=False)
+        embed.add_field(name='.credit or .credits',
                         value='Shows the credits.',
                         inline=False)
-        embed.add_field(name='/ping', value='Returns "Pong!"', inline=False)
-        embed.add_field(name='/inspire',
+        embed.add_field(name='.ping', value='Returns "Pong!"', inline=False)
+        embed.add_field(name='.inspire',
                         value='Send a random quote from https://zenquotes.io/',
                         inline=False)
-        embed.add_field(name='/hi', value='Returns "Hello!"', inline=False)
-        embed.add_field(name='/bye', value='Returns "Bye!"', inline=False)
+        embed.add_field(name='.hi', value='Returns "Hello!"', inline=False)
+        embed.add_field(name='.bye', value='Returns "Bye!"', inline=False)
         embed.add_field(
-            name='/responding on/off',
+            name='.responding on/off',
             value=
             'Toggles between replying to certain words or phrases automatically.',
             inline=False)
-        embed.add_field(name='/new "text"',
+        embed.add_field(name='.new text',
                         value='Adds more encouraging messages.',
                         inline=False)
         embed.add_field(
-            name='/list',
+            name='.list',
             value=
-            'Only lists the encouragements that have been added from /new.',
+            'Only lists the encouragements that have been added from .new.',
             inline=False)
         embed.add_field(
-            name='/delete number',
+            name='.delete number',
             value=
-            'Deletes the corresponding encouraging message listed in /list.',
+            'Deletes the corresponding encouraging message listed in .list.',
             inline=False)
-        embed.add_field(name='/hello there',
+        embed.add_field(name='.hello there',
                         value='Returns "General Kenobi!"',
                         inline=False)
-        embed.add_field(name='/say "text"',
+        embed.add_field(name='.say "text"',
                         value='Says your text.',
                         inline=False)
-        embed.add_field(name='/hello name',
+        embed.add_field(name='.hello name',
                         value='Returns "Hello Name!"',
                         inline=False)
         embed.add_field(
-            name='/8ball question',
+            name='.8ball question',
             value=
             'Returns whether or not your question\'s answer is yes or no.',
             inline=False)
         embed.add_field(
-            name='/kick',
+            name='.kick',
             value='Kicks a member. NOTE: requires Kick Members permission.',
             inline=False)
         embed.add_field(
-            name='/ban',
+            name='.ban',
             value='Bans a member. NOTE: requires Ban Members permission.',
             inline=False)
         embed.add_field(
-            name='/unban',
+            name='.unban',
             value='Unbans a member. NOTE: requires Ban Members permission.',
             inline=False)
-        embed.add_field(name='/clear or /purge number',
+        embed.add_field(name='.clear or .purge number',
                         value='Deletes the number of messages. Default is 5.',
                         inline=False)
-        embed.add_field(name='/perseverance',
+        embed.add_field(name='.perseverance',
                         value='Shows a picture of Perseverance.',
                         inline=False)
 
