@@ -123,6 +123,12 @@ async def responding(ctx, arg):
         await ctx.reply("Responding is off.")
 
 
+@responding.error
+async def responding_error(ctx, error):
+  if isinstance(error, commands.MissingRequiredArgument):
+    await ctx.reply('Please specify whether you want responding to be on or off.')
+
+
 @client.command()
 async def list(ctx):
     encouragements = []
