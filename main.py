@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 
 client = discord.Client(intents=discord.Intents.all())
 slash = SlashCommand(client, sync_commands=True)
-status = cycle(['/help', 'your messages', '/help', 'Never Gonna Give You Up'])
+status = cycle(['/help', 'your messages', '/help', 'Never Gonna Give You Up', '/help', 'try /setup if the slash commands are not working'])
 
 #db["id"] = [788578597488427008, 764683397528158259]
 guild_ids = db["id"]
@@ -117,7 +117,7 @@ async def on_message(message):
 async def on_guild_join(guild):
     for channel in guild.text_channels:
         if channel.permissions_for(guild.me).send_messages:
-            await channel.send('Thank you for inviting me!')
+            await channel.send('Thank you for inviting me! Try /setup if the commands still don\'t work after 5 minutes.')
             ido = int(guild.id)
             ids = db["id"]
             ids.append(ido)
