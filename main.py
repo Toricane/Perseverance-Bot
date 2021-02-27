@@ -158,26 +158,34 @@ async def on_member_remove(member):
     print(f'{member} has left a server.')
 
 
-@slash.slash(name="inspire", description="The bot will send a random inspirational quote", guild_ids=guild_ids)
+@slash.slash(name="inspire",
+             description="The bot will send a random inspirational quote",
+             guild_ids=guild_ids)
 async def _inspire(ctx):
     quote = await get_quote()
     await ctx.respond()
     await ctx.send(quote)
 
 
-@slash.slash(name="hi", description="The bot will say hello to you", guild_ids=guild_ids)
+@slash.slash(name="hi",
+             description="The bot will say hello to you",
+             guild_ids=guild_ids)
 async def _hi(ctx):
     await ctx.respond()
     await ctx.send('Hello!')
 
 
-@slash.slash(name="bye", description="The bot will say bye to you", guild_ids=guild_ids)
+@slash.slash(name="bye",
+             description="The bot will say bye to you",
+             guild_ids=guild_ids)
 async def _bye(ctx):
     await ctx.respond()
     await ctx.send('Bye!')
 
 
-@slash.slash(name="list", description="Lists the encouraging messages", guild_ids=guild_ids)
+@slash.slash(name="list",
+             description="Lists the encouraging messages",
+             guild_ids=guild_ids)
 async def _list(ctx):
     encouragements = []
     if "encouragements" in db.keys():
@@ -186,16 +194,18 @@ async def _list(ctx):
     await ctx.send(encouragements)
 
 
-@slash.slash(name="delete",
-             description="Deletes an encouraging message, /list to see",
-             options=[
-                 manage_commands.create_option(
-                     name="index",
-                     description="The encouraging message's position in the list that you want to delete, try /list to see",
-                     option_type=3,
-                     required=True)
-             ],
-             guild_ids=guild_ids)
+@slash.slash(
+    name="delete",
+    description="Deletes an encouraging message, /list to see",
+    options=[
+        manage_commands.create_option(
+            name="index",
+            description=
+            "The encouraging message's position in the list that you want to delete, try /list to see",
+            option_type=3,
+            required=True)
+    ],
+    guild_ids=guild_ids)
 async def _delete(ctx, argone):
     encouragements = []
     if "encouragements" in db.keys():
@@ -209,11 +219,10 @@ async def _delete(ctx, argone):
 @slash.slash(name="new",
              description="Add a new encouraging message",
              options=[
-                 manage_commands.create_option(
-                     name="message",
-                     description="Add it here",
-                     option_type=3,
-                     required=True)
+                 manage_commands.create_option(name="message",
+                                               description="Add it here",
+                                               option_type=3,
+                                               required=True)
              ],
              guild_ids=guild_ids)
 async def _new(ctx, argone):
@@ -360,6 +369,20 @@ async def change_status():
         type=discord.ActivityType.watching, name=next(status)))
 
 
+@slash.slash(name="invite",
+             description="Shows the invite link for the bot",
+             guild_ids=guild_ids)
+async def _invite(ctx):
+    embed = discord.Embed(colour=discord.Colour.orange())
+    embed.add_field(
+        name='Invite the bot!',
+        value=
+        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+        inline=False)
+    await ctx.respond()
+    await ctx.send(embed=embed)
+
+
 @slash.slash(name="credits",
              description="Shows the credits",
              guild_ids=guild_ids)
@@ -385,6 +408,11 @@ async def _credits(ctx):
         value=
         'https://discordpy.readthedocs.io/en/latest/\nhttps://discord-py-slash-command.readthedocs.io/en/latest/',
         inline=False)
+    embed.add_field(
+        name='Invite the bot!',
+        value=
+        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+        inline=False)
     await ctx.respond()
     await ctx.send(embed=embed)
 
@@ -401,7 +429,7 @@ async def _credits(ctx):
             required=True)
     ],
     guild_ids=guild_ids)
-async def _help(ctx, argone):
+async def _help(ctx, argone):  # noqa: C901
     embed = discord.Embed(colour=discord.Colour.orange())
     arg = str(argone).lower()
     if arg == "ping":
@@ -411,9 +439,10 @@ async def _help(ctx, argone):
         await ctx.send(embed=embed)
 
     elif arg == "inspire":
-        embed.add_field(name='/inspire',
-                        value='send a random quote from https://zenquotes.io/',
-                        inline=False)
+        embed.add_field(
+            name='/inspire',
+            value='Sends a random quote from https://zenquotes.io/',
+            inline=False)
         await ctx.respond()
         await ctx.send(embed=embed)
 
@@ -426,6 +455,81 @@ async def _help(ctx, argone):
         embed.add_field(name='/bye', value='Returns "Bye!"', inline=False)
         await ctx.respond()
         await ctx.send(embed=embed)
+
+    elif arg == "new":
+        embed.add_field(name='/new text',
+                        value='Adds more encouraging messages.',
+                        inline=False)
+
+    elif arg == "list":
+        embed.add_field(
+            name='/list',
+            value=
+            'Only lists the encouragements that have been added from .new.',
+            inline=False)
+
+    elif arg == "delete":
+        embed.add_field(
+            name='/delete number',
+            value='Deletes the corsending encouraging message listed in /list.',
+            inline=False)
+
+    elif arg == "hello":
+        embed.add_field(name='/hello there',
+                        value='Returns "General Kenobi!"',
+                        inline=False)
+        embed.add_field(name='/hello name',
+                        value='Returns "Hello Name!"',
+                        inline=False)
+
+    elif arg == "say":
+        embed.add_field(name='/say "text"',
+                        value='Says your text.',
+                        inline=False)
+
+    elif arg == "8ball":
+        embed.add_field(
+            name='/8ball question',
+            value=
+            'Returns whether or not your question\'s answer is yes or no.',
+            inline=False)
+
+    elif arg == "kick":
+        embed.add_field(
+            name='/kick',
+            value='Kicks a member. \nNOTE: requires Kick Members permission.',
+            inline=False)
+
+    elif arg == "ban":
+        embed.add_field(
+            name='/ban',
+            value='Bans a member. \nNOTE: requires Ban Members permission.',
+            inline=False)
+
+    elif arg == "unban":
+        embed.add_field(
+            name='/unban',
+            value='Unbans a member. \nNOTE: requires Ban Members permission.',
+            inline=False)
+
+    elif arg == "clear" or arg == "purge":
+        embed.add_field(
+            name='/clear number',
+            value=
+            'Deletes the number of messages. Default is 5. \nNOTE: requires Manage Messages permission.',
+            inline=False)
+
+    elif arg == "perseverance":
+        embed.add_field(name='/perseverance',
+                        value='Shows a picture of Perseverance.',
+                        inline=False)
+
+    elif arg == "invite":
+        embed.add_field(
+            name='Invite the bot!',
+            value=
+            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+            inline=False)
 
     else:
         embed.set_author(name='Help')
@@ -449,20 +553,20 @@ async def _help(ctx, argone):
         embed.add_field(
             name='/list',
             value=
-            'Only lists the encouragements that have been added from .new.',
+            'Only lists the encouragements that have been added from /new.',
             inline=False)
         embed.add_field(
             name='/delete number',
-            value='Deletes the corsending encouraging message listed in .list.',
+            value='Deletes the corsending encouraging message listed in /list.',
             inline=False)
         embed.add_field(name='/hello there',
                         value='Returns "General Kenobi!"',
                         inline=False)
-        embed.add_field(name='/say "text"',
-                        value='Says your text.',
-                        inline=False)
         embed.add_field(name='/hello name',
                         value='Returns "Hello Name!"',
+                        inline=False)
+        embed.add_field(name='/say "text"',
+                        value='Says your text.',
                         inline=False)
         embed.add_field(
             name='/8ball question',
@@ -489,12 +593,19 @@ async def _help(ctx, argone):
         embed.add_field(name='/perseverance',
                         value='Shows a picture of Perseverance.',
                         inline=False)
+        embed.add_field(
+            name='Invite the bot!',
+            value=
+            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+            inline=False)
 
         await ctx.respond()
         await ctx.send(embed=embed)
 
 
-@slash.slash(name="perseverance", description="Shows a photo of Perseverance", guild_ids=guild_ids)
+@slash.slash(name="perseverance",
+             description="Shows a photo of Perseverance",
+             guild_ids=guild_ids)
 async def _perseverance(ctx):
     await ctx.respond()
     await ctx.send(file=discord.File('perseverance.jpeg'))
