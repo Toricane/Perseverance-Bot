@@ -460,6 +460,8 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(name='/new text',
                         value='Adds more encouraging messages.',
                         inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "list":
         embed.add_field(
@@ -467,12 +469,16 @@ async def _help(ctx, argone):  # noqa: C901
             value=
             'Only lists the encouragements that have been added from .new.',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "delete":
         embed.add_field(
             name='/delete number',
             value='Deletes the corsending encouraging message listed in /list.',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "hello":
         embed.add_field(name='/hello there',
@@ -481,11 +487,15 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(name='/hello name',
                         value='Returns "Hello Name!"',
                         inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "say":
         embed.add_field(name='/say "text"',
                         value='Says your text.',
                         inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "8ball":
         embed.add_field(
@@ -493,24 +503,32 @@ async def _help(ctx, argone):  # noqa: C901
             value=
             'Returns whether or not your question\'s answer is yes or no.',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "kick":
         embed.add_field(
             name='/kick',
             value='Kicks a member. \nNOTE: requires Kick Members permission.',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "ban":
         embed.add_field(
             name='/ban',
             value='Bans a member. \nNOTE: requires Ban Members permission.',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "unban":
         embed.add_field(
             name='/unban',
             value='Unbans a member. \nNOTE: requires Ban Members permission.',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "clear" or arg == "purge":
         embed.add_field(
@@ -518,11 +536,15 @@ async def _help(ctx, argone):  # noqa: C901
             value=
             'Deletes the number of messages. Default is 5. \nNOTE: requires Manage Messages permission.',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "perseverance":
         embed.add_field(name='/perseverance',
                         value='Shows a picture of Perseverance.',
                         inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     elif arg == "invite":
         embed.add_field(
@@ -530,6 +552,8 @@ async def _help(ctx, argone):  # noqa: C901
             value=
             'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
             inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
 
     else:
         embed.set_author(name='Help')
