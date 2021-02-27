@@ -148,6 +148,14 @@ version = "5.1.0"
 
 [[package]]
 category = "main"
+description = "World timezone definitions, modern and historical"
+name = "pytz"
+optional = false
+python-versions = "*"
+version = "2021.1"
+
+[[package]]
+category = "main"
 description = "A library for interacting with features of repl.it"
 name = "replit"
 optional = false
@@ -193,7 +201,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "b33ce91abbdb73cc294e8c9a534b0cea4a7ad47789af7aae7ae88534a5e1339b"
+content-hash = "d77831998d63784566a2f5698b37c37bcced21a0da69fa4e4d7e6c99ac8b9878"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -368,6 +376,10 @@ multidict = [
     {file = "multidict-5.1.0-cp39-cp39-win32.whl", hash = "sha256:fc13a9524bc18b6fb6e0dbec3533ba0496bbed167c56d0aabefd965584557d80"},
     {file = "multidict-5.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:7df80d07818b385f3129180369079bd6934cf70469f99daaebfac89dca288359"},
     {file = "multidict-5.1.0.tar.gz", hash = "sha256:25b4e5f22d3a37ddf3effc0710ba692cfc792c2b9edfb9c05aefe823256e84d5"},
+]
+pytz = [
+    {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
+    {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
 ]
 replit = [
     {file = "replit-2.0.0-py3-none-any.whl", hash = "sha256:862b49887f486a5c83eba4809b86a977378a008f1c5d53ab3c1187418194cf18"},

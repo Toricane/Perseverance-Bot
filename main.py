@@ -12,6 +12,8 @@ from itertools import cycle
 from discord_slash import SlashCommand
 from discord_slash.utils import manage_commands
 import sys
+import datetime
+import pytz
 
 logging.basicConfig(level=logging.INFO)
 
@@ -73,6 +75,8 @@ async def get_quote():
 async def on_ready():
     change_status.start()
     print('We have logged in as {0.user}'.format(client))
+    timestamp = datetime.datetime.now()
+    print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
 
 
 @client.event
