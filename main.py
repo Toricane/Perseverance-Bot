@@ -11,6 +11,7 @@ import asyncio
 from itertools import cycle
 from discord_slash import SlashCommand
 from discord_slash.utils import manage_commands
+import sys
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,7 +19,8 @@ client = discord.Client(intents=discord.Intents.all())
 slash = SlashCommand(client, sync_commands=True)
 status = cycle(['/help', 'your messages', '/help', 'Never Gonna Give You Up'])
 
-guild_ids = [788578597488427008, 764683397528158259]
+#db["id"] = [788578597488427008, 764683397528158259]
+guild_ids = db["id"]
 
 sad_words = [
     "sad", "depressed", "unhappy", "angry", "miserable", "depressing",
@@ -95,10 +97,46 @@ async def on_message(message):
             if "!" not in msg and "." not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
                 await message.reply(random.choice(options))
     
-    # if msg == "/setup":
-    #   id = discord.Guild.id
-    #   if id not in db["guild_ids"]:
-    #     db["guild_ids"].append(id)
+    if msg == "/setup":
+      ido = message.guild.id
+      if ido not in db["id"]:
+        ids = db["id"]
+        ids.append(ido)
+        db["id"] = ids
+        print(db["id"])
+        await message.reply("Server has been set up! The bot is restarting! If the error persists, contact Toricane#6391 in Discord to restart the bot!")
+        slash = SlashCommand(client, sync_commands=True)
+        os.execl(sys.executable, sys.executable, *sys.argv)
+      else:
+        await message.reply("Server already setup! The bot is restarting! If the error persists, contact Toricane#6391 in Discord to restart the bot!")
+        slash = SlashCommand(client, sync_commands=True)
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+
+@client.event
+async def on_guild_join(guild):
+    for channel in guild.text_channels:
+        if channel.permissions_for(guild.me).send_messages:
+            await channel.send('Thank you for inviting me!')
+            ido = int(guild.id)
+            ids = db["id"]
+            ids.append(ido)
+            db["id"] = ids
+            print(db["id"])
+            slash = SlashCommand(client, sync_commands=True)
+        break
+    os.execl(sys.executable, sys.executable, *sys.argv)
+
+
+@client.event
+async def on_guild_remove(guild):
+    ido = int(guild.id)
+    ids = db["id"]
+    ids.remove(ido)
+    db["id"] = ids
+    print(db["id"])
+    slash = SlashCommand(client, sync_commands=True)
+    os.execl(sys.executable, sys.executable, *sys.argv)
 
 
 @client.event
