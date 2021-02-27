@@ -9,13 +9,16 @@ from replit import db
 from keep_alive import keep_alive
 import asyncio
 from itertools import cycle
-
+from discord_slash import SlashCommand
+from discord_slash.utils import manage_commands
 
 logging.basicConfig(level=logging.INFO)
 
-client = commands.Bot(command_prefix='.')
-client.remove_command('help')
-status = cycle(['.help', 'your messages', '.help', 'Never Gonna Give You Up'])
+client = discord.Client(intents=discord.Intents.all())
+slash = SlashCommand(client, sync_commands=True)
+status = cycle(['/help', 'your messages', '/help', 'Never Gonna Give You Up'])
+
+guild_ids = [788578597488427008, 764683397528158259]
 
 sad_words = [
     "sad", "depressed", "unhappy", "angry", "miserable", "depressing",
@@ -70,7 +73,8 @@ async def on_ready():
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.reply(
+        await ctx.respond()
+        await ctx.send(
             'Command was not found. Be sure you did not make a typo and try again.'
         )
         await asyncio.sleep(3)
@@ -90,8 +94,11 @@ async def on_message(message):
         if any(word in msg for word in sad_words):
             if "!" not in msg and "." not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
                 await message.reply(random.choice(options))
-
-    await client.process_commands(message)
+    
+    # if msg == "/setup":
+    #   id = discord.Guild.id
+    #   if id not in db["guild_ids"]:
+    #     db["guild_ids"].append(id)
 
 
 @client.event
@@ -104,102 +111,83 @@ async def on_member_remove(member):
     print(f'{member} has left a server.')
 
 
-@client.command()
-async def inspire(ctx):
+@slash.slash(name="inspire", guild_ids=guild_ids)
+async def _inspire(ctx):
     quote = await get_quote()
-    await ctx.reply(quote)
+    await ctx.respond()
+    await ctx.send(quote)
 
 
-@client.command()
-async def hi(ctx):
-    await ctx.reply('Hello!')
+@slash.slash(name="hi", guild_ids=guild_ids)
+async def _hi(ctx):
+    await ctx.respond()
+    await ctx.send('Hello!')
 
 
-@client.command()
-async def bye(ctx):
-    await ctx.reply('Bye!')
+@slash.slash(name="bye", guild_ids=guild_ids)
+async def _bye(ctx):
+    await ctx.respond()
+    await ctx.send('Bye!')
 
 
-@client.command()
-async def responding(ctx, arg):
-
-    if arg.lower() == "true" or arg.lower() == "on":
-        db["responding"] = True
-    else:
-        db["responding"] = False
-
-    if db["responding"] == True or db["responding"]:
-        await ctx.reply("Responding is on.")
-    else:
-        await ctx.reply("Responding is off.")
-
-
-@responding.error
-async def responding_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.reply(
-            'Please specify whether you want responding to be on or off.')
-
-
-@client.command()
-async def list(ctx):
+@slash.slash(name="list", guild_ids=guild_ids)
+async def _list(ctx):
     encouragements = []
     if "encouragements" in db.keys():
         encouragements = db["encouragements"]
-    await ctx.reply(encouragements)
+    await ctx.respond()
+    await ctx.send(encouragements)
 
 
-@client.command()
-async def delete(ctx, arg):
+@slash.slash(name="delete", guild_ids=guild_ids)
+async def _delete(ctx, arg):
     encouragements = []
     if "encouragements" in db.keys():
         index = int(arg) - 1
         delete_encouragment(index)
         encouragements = db["encouragements"]
-    await ctx.reply(encouragements)
+    await ctx.respond()
+    await ctx.send(encouragements)
 
 
-@client.command()
-async def new(ctx, *, arg):
+@slash.slash(name="new", guild_ids=guild_ids)
+async def _new(ctx, *, arg):
     encouraging_message = arg
     update_encouragements(encouraging_message)
-    await ctx.reply(f'New encouraging message added: {encouraging_message}')
+    await ctx.respond()
+    await ctx.send(f'New encouraging message added: {encouraging_message}')
 
 
-@client.command(aliases=['purge'])
+@slash.slash(name="clear", guild_ids=guild_ids)
 @commands.has_permissions(manage_messages=True)
-async def clear(ctx, amount=5):
+async def _clear(ctx, amount=5):
+    amount = int(amount)
     await ctx.channel.purge(limit=amount + 1)
+    await ctx.respond()
     await ctx.send(f"Removed {amount} messages.")
     await asyncio.sleep(3)
-    await ctx.channel.purge(limit=1)
+    await ctx.channel.purge(limit=2)
 
 
-@clear.error
-async def clear_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.reply("You do not have the manage messages permission.")
-        await asyncio.sleep(3)
-        await ctx.channel.purge(limit=2)
-
-
-@client.command()
+@slash.slash(name="kick", guild_ids=guild_ids)
 @commands.has_permissions(kick_members=True)
-async def kick(ctx, member: discord.Member, *, reason=None):
+async def _kick(ctx, member: discord.Member, *, reason=None):
     await member.kick(reason=reason)
-    await ctx.reply(f"Kicked {member} because {reason}.")
+    await ctx.respond()
+    await ctx.send(f"Kicked {member} because {reason}.")
 
 
-@client.command()
+@slash.slash(name="ban", guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
-async def ban(ctx, member: discord.Member, *, reason=None):
+async def _ban(ctx, member: discord.Member, *, reason=None):
     await member.ban(reason=reason)
-    await ctx.reply(f"Banned {member.mention} because {reason}.")
+    await ctx.respond()
+    await ctx.send(f"Banned {member.mention} because {reason}.")
 
 
-@client.command()
+@slash.slash(name="unban", guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
-async def unban(ctx, *, member):
+async def _unban(ctx, *, member):
     banned_users = await ctx.guild.bans()
     member_name, member_discriminator = member.split('#')
     for ban_entry in banned_users:
@@ -208,45 +196,71 @@ async def unban(ctx, *, member):
                                                member_discriminator):
             await ctx.guild.unban(user)
             person = f"{user.name}#{user.discriminator}"
-            await ctx.reply(f"Unbanned {person}.")
+            await ctx.respond()
+            await ctx.send(f"Unbanned {person}.")
             return
 
 
-@client.command()
-async def hello(ctx, *, arg):
+@slash.slash(name="hello", guild_ids=guild_ids)
+async def _hello(ctx, *, arg):
     if arg.lower() == "there":
-        await ctx.reply("General Kenobi!")
+        await ctx.send("General Kenobi!")
     else:
         textx = arg.lower()
         texty = textx.capitalize()
+        await ctx.respond()
         await ctx.channel.send(f"Hello {texty}!")
         await ctx.message.delete()
 
 
-@client.command()
-async def say(ctx, *, arg):
+@slash.slash(name="say", guild_ids=guild_ids)
+async def _say(ctx, *, arg):
     text = arg
+    await ctx.respond()
     await ctx.channel.send(text)
     await ctx.message.delete()
 
 
-@client.command()
-async def ping(ctx):
-    await ctx.reply(f'Pong! {round(client.latency * 1000)}ms')
+@slash.slash(name="ping",
+             description="This returns the bot latency",
+             options=[
+                 manage_commands.create_option(
+                     name="message",
+                     description="This returns the bot latency",
+                     option_type=3,
+                     required=True)
+             ],
+             guild_ids=guild_ids)
+async def _ping(ctx, message: str):
+    await ctx.respond()
+    await ctx.send(
+        f'Pong! {round(client.latency * 1000)}ms. You responded with {message}.'
+    )
 
 
-@client.command(aliases=['8ball'])
-async def _8ball(ctx, *, question):
+@slash.slash(name="8ball",
+             description="Returns yes or no to your question",
+             options=[
+                 manage_commands.create_option(
+                     name="question",
+                     description="Enter your question here",
+                     option_type=3,
+                     required=True)
+             ],
+             guild_ids=guild_ids)
+async def _8ball(ctx, question: str):
     responses = [
         "It is certain.", "It is decidedly so.", "Without a doubt.",
         "Yes - definitely.", "You may rely on it.", "As I see it, yes.",
         "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
-        "Reply hazy, try again.", "Ask again later.",
+        "send hazy, try again.", "Ask again later.",
         "Better not tell you now.", "Cannot predict now.",
-        "Concentrate and ask again.", "Don't count on it.", "My reply is no.",
-        "My sources say no.", "Outlook not so good.", "Very doubtful."
+        "Concentrate and ask again.", "Don't count on it.",
+        "My response is no.", "My sources say no.", "Outlook not so good.",
+        "Very doubtful."
     ]
-    await ctx.reply(f'{random.choice(responses)}')
+    await ctx.respond()
+    await ctx.send(f'{random.choice(responses)}')
 
 
 @tasks.loop(seconds=10)
@@ -255,8 +269,8 @@ async def change_status():
         type=discord.ActivityType.watching, name=next(status)))
 
 
-@client.command(aliases=['credit'])
-async def credits(ctx):
+@slash.slash(name="credits", guild_ids=guild_ids)
+async def _credits(ctx):
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.set_author(name='Credits')
     embed.add_field(name='Created by Toricane#6391',
@@ -273,101 +287,106 @@ async def credits(ctx):
         value=
         'https://youtu.be/SPTfmiYiuok\nhttps://youtube.com/playlist?list=PLW3GfRiBCHOhfVoiDZpSz8SM_HybXRPzZ',
         inline=False)
+    await ctx.respond()
     await ctx.send(embed=embed)
 
 
-@client.command(pass_context=True)
-async def help(ctx, *, arg=None):
+@slash.slash(name="help", guild_ids=guild_ids)
+async def _help(ctx, *, arg=None):
     embed = discord.Embed(colour=discord.Colour.orange())
     arg = str(arg).lower()
     if arg == "ping":
-        embed.set_author(name='Help for .ping')
-        embed.add_field(name='.ping', value='Returns "Pong!"', inline=False)
+        embed.set_author(name='Help for /ping')
+        embed.add_field(name='/ping', value='Returns "Pong!"', inline=False)
+        await ctx.respond()
         await ctx.send(embed=embed)
 
     elif arg == "inspire":
-        embed.add_field(name='.inspire',
-                        value='Send a random quote from https://zenquotes.io/',
+        embed.add_field(name='/inspire',
+                        value='send a random quote from https://zenquotes.io/',
                         inline=False)
+        await ctx.respond()
         await ctx.send(embed=embed)
 
     elif arg == "hi":
-        embed.add_field(name='.hi', value='Returns "Hello!"', inline=False)
+        embed.add_field(name='/hi', value='Returns "Hello!"', inline=False)
+        await ctx.respond()
         await ctx.send(embed=embed)
 
     elif arg == "bye":
-        embed.add_field(name='.bye', value='Returns "Bye!"', inline=False)
+        embed.add_field(name='/bye', value='Returns "Bye!"', inline=False)
+        await ctx.respond()
         await ctx.send(embed=embed)
 
     else:
         embed.set_author(name='Help')
-        embed.add_field(name='.help', value='Shows this message', inline=False)
-        embed.add_field(name='.credit or .credits',
+        embed.add_field(name='/help', value='Shows this message', inline=False)
+        embed.add_field(name='/credits',
                         value='Shows the credits.',
                         inline=False)
-        embed.add_field(name='.ping', value='Returns "Pong!"', inline=False)
-        embed.add_field(name='.inspire',
-                        value='Send a random quote from https://zenquotes.io/',
+        embed.add_field(name='/ping message',
+                        value='Returns "Pong!"',
                         inline=False)
-        embed.add_field(name='.hi', value='Returns "Hello!"', inline=False)
-        embed.add_field(name='.bye', value='Returns "Bye!"', inline=False)
-        embed.add_field(
-            name='.responding on/off',
-            value=
-            'Toggles between replying to certain words or phrases automatically.',
-            inline=False)
-        embed.add_field(name='.new text',
+        embed.add_field(name='/inspire',
+                        value='send a random quote from https://zenquotes.io/',
+                        inline=False)
+        embed.add_field(name='/hi', value='Returns "Hello!"', inline=False)
+        embed.add_field(name='/bye', value='Returns "Bye!"', inline=False)
+        embed.add_field(name='/new text',
                         value='Adds more encouraging messages.',
                         inline=False)
         embed.add_field(
-            name='.list',
+            name='/list',
             value=
             'Only lists the encouragements that have been added from .new.',
             inline=False)
         embed.add_field(
-            name='.delete number',
-            value=
-            'Deletes the corresponding encouraging message listed in .list.',
+            name='/delete number',
+            value='Deletes the corsending encouraging message listed in .list.',
             inline=False)
-        embed.add_field(name='.hello there',
+        embed.add_field(name='/hello there',
                         value='Returns "General Kenobi!"',
                         inline=False)
-        embed.add_field(name='.say "text"',
+        embed.add_field(name='/say "text"',
                         value='Says your text.',
                         inline=False)
-        embed.add_field(name='.hello name',
+        embed.add_field(name='/hello name',
                         value='Returns "Hello Name!"',
                         inline=False)
         embed.add_field(
-            name='.8ball question',
+            name='/8ball question',
             value=
             'Returns whether or not your question\'s answer is yes or no.',
             inline=False)
         embed.add_field(
-            name='.kick',
-            value='Kicks a member. NOTE: requires Kick Members permission.',
+            name='/kick',
+            value='Kicks a member. \nNOTE: requires Kick Members permission.',
             inline=False)
         embed.add_field(
-            name='.ban',
-            value='Bans a member. NOTE: requires Ban Members permission.',
+            name='/ban',
+            value='Bans a member. \nNOTE: requires Ban Members permission.',
             inline=False)
         embed.add_field(
-            name='.unban',
-            value='Unbans a member. NOTE: requires Ban Members permission.',
+            name='/unban',
+            value='Unbans a member. \nNOTE: requires Ban Members permission.',
             inline=False)
-        embed.add_field(name='.clear or .purge number',
-                        value='Deletes the number of messages. Default is 5.',
-                        inline=False)
-        embed.add_field(name='.perseverance',
+        embed.add_field(
+            name='/clear number',
+            value=
+            'Deletes the number of messages. Default is 5. \nNOTE: requires Manage Messages permission.',
+            inline=False)
+        embed.add_field(name='/perseverance',
                         value='Shows a picture of Perseverance.',
                         inline=False)
 
+        await ctx.respond()
         await ctx.send(embed=embed)
 
 
-@client.command()
-async def perseverance(ctx):
-    await ctx.reply(file=discord.File('perseverance.jpeg'))
+@slash.slash(name="perseverance", guild_ids=guild_ids)
+async def _perseverance(ctx):
+    await ctx.respond()
+    await ctx.send(file=discord.File('perseverance.jpeg'))
 
 
 keep_alive()
