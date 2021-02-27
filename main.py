@@ -105,6 +105,7 @@ async def on_message(message):
                 await message.reply(random.choice(options))
 
     if msg == "/setup":
+        print('/setup')
         ido = message.guild.id
         if ido not in db["id"]:
             ids = db["id"]
@@ -166,6 +167,7 @@ async def on_member_remove(member):
              description="The bot will send a random inspirational quote",
              guild_ids=guild_ids)
 async def _inspire(ctx):
+    print("/inspire")
     quote = await get_quote()
     await ctx.respond()
     await ctx.send(quote)
@@ -175,6 +177,7 @@ async def _inspire(ctx):
              description="The bot will say hello to you",
              guild_ids=guild_ids)
 async def _hi(ctx):
+    print("/hi")
     await ctx.respond()
     await ctx.send('Hello!')
 
@@ -183,6 +186,7 @@ async def _hi(ctx):
              description="The bot will say bye to you",
              guild_ids=guild_ids)
 async def _bye(ctx):
+    print("/bye")
     await ctx.respond()
     await ctx.send('Bye!')
 
@@ -191,6 +195,7 @@ async def _bye(ctx):
              description="Lists the encouraging messages",
              guild_ids=guild_ids)
 async def _list(ctx):
+    print("/list")
     encouragements = []
     if "encouragements" in db.keys():
         encouragements = db["encouragements"]
@@ -214,6 +219,7 @@ async def _delete(ctx, argone):
     encouragements = []
     if "encouragements" in db.keys():
         index = int(argone) - 1
+        print(f"/delete {index}")
         delete_encouragment(index)
         encouragements = db["encouragements"]
     await ctx.respond()
@@ -230,6 +236,7 @@ async def _delete(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _new(ctx, argone):
+    print(f"/new {argone}")
     encouraging_message = argone
     update_encouragements(encouraging_message)
     await ctx.respond()
@@ -239,6 +246,7 @@ async def _new(ctx, argone):
 @slash.slash(name="clear", description="Delete messages", guild_ids=guild_ids)
 @commands.has_permissions(manage_messages=True)
 async def _clear(ctx, amount=5):
+    print(f"/clear {amount}")
     amount = int(amount)
     await ctx.channel.purge(limit=amount + 1)
     await ctx.respond()
@@ -250,6 +258,7 @@ async def _clear(ctx, amount=5):
 @slash.slash(name="kick", description="Kicks a member", guild_ids=guild_ids)
 @commands.has_permissions(kick_members=True)
 async def _kick(ctx, member: discord.Member, *, reason=None):
+    print(f"/kick {member} {reason}")
     await member.kick(reason=reason)
     await ctx.respond()
     await ctx.send(f"Kicked {member} because {reason}.")
@@ -258,6 +267,7 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
 async def _ban(ctx, member: discord.Member, *, reason=None):
+    print(f"/ban {member} {reason}")
     await member.ban(reason=reason)
     await ctx.respond()
     await ctx.send(f"Banned {member.mention} because {reason}.")
@@ -275,6 +285,7 @@ async def _ban(ctx, member: discord.Member, *, reason=None):
              guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
 async def _unban(ctx, argone):
+    print(f"/unban {argone}")
     banned_users = await ctx.guild.bans()
     member_name, member_discriminator = argone.split('#')
     for ban_entry in banned_users:
@@ -299,6 +310,7 @@ async def _unban(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _hello(ctx, argone):
+    print(f"/hello {argone}")
     if argone.lower() == "there":
         await ctx.send("General Kenobi!")
     else:
@@ -319,6 +331,7 @@ async def _hello(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _say(ctx, argone):
+    print(f"/say {argone}")
     text = argone
     await ctx.respond()
     await ctx.channel.send(text)
@@ -336,6 +349,7 @@ async def _say(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _ping(ctx, message: str):
+    print(f"/ping {message}")
     await ctx.respond()
     await ctx.send(
         f'Pong! {round(client.latency * 1000)}ms. You responded with {message}.'
@@ -353,6 +367,7 @@ async def _ping(ctx, message: str):
              ],
              guild_ids=guild_ids)
 async def _8ball(ctx, question: str):
+    print(f"/8ball {question}")
     responses = [
         "It is certain.", "It is decidedly so.", "Without a doubt.",
         "Yes - definitely.", "You may rely on it.", "As I see it, yes.",
@@ -377,6 +392,7 @@ async def change_status():
              description="Shows the invite link for the bot",
              guild_ids=guild_ids)
 async def _invite(ctx):
+    print("/invite")
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.add_field(
         name='Invite the bot!',
@@ -387,10 +403,19 @@ async def _invite(ctx):
     await ctx.send(embed=embed)
 
 
+@slash.slash(name="perseverance",
+             description="Shows a photo of Perseverance",
+             guild_ids=guild_ids)
+async def _perseverance(ctx):
+    await ctx.respond()
+    await ctx.send(file=discord.File('perseverance.jpeg'))
+
+
 @slash.slash(name="credits",
              description="Shows the credits",
              guild_ids=guild_ids)
 async def _credits(ctx):
+    print("/credits")
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.set_author(name='Credits')
     embed.add_field(name='Created by Toricane#6391',
@@ -434,6 +459,7 @@ async def _credits(ctx):
     ],
     guild_ids=guild_ids)
 async def _help(ctx, argone):  # noqa: C901
+    print(f"/help {argone}")
     embed = discord.Embed(colour=discord.Colour.orange())
     arg = str(argone).lower()
     if arg == "ping":
@@ -629,14 +655,6 @@ async def _help(ctx, argone):  # noqa: C901
 
         await ctx.respond()
         await ctx.send(embed=embed)
-
-
-@slash.slash(name="perseverance",
-             description="Shows a photo of Perseverance",
-             guild_ids=guild_ids)
-async def _perseverance(ctx):
-    await ctx.respond()
-    await ctx.send(file=discord.File('perseverance.jpeg'))
 
 
 keep_alive()
