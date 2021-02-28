@@ -30,7 +30,7 @@ guild_ids = db["id"]
 sad_words = [
     "sad", "depressed", "unhappy", "angry", "miserable", "depressing",
     "bitter", "dismal", "heartbroken", "melancholy", "mournful", "pessimistic",
-    "somber", "sorrowful", "sorry", "wistful", "bereaved", "blue", "cheerless",
+    "somber", "sorrowful", "sorry", "wistful", "bereaved", "cheerless",
     "dejected", "despairing", "despondent", "disconsolate", "distressed",
     "doleful", "down in dumps", "down in mouth", "downcast", "forlorn",
     "gloomy", "glum", "grief-stricken", "grieved", "heartsick", "heavyhearted",
