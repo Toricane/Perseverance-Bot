@@ -13,7 +13,6 @@ from discord_slash import SlashCommand
 from discord_slash.utils import manage_commands
 import sys
 import datetime
-import pytz
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,10 +36,6 @@ sad_words = [
     "hurting", "in doldrums", "in grief", "in the dumps", "languishing",
     "low-spirited", "lugubrious", "morbid", "morose", "out of sorts",
     "pensive", "sick at heart", "troubled", "weeping", "woebegone"
-]
-
-starter_encouragements = [
-    "Cheer up!", "Hang in there.", "You are a great person!"
 ]
 
 if "responding" not in db.keys():
@@ -96,9 +91,8 @@ async def on_message(message):
     msg = message.content
 
     if db["responding"] == True:
-        options = starter_encouragements
         if "encouragements" in db.keys():
-            options = options + db["encouragements"]
+            options = db["encouragements"]
 
         if any(word in msg for word in sad_words):
             if "!" not in msg and "." not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
@@ -200,7 +194,7 @@ async def _list(ctx):
     if "encouragements" in db.keys():
         encouragements = db["encouragements"]
     await ctx.respond()
-    await ctx.send(encouragements)
+    await ctx.send(f'{encouragements}')
 
 
 @slash.slash(
