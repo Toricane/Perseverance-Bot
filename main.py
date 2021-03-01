@@ -1,5 +1,7 @@
 import subprocess
 
+list_files = subprocess.run(["pip", "install", "pynacl"])
+
 list_files = subprocess.run(["pip", "install", "-U", "discord-py-slash-command"])
 
 import os
@@ -165,7 +167,7 @@ async def on_member_remove(member):
              description="The bot will send a random inspirational quote",
              guild_ids=guild_ids)
 async def _inspire(ctx):
-    print("/inspire")
+    print(f"{ctx.author.name}: /inspire")
     quote = await get_quote()
     await ctx.respond()
     await ctx.send(quote)
