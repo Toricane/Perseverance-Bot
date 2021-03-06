@@ -2,7 +2,8 @@ import subprocess
 
 list_files = subprocess.run(["pip", "install", "pynacl"])
 
-list_files = subprocess.run(["pip", "install", "-U", "discord-py-slash-command"])
+list_files = subprocess.run(
+    ["pip", "install", "-U", "discord-py-slash-command"])
 
 import os
 import aiohttp
@@ -19,6 +20,8 @@ from discord_slash import SlashCommand
 from discord_slash.utils import manage_commands
 import sys
 import datetime
+import wikipedia
+import pyjokes
 
 logging.basicConfig(level=logging.INFO)
 
@@ -262,6 +265,28 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
     await member.kick(reason=reason)
     await ctx.respond()
     await ctx.send(f"Kicked {member} because {reason}.")
+
+
+@slash.slash(name="wikipedia",
+             description="Searches for something on Wikipedia",
+             options=[
+                 manage_commands.create_option(
+                     name="text",
+                     description="What do you want to search?",
+                     option_type=3,
+                     required=True),
+                 manage_commands.create_option(
+                     name="lines",
+                     description="How many lines do you want? Default is 10.",
+                     option_type=3,
+                     required=False)
+             ],
+             guild_ids=guild_ids)
+async def _wikipedia(ctx, text, lines=10):
+    print(f"/wikipedia {text} {lines}")
+    info = wikipedia.summary(text, int(lines))
+    await ctx.respond()
+    await ctx.send(f"{info}")
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
@@ -576,6 +601,15 @@ async def _help(ctx, argone):  # noqa: C901
         await ctx.respond()
         await ctx.send(embed=embed)
 
+    elif arg == "wikipedia":
+        embed.add_field(
+            name='/wikipedia text lines',
+            value=
+            'Search anything on Wikipedia! NOTE: lines are not required and has a default value of 10.',
+            inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
+
     elif arg == "invite":
         embed.add_field(
             name='Invite the bot!',
@@ -647,6 +681,11 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(name='/perseverance',
                         value='Shows a picture of Perseverance.',
                         inline=False)
+        embed.add_field(
+            name='/wikipedia text lines',
+            value=
+            'Search anything on Wikipedia! NOTE: lines are not required and has a default value of 10.',
+            inline=False)
         embed.add_field(
             name='Invite the bot!',
             value=
