@@ -1,9 +1,9 @@
-import subprocess
+# import subprocess
 
-list_files = subprocess.run(["pip", "install", "pynacl"])
+# list_files = subprocess.run(["pip", "install", "pynacl"])
 
-list_files = subprocess.run(
-    ["pip", "install", "-U", "discord-py-slash-command"])
+# list_files = subprocess.run(
+#     ["pip", "install", "-U", "discord-py-slash-command"])
 
 import os
 import aiohttp
