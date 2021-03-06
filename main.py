@@ -289,6 +289,12 @@ async def _wikipedia(ctx, text, lines=10):
     await ctx.send(f"{info}")
 
 
+@slash.slash(name="joke", description="Gives you a joke", guild_ids=guild_ids)
+async def _joke(ctx):
+    await ctx.respond()
+    await ctx.send(f"{pyjokes.get_joke()}")
+
+
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
 async def _ban(ctx, member: discord.Member, *, reason=None):
@@ -610,6 +616,13 @@ async def _help(ctx, argone):  # noqa: C901
         await ctx.respond()
         await ctx.send(embed=embed)
 
+    elif arg == "joke":
+        embed.add_field(name='/joke',
+                        value='Gives you a random joke!',
+                        inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
+
     elif arg == "invite":
         embed.add_field(
             name='Invite the bot!',
@@ -684,8 +697,11 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(
             name='/wikipedia text lines',
             value=
-            'Search anything on Wikipedia! NOTE: lines are not required and has a default value of 10.',
+            'Search anything on Wikipedia! \nNOTE: lines are not required and has a default value of 10.',
             inline=False)
+        embed.add_field(name='/joke',
+                        value='Gives you a random joke!',
+                        inline=False)
         embed.add_field(
             name='Invite the bot!',
             value=
