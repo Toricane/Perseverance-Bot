@@ -39,7 +39,8 @@ from urllib.parse import urlparse
 def googleSearch(query):
     g_clean = []
     if "http" not in query:
-        url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(query)
+        url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(
+            query)
     else:
         url = query
     try:
@@ -72,8 +73,8 @@ logging.basicConfig(level=logging.INFO)
 client = discord.Client(intents=discord.Intents.all())
 slash = SlashCommand(client, sync_commands=True)
 status = cycle([
-    '/help help', 'your messages', '/help help', 'Never Gonna Give You Up', '/help help',
-    'try /setup if the slash commands are not working'
+    '/help help', 'your messages', '/help help', 'Never Gonna Give You Up',
+    '/help help', 'try /setup if the slash commands are not working'
 ])
 
 #db["id"] = [788578597488427008, 764683397528158259]
@@ -342,33 +343,35 @@ async def _wikipedia(ctx, text, results=1, lines=5):
         await ctx.send("Please try again.")
 
 
-
 @slash.slash(name="joke", description="Gives you a joke", guild_ids=guild_ids)
 async def _joke(ctx):
     await ctx.respond()
     await ctx.send(f"{pyjokes.get_joke()}")
 
 
-@slash.slash(name="google",
-             description="Search anything on Google!",
-             options=[
-                 manage_commands.create_option(name="text",
-                                               description="Search it here",
-                                               option_type=3,
-                                               required=True),
-                 manage_commands.create_option(name="results",
-                                               description="How many results? Max is 10 and default is 5",
-                                               option_type=3,
-                                               required=False)
-             ],
-             guild_ids=guild_ids)
+@slash.slash(
+    name="google",
+    description="Search anything on Google!",
+    options=[
+        manage_commands.create_option(name="text",
+                                      description="Search it here",
+                                      option_type=3,
+                                      required=True),
+        manage_commands.create_option(
+            name="results",
+            description="How many results? Max is 10 and default is 5",
+            option_type=3,
+            required=False)
+    ],
+    guild_ids=guild_ids)
 async def _google(ctx, text, results=5):
     result = googleSearch(text)
     hello = True
+    results = int(results)
     try:
-        a,b,c,d,e,f,g,h,i,j = result
+        a, b, c, d, e, f, g, h, i, j = result
     except:
-        a,b,c,d,e,f,g,h,i = result
+        a, b, c, d, e, f, g, h, i = result
         hello = False
     if results == 1:
         await ctx.respond()
@@ -448,8 +451,11 @@ async def _google(ctx, text, results=5):
     else:
         await ctx.respond()
         await ctx.send("ERROR")
-        await ctx.send("Make sure the results parameter is between 1 and 10 inclusive.")
-        await ctx.send("This could also mean that Google does not have enough results available. Make sure you made no typos.")
+        await ctx.send(
+            "Make sure the results parameter is between 1 and 10 inclusive.")
+        await ctx.send(
+            "This could also mean that Google does not have enough results available. Make sure you made no typos."
+        )
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
@@ -775,7 +781,8 @@ async def _help(ctx, argone):  # noqa: C901
     elif arg == "google":
         embed.add_field(
             name='/google text results',
-            value='Google anything! \nNOTE: results is optional and max is 10, default is 5',
+            value=
+            'Google anything! \nNOTE: results is optional and max is 10, default is 5',
             inline=False)
         await ctx.respond()
         await ctx.send(embed=embed)
