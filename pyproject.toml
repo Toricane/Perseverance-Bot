@@ -12,6 +12,8 @@ flask = "^1.1.2"
 pytz = "^2021.1"
 wikipedia = "^1.4.0"
 pyjokes = "^0.6.0"
+google-api-helper = "^0.3.1"
+metadata-parser = "^0.10.4"
 
 [tool.poetry.dev-dependencies]
 

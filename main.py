@@ -1,9 +1,17 @@
-# import subprocess
+import subprocess
 
-# list_files = subprocess.run(["pip", "install", "pynacl"])
+list_files = subprocess.run(["pip", "install", "pynacl"])
 
-# list_files = subprocess.run(
-#     ["pip", "install", "-U", "discord-py-slash-command"])
+list_files = subprocess.run(
+    ["pip", "install", "-U", "discord-py-slash-command"])
+
+list_files = subprocess.run(["pip", "install", "googlesearch-python"])
+
+list_files = subprocess.run(["pip", "install", "lxml"])
+
+list_files = subprocess.run(["pip", "install", "metadata-parser"])
+
+list_files = subprocess.run(["pip", "install", "wikipedia"])
 
 import os
 import aiohttp
@@ -22,13 +30,49 @@ import sys
 import datetime
 import wikipedia
 import pyjokes
+import requests
+from bs4 import BeautifulSoup
+import re
+from urllib.parse import urlparse
+
+
+def googleSearch(query):
+    g_clean = []
+    if "http" not in query:
+        url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(query)
+    else:
+        url = query
+    try:
+        html = requests.get(url)
+        if html.status_code == 200:
+            soup = BeautifulSoup(html.text, 'lxml')
+            a = soup.find_all('a')
+            for i in a:
+                k = i.get('href')
+                try:
+                    m = re.search("(?P<url>https?://[^\s]+)", k)
+                    n = m.group(0)
+                    rul = n.split('&')[0]
+                    domain = urlparse(rul)
+                    if (re.search('google.com', domain.netloc)):
+                        continue
+                    else:
+                        g_clean.append(rul)
+                except:
+                    continue
+    except Exception as ex:
+        print(str(ex))
+    finally:
+        del g_clean[10:100]
+        return g_clean
+
 
 logging.basicConfig(level=logging.INFO)
 
 client = discord.Client(intents=discord.Intents.all())
 slash = SlashCommand(client, sync_commands=True)
 status = cycle([
-    '/help', 'your messages', '/help', 'Never Gonna Give You Up', '/help',
+    '/help help', 'your messages', '/help help', 'Never Gonna Give You Up', '/help help',
     'try /setup if the slash commands are not working'
 ])
 
@@ -81,17 +125,6 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
     timestamp = datetime.datetime.now()
     print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
-
-
-@client.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):
-        await ctx.respond()
-        await ctx.send(
-            'Command was not found. Be sure you did not make a typo and try again.'
-        )
-        await asyncio.sleep(3)
-        await ctx.channel.purge(limit=2)
 
 
 @client.event
@@ -267,32 +300,156 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
     await ctx.send(f"Kicked {member} because {reason}.")
 
 
-@slash.slash(name="wikipedia",
-             description="Searches for something on Wikipedia",
-             options=[
-                 manage_commands.create_option(
-                     name="text",
-                     description="What do you want to search?",
-                     option_type=3,
-                     required=True),
-                 manage_commands.create_option(
-                     name="lines",
-                     description="How many lines do you want? Default is 10.",
-                     option_type=3,
-                     required=False)
-             ],
-             guild_ids=guild_ids)
-async def _wikipedia(ctx, text, lines=10):
+@slash.slash(
+    name="wikipedia",
+    description="Searches for something on Wikipedia",
+    options=[
+        manage_commands.create_option(
+            name="text",
+            description="What do you want to search?",
+            option_type=3,
+            required=True),
+        manage_commands.create_option(
+            name="results",
+            description=
+            "How many results should you randomly recieve 1 result from? Default is 5.",
+            option_type=3,
+            required=False),
+        manage_commands.create_option(
+            name="lines",
+            description="How many lines do you want? Default is 10.",
+            option_type=3,
+            required=False)
+    ],
+    guild_ids=guild_ids)
+async def _wikipedia(ctx, text, results=1, lines=5):
     print(f"/wikipedia {text} {lines}")
-    info = wikipedia.summary(text, int(lines))
-    await ctx.respond()
-    await ctx.send(f"{info}")
+    result = wikipedia.search(text, results)
+    try:
+        end = random.choice(result)
+        info = wikipedia.summary(end, int(lines))
+        if len(info) <= 2000:
+            await ctx.respond()
+            await ctx.send(f"{info}")
+        else:
+            await ctx.respond()
+            await ctx.send("The message is too long, please use less lines.")
+    except IndexError:
+        await ctx.respond()
+        await ctx.send("No results found.")
+    except discord.errors.NotFound:
+        await ctx.respond()
+        await ctx.send("Please try again.")
+
 
 
 @slash.slash(name="joke", description="Gives you a joke", guild_ids=guild_ids)
 async def _joke(ctx):
     await ctx.respond()
     await ctx.send(f"{pyjokes.get_joke()}")
+
+
+@slash.slash(name="google",
+             description="Search anything on Google!",
+             options=[
+                 manage_commands.create_option(name="text",
+                                               description="Search it here",
+                                               option_type=3,
+                                               required=True),
+                 manage_commands.create_option(name="results",
+                                               description="How many results? Max is 10 and default is 5",
+                                               option_type=3,
+                                               required=False)
+             ],
+             guild_ids=guild_ids)
+async def _google(ctx, text, results=5):
+    result = googleSearch(text)
+    hello = True
+    try:
+        a,b,c,d,e,f,g,h,i,j = result
+    except:
+        a,b,c,d,e,f,g,h,i = result
+        hello = False
+    if results == 1:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+    elif results == 2:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+    elif results == 3:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+    elif results == 4:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+        await ctx.send(f"{d}")
+    elif results == 5:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+        await ctx.send(f"{d}")
+        await ctx.send(f"{e}")
+    elif results == 6:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+        await ctx.send(f"{d}")
+        await ctx.send(f"{e}")
+        await ctx.send(f"{f}")
+    elif results == 7:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+        await ctx.send(f"{d}")
+        await ctx.send(f"{e}")
+        await ctx.send(f"{f}")
+        await ctx.send(f"{g}")
+    elif results == 8:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+        await ctx.send(f"{d}")
+        await ctx.send(f"{e}")
+        await ctx.send(f"{f}")
+        await ctx.send(f"{g}")
+        await ctx.send(f"{h}")
+    elif results == 9:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+        await ctx.send(f"{d}")
+        await ctx.send(f"{e}")
+        await ctx.send(f"{f}")
+        await ctx.send(f"{g}")
+        await ctx.send(f"{h}")
+        await ctx.send(f"{i}")
+    elif results == 10 and hello == True:
+        await ctx.respond()
+        await ctx.send(f"{a}")
+        await ctx.send(f"{b}")
+        await ctx.send(f"{c}")
+        await ctx.send(f"{d}")
+        await ctx.send(f"{e}")
+        await ctx.send(f"{f}")
+        await ctx.send(f"{g}")
+        await ctx.send(f"{h}")
+        await ctx.send(f"{i}")
+        await ctx.send(f"{j}")
+    else:
+        await ctx.respond()
+        await ctx.send("ERROR")
+        await ctx.send("Make sure the results parameter is between 1 and 10 inclusive.")
+        await ctx.send("This could also mean that Google does not have enough results available. Make sure you made no typos.")
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
@@ -609,9 +766,16 @@ async def _help(ctx, argone):  # noqa: C901
 
     elif arg == "wikipedia":
         embed.add_field(
-            name='/wikipedia text lines',
+            name='/wikipedia text results lines',
             value=
-            'Search anything on Wikipedia! NOTE: lines are not required and has a default value of 10.',
+            'Search anything on Wikipedia! \nNOTE: results and lines are not required and have a default value of 1 and 5.',
+            inline=False)
+        await ctx.respond()
+        await ctx.send(embed=embed)
+    elif arg == "google":
+        embed.add_field(
+            name='/google text results',
+            value='Google anything! \nNOTE: results is optional and max is 10, default is 5',
             inline=False)
         await ctx.respond()
         await ctx.send(embed=embed)
@@ -697,7 +861,7 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(
             name='/wikipedia text lines',
             value=
-            'Search anything on Wikipedia! \nNOTE: lines are not required and has a default value of 10.',
+            'Search anything on Wikipedia! \nNOTE: results and lines are not required and have a default value of 1 and 5.',
             inline=False)
         embed.add_field(name='/joke',
                         value='Gives you a random joke!',
