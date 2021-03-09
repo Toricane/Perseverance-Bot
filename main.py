@@ -77,7 +77,6 @@ status = cycle([
     '/help help', 'try /setup if the slash commands are not working'
 ])
 
-#db["id"] = [788578597488427008, 764683397528158259]
 guild_ids = db["id"]
 
 sad_words = [
@@ -132,6 +131,10 @@ async def on_ready():
 async def on_message(message):
 
     msg = message.content
+
+    mention = f'<@!{client.user.id}>'
+    if mention in message.content:
+        await message.reply("You mentioned me!")
 
     if db["responding"] == True:
         if "encouragements" in db.keys():
@@ -326,21 +329,21 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
 async def _wikipedia(ctx, text, results=1, lines=5):
     print(f"/wikipedia {text} {lines}")
     result = wikipedia.search(text, results)
+    await ctx.respond()
     try:
         end = random.choice(result)
         info = wikipedia.summary(end, int(lines))
         if len(info) <= 2000:
-            await ctx.respond()
-            await ctx.send(f"{info}")
+            await ctx.send(info)
         else:
-            await ctx.respond()
             await ctx.send("The message is too long, please use less lines.")
     except IndexError:
-        await ctx.respond()
         await ctx.send("No results found.")
     except discord.errors.NotFound:
-        await ctx.respond()
         await ctx.send("Please try again.")
+    except Exception as e:
+        print(e)
+        await ctx.send("ERROR, there may be too many to choose from, or a module error.")
 
 
 @slash.slash(name="joke", description="Gives you a joke", guild_ids=guild_ids)
@@ -366,96 +369,19 @@ async def _joke(ctx):
     guild_ids=guild_ids)
 async def _google(ctx, text, results=5):
     result = googleSearch(text)
-    hello = True
     results = int(results)
     try:
         a, b, c, d, e, f, g, h, i, j = result
+        alphabet = [a, b, c, d, e, f, g, h, i, j]
     except:
         a, b, c, d, e, f, g, h, i = result
-        hello = False
-    if results == 1:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-    elif results == 2:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-    elif results == 3:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-    elif results == 4:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-        await ctx.send(f"{d}")
-    elif results == 5:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-        await ctx.send(f"{d}")
-        await ctx.send(f"{e}")
-    elif results == 6:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-        await ctx.send(f"{d}")
-        await ctx.send(f"{e}")
-        await ctx.send(f"{f}")
-    elif results == 7:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-        await ctx.send(f"{d}")
-        await ctx.send(f"{e}")
-        await ctx.send(f"{f}")
-        await ctx.send(f"{g}")
-    elif results == 8:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-        await ctx.send(f"{d}")
-        await ctx.send(f"{e}")
-        await ctx.send(f"{f}")
-        await ctx.send(f"{g}")
-        await ctx.send(f"{h}")
-    elif results == 9:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-        await ctx.send(f"{d}")
-        await ctx.send(f"{e}")
-        await ctx.send(f"{f}")
-        await ctx.send(f"{g}")
-        await ctx.send(f"{h}")
-        await ctx.send(f"{i}")
-    elif results == 10 and hello == True:
-        await ctx.respond()
-        await ctx.send(f"{a}")
-        await ctx.send(f"{b}")
-        await ctx.send(f"{c}")
-        await ctx.send(f"{d}")
-        await ctx.send(f"{e}")
-        await ctx.send(f"{f}")
-        await ctx.send(f"{g}")
-        await ctx.send(f"{h}")
-        await ctx.send(f"{i}")
-        await ctx.send(f"{j}")
-    else:
-        await ctx.respond()
-        await ctx.send("ERROR")
-        await ctx.send(
-            "Make sure the results parameter is between 1 and 10 inclusive.")
-        await ctx.send(
-            "This could also mean that Google does not have enough results available. Make sure you made no typos."
-        )
+        alphabet = [a, b, c, d, e, f, g, h, i]
+    await ctx.respond()
+    if results > 10:
+        await ctx.send("Results must be between 1 and 10")
+        return False
+    for x in range(0, results):
+        await ctx.send(alphabet[x])
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
@@ -603,6 +529,54 @@ async def _invite(ctx):
 async def _perseverance(ctx):
     await ctx.respond()
     await ctx.send(file=discord.File('perseverance.jpeg'))
+
+
+@slash.slash(
+    name="embed",
+    description="Create an embed",
+    options=[
+        manage_commands.create_option(name="title",
+                                      description="Enter your title here",
+                                      option_type=3,
+                                      required=True),
+        manage_commands.create_option(name="text",
+                                      description="Enter your text here",
+                                      option_type=3,
+                                      required=True),
+        manage_commands.create_option(
+            name="color",
+            description=
+            "What color should the embed be? Pick 'random' or any color from rainbow",
+            option_type=3,
+            required=False)
+    ],
+    guild_ids=guild_ids)
+async def _embed(ctx, title, text, color="default"):
+    colory = color.lower()
+    if colory == "red":
+        colory = discord.Colour.red()
+    elif colory == "orange":
+        colory = discord.Colour.orange()
+    elif colory == "yellow":
+        colory = discord.Colour.yellow()
+    elif colory == "green":
+        colory = discord.Colour.green()
+    elif colory == "blue":
+        colory = discord.Colour.blue()
+    elif colory == "indigo":
+        colory = discord.Colour.dark_blue()
+    elif colory == "purple":
+        colory = discord.Colour.purple()
+    elif colory == "default":
+        colory = discord.Colour.default()
+    else:
+        colory = discord.Colour.random()
+
+    embed = discord.Embed(colour=colory)
+    embed.add_field(name=f'{title}', value=f'{text}', inline=False)
+
+    await ctx.respond()
+    await ctx.send(embed=embed)
 
 
 @slash.slash(name="credits",
