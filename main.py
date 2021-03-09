@@ -133,7 +133,7 @@ async def on_message(message):
     msg = message.content
 
     mention = f'<@!{client.user.id}>'
-    if mention in message.content:
+    if mention in msg:
         await message.reply("You mentioned me!")
 
     if db["responding"] == True:
@@ -297,9 +297,11 @@ async def _clear(ctx, amount=5):
 
 @client.event
 async def on_slash_command_error(ctx, error):
-    if isinstance(error,discord.ext.commands.errors.MissingPermissions):
+    if isinstance(error, discord.ext.commands.errors.MissingPermissions):
         await ctx.respond()
-        await ctx.send(f"You don't have the required permissions to run this command, {ctx.author.mention}.")
+        await ctx.send(
+            f"You don't have the required permissions to run this command, {ctx.author.mention}."
+        )
 
 
 @slash.slash(name="kick", description="Kicks a member", guild_ids=guild_ids)
@@ -350,7 +352,8 @@ async def _wikipedia(ctx, text, results=1, lines=5):
         await ctx.send("Please try again.")
     except Exception as e:
         print(e)
-        await ctx.send("ERROR, there may be too many to choose from, or a module error.")
+        await ctx.send(
+            "ERROR, there may be too many to choose from, or a module error.")
 
 
 @slash.slash(name="joke", description="Gives you a joke", guild_ids=guild_ids)
