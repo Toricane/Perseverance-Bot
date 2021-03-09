@@ -217,7 +217,7 @@ async def _inspire(ctx):
              description="The bot will say hello to you",
              guild_ids=guild_ids)
 async def _hi(ctx):
-    print("/hi")
+    print(f"{ctx.author.name}: /hi")
     await ctx.respond()
     await ctx.send('Hello!')
 
@@ -226,7 +226,7 @@ async def _hi(ctx):
              description="The bot will say bye to you",
              guild_ids=guild_ids)
 async def _bye(ctx):
-    print("/bye")
+    print(f"{ctx.author.name}: /bye")
     await ctx.respond()
     await ctx.send('Bye!')
 
@@ -235,12 +235,12 @@ async def _bye(ctx):
              description="Lists the encouraging messages",
              guild_ids=guild_ids)
 async def _list(ctx):
-    print("/list")
+    print(f"{ctx.author.name}: /list")
     encouragements = []
     if "encouragements" in db.keys():
         encouragements = db["encouragements"]
     await ctx.respond()
-    await ctx.send(f'{encouragements}')
+    await ctx.send(encouragements)
 
 
 @slash.slash(
@@ -259,7 +259,7 @@ async def _delete(ctx, argone):
     encouragements = []
     if "encouragements" in db.keys():
         index = int(argone) - 1
-        print(f"/delete {index}")
+        print(f"{ctx.author.name}: /delete {argone}")
         delete_encouragment(index)
         encouragements = db["encouragements"]
     await ctx.respond()
@@ -276,7 +276,7 @@ async def _delete(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _new(ctx, argone):
-    print(f"/new {argone}")
+    print(f"{ctx.author.name}: /new {argone}")
     encouraging_message = argone
     update_encouragements(encouraging_message)
     await ctx.respond()
@@ -286,7 +286,7 @@ async def _new(ctx, argone):
 @slash.slash(name="clear", description="Delete messages", guild_ids=guild_ids)
 @commands.has_permissions(manage_messages=True)
 async def _clear(ctx, amount=5):
-    print(f"/clear {amount}")
+    print(f"{ctx.author.name}: /clear {amount}")
     amount = int(amount)
     await ctx.channel.purge(limit=amount + 1)
     await ctx.respond()
@@ -298,7 +298,7 @@ async def _clear(ctx, amount=5):
 @slash.slash(name="kick", description="Kicks a member", guild_ids=guild_ids)
 @commands.has_permissions(kick_members=True)
 async def _kick(ctx, member: discord.Member, *, reason=None):
-    print(f"/kick {member} {reason}")
+    print(f"{ctx.author.name}: /kick {member} {reason}")
     await member.kick(reason=reason)
     await ctx.respond()
     await ctx.send(f"Kicked {member} because {reason}.")
@@ -327,7 +327,7 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
     ],
     guild_ids=guild_ids)
 async def _wikipedia(ctx, text, results=1, lines=5):
-    print(f"/wikipedia {text} {lines}")
+    print(f"{ctx.author.name}: /wikipedia {text} {lines}")
     result = wikipedia.search(text, results)
     await ctx.respond()
     try:
@@ -348,8 +348,9 @@ async def _wikipedia(ctx, text, results=1, lines=5):
 
 @slash.slash(name="joke", description="Gives you a joke", guild_ids=guild_ids)
 async def _joke(ctx):
+    print(f"{ctx.author.name}: /joke")
     await ctx.respond()
-    await ctx.send(f"{pyjokes.get_joke()}")
+    await ctx.send(pyjokes.get_joke())
 
 
 @slash.slash(
@@ -368,6 +369,7 @@ async def _joke(ctx):
     ],
     guild_ids=guild_ids)
 async def _google(ctx, text, results=5):
+    print(f"{ctx.author.name}: /google {text} {results}")
     result = googleSearch(text)
     results = int(results)
     try:
@@ -387,7 +389,7 @@ async def _google(ctx, text, results=5):
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
 async def _ban(ctx, member: discord.Member, *, reason=None):
-    print(f"/ban {member} {reason}")
+    print(f"{ctx.author.name}: /ban {member} {reason}")
     await member.ban(reason=reason)
     await ctx.respond()
     await ctx.send(f"Banned {member.mention} because {reason}.")
@@ -405,7 +407,7 @@ async def _ban(ctx, member: discord.Member, *, reason=None):
              guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
 async def _unban(ctx, argone):
-    print(f"/unban {argone}")
+    print(f"{ctx.author.name}: /unban {argone}")
     banned_users = await ctx.guild.bans()
     member_name, member_discriminator = argone.split('#')
     for ban_entry in banned_users:
@@ -430,7 +432,7 @@ async def _unban(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _hello(ctx, argone):
-    print(f"/hello {argone}")
+    print(f"{ctx.author.name}: /hello {argone}")
     if argone.lower() == "there":
         await ctx.send("General Kenobi!")
     else:
@@ -451,7 +453,7 @@ async def _hello(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _say(ctx, argone):
-    print(f"/say {argone}")
+    print(f"{ctx.author.name}: /say {argone}")
     text = argone
     await ctx.respond()
     await ctx.channel.send(text)
@@ -469,7 +471,7 @@ async def _say(ctx, argone):
              ],
              guild_ids=guild_ids)
 async def _ping(ctx, message: str):
-    print(f"/ping {message}")
+    print(f"{ctx.author.name}: /ping {message}")
     await ctx.respond()
     await ctx.send(
         f'Pong! {round(client.latency * 1000)}ms. You responded with {message}.'
@@ -487,7 +489,7 @@ async def _ping(ctx, message: str):
              ],
              guild_ids=guild_ids)
 async def _8ball(ctx, question: str):
-    print(f"/8ball {question}")
+    print(f"{ctx.author.name}: /8ball {question}")
     responses = [
         "It is certain.", "It is decidedly so.", "Without a doubt.",
         "Yes - definitely.", "You may rely on it.", "As I see it, yes.",
@@ -499,7 +501,7 @@ async def _8ball(ctx, question: str):
         "Very doubtful."
     ]
     await ctx.respond()
-    await ctx.send(f'{random.choice(responses)}')
+    await ctx.send(random.choice(responses))
 
 
 @tasks.loop(seconds=10)
@@ -512,7 +514,7 @@ async def change_status():
              description="Shows the invite link for the bot",
              guild_ids=guild_ids)
 async def _invite(ctx):
-    print("/invite")
+    print(f"{ctx.author.name}: /invite")
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.add_field(
         name='Invite the bot!',
@@ -527,6 +529,7 @@ async def _invite(ctx):
              description="Shows a photo of Perseverance",
              guild_ids=guild_ids)
 async def _perseverance(ctx):
+    print(f"{ctx.author.name}: /perseverance")
     await ctx.respond()
     await ctx.send(file=discord.File('perseverance.jpeg'))
 
@@ -552,6 +555,7 @@ async def _perseverance(ctx):
     ],
     guild_ids=guild_ids)
 async def _embed(ctx, title, text, color="default"):
+    print(f"{ctx.author.name}: /embed {title} {text} {color}")
     colory = color.lower()
     if colory == "red":
         colory = discord.Colour.red()
@@ -573,7 +577,7 @@ async def _embed(ctx, title, text, color="default"):
         colory = discord.Colour.random()
 
     embed = discord.Embed(colour=colory)
-    embed.add_field(name=f'{title}', value=f'{text}', inline=False)
+    embed.add_field(name=title, value=text, inline=False)
 
     await ctx.respond()
     await ctx.send(embed=embed)
@@ -583,7 +587,7 @@ async def _embed(ctx, title, text, color="default"):
              description="Shows the credits",
              guild_ids=guild_ids)
 async def _credits(ctx):
-    print("/credits")
+    print(f"{ctx.author.name}: /credits")
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.set_author(name='Credits')
     embed.add_field(name='Created by Toricane#6391',
@@ -627,7 +631,7 @@ async def _credits(ctx):
     ],
     guild_ids=guild_ids)
 async def _help(ctx, argone):  # noqa: C901
-    print(f"/help {argone}")
+    print(f"{ctx.author.name}: /help {argone}")
     embed = discord.Embed(colour=discord.Colour.orange())
     arg = str(argone).lower()
     if arg == "ping":
