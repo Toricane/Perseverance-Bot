@@ -295,6 +295,13 @@ async def _clear(ctx, amount=5):
     await ctx.channel.purge(limit=2)
 
 
+@client.event
+async def on_slash_command_error(ctx, error):
+    if isinstance(error,discord.ext.commands.errors.MissingPermissions):
+        await ctx.respond()
+        await ctx.send(f"You don't have the required permissions to run this command, {ctx.author.mention}.")
+
+
 @slash.slash(name="kick", description="Kicks a member", guild_ids=guild_ids)
 @commands.has_permissions(kick_members=True)
 async def _kick(ctx, member: discord.Member, *, reason=None):
