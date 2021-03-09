@@ -37,6 +37,7 @@ from urllib.parse import urlparse
 
 
 def googleSearch(query):
+    query = query.replace(" ", "+")
     g_clean = []
     if "http" not in query:
         url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(
@@ -394,6 +395,13 @@ async def _google(ctx, text, results=5):
         return False
     for x in range(0, results):
         await ctx.send(alphabet[x])
+    query = text.replace(" ", "+")
+    if "http" not in query:
+        url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(
+            query)
+    else:
+        url = query
+    await ctx.send(f"URL: {url}")
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
@@ -536,12 +544,12 @@ async def _invite(ctx):
 
 
 @slash.slash(name="perseverance",
-             description="Shows a photo of Perseverance",
+             description="Shows the profile picture of Perseverance",
              guild_ids=guild_ids)
 async def _perseverance(ctx):
     print(f"{ctx.author.name}: /perseverance")
     await ctx.respond()
-    await ctx.send(file=discord.File('perseverance.jpeg'))
+    await ctx.send(file=discord.File('perseverance.png'))
 
 
 @slash.slash(
@@ -753,7 +761,7 @@ async def _help(ctx, argone):  # noqa: C901
 
     elif arg == "perseverance":
         embed.add_field(name='/perseverance',
-                        value='Shows a picture of Perseverance.',
+                        value='Shows the profile picture of Perseverance',
                         inline=False)
         await ctx.respond()
         await ctx.send(embed=embed)
@@ -851,7 +859,7 @@ async def _help(ctx, argone):  # noqa: C901
             'Deletes the number of messages. Default is 5. \nNOTE: requires Manage Messages permission.',
             inline=False)
         embed.add_field(name='/perseverance',
-                        value='Shows a picture of Perseverance.',
+                        value='Shows the profile picture of Perseverance',
                         inline=False)
         embed.add_field(
             name='/wikipedia text lines',
