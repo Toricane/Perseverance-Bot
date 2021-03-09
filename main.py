@@ -132,10 +132,6 @@ async def on_message(message):
 
     msg = message.content
 
-    mention = f'<@!{client.user.id}>'
-    if mention in msg:
-        await message.reply("You mentioned me!")
-
     if db["responding"] == True:
         if "encouragements" in db.keys():
             options = db["encouragements"]
@@ -143,6 +139,10 @@ async def on_message(message):
         if any(word in msg for word in sad_words):
             if "!" not in msg and "." not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
                 await message.reply(random.choice(options))
+        
+        mention = f'<@!{client.user.id}>'
+        if mention in msg:
+            await message.reply("You mentioned me!")
 
     if msg == "/setup":
         print('/setup')
@@ -240,7 +240,7 @@ async def _list(ctx):
     if "encouragements" in db.keys():
         encouragements = db["encouragements"]
     await ctx.respond()
-    await ctx.send(encouragements)
+    await ctx.send(f"{encouragements}")
 
 
 @slash.slash(
@@ -248,7 +248,7 @@ async def _list(ctx):
     description="Deletes an encouraging message, /list to see",
     options=[
         manage_commands.create_option(
-            name="index",
+            name="number",
             description=
             "The encouraging message's position in the list that you want to delete, try /list to see",
             option_type=3,
@@ -263,7 +263,7 @@ async def _delete(ctx, argone):
         delete_encouragment(index)
         encouragements = db["encouragements"]
     await ctx.respond()
-    await ctx.send(encouragements)
+    await ctx.send(f"{encouragements}")
 
 
 @slash.slash(name="new",
