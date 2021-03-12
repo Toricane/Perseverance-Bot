@@ -1,17 +1,21 @@
-import subprocess
+# import subprocess
 
-list_files = subprocess.run(["pip", "install", "pynacl"])
+# list_files = subprocess.run(["pip", "install", "pynacl"])
 
-list_files = subprocess.run(
-    ["pip", "install", "-U", "discord-py-slash-command"])
+# list_files = subprocess.run(
+#     ["pip", "install", "-U", "discord-py-slash-command"])
 
-list_files = subprocess.run(["pip", "install", "googlesearch-python"])
+# list_files = subprocess.run(["pip", "install", "googlesearch-python"])
 
-list_files = subprocess.run(["pip", "install", "lxml"])
+# list_files = subprocess.run(["pip", "install", "lxml"])
 
-list_files = subprocess.run(["pip", "install", "metadata-parser"])
+# list_files = subprocess.run(["pip", "install", "metadata-parser"])
 
-list_files = subprocess.run(["pip", "install", "wikipedia"])
+# list_files = subprocess.run(["pip", "install", "wikipedia"])
+
+# list_files = subprocess.run(["pip", "install", "googletrans==3.1.0a0"])
+
+# list_files = subprocess.run(["pip", "install", "PyDictionary"])
 
 import os
 import aiohttp
@@ -34,7 +38,118 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse
+from googletrans import Translator
+from PyDictionary import PyDictionary
 
+LANGUAGES = {
+    'af': 'afrikaans',
+    'sq': 'albanian',
+    'am': 'amharic',
+    'ar': 'arabic',
+    'hy': 'armenian',
+    'az': 'azerbaijani',
+    'eu': 'basque',
+    'be': 'belarusian',
+    'bn': 'bengali',
+    'bs': 'bosnian',
+    'bg': 'bulgarian',
+    'ca': 'catalan',
+    'ceb': 'cebuano',
+    'ny': 'chichewa',
+    'zh-cn': 'chinese (simplified)',
+    'zh-tw': 'chinese (traditional)',
+    'co': 'corsican',
+    'hr': 'croatian',
+    'cs': 'czech',
+    'da': 'danish',
+    'nl': 'dutch',
+    'en': 'english',
+    'eo': 'esperanto',
+    'et': 'estonian',
+    'tl': 'filipino',
+    'fi': 'finnish',
+    'fr': 'french',
+    'fy': 'frisian',
+    'gl': 'galician',
+    'ka': 'georgian',
+    'de': 'german',
+    'el': 'greek',
+    'gu': 'gujarati',
+    'ht': 'haitian creole',
+    'ha': 'hausa',
+    'haw': 'hawaiian',
+    'iw': 'hebrew',
+    'he': 'hebrew',
+    'hi': 'hindi',
+    'hmn': 'hmong',
+    'hu': 'hungarian',
+    'is': 'icelandic',
+    'ig': 'igbo',
+    'id': 'indonesian',
+    'ga': 'irish',
+    'it': 'italian',
+    'ja': 'japanese',
+    'jw': 'javanese',
+    'kn': 'kannada',
+    'kk': 'kazakh',
+    'km': 'khmer',
+    'ko': 'korean',
+    'ku': 'kurdish (kurmanji)',
+    'ky': 'kyrgyz',
+    'lo': 'lao',
+    'la': 'latin',
+    'lv': 'latvian',
+    'lt': 'lithuanian',
+    'lb': 'luxembourgish',
+    'mk': 'macedonian',
+    'mg': 'malagasy',
+    'ms': 'malay',
+    'ml': 'malayalam',
+    'mt': 'maltese',
+    'mi': 'maori',
+    'mr': 'marathi',
+    'mn': 'mongolian',
+    'my': 'myanmar (burmese)',
+    'ne': 'nepali',
+    'no': 'norwegian',
+    'or': 'odia',
+    'ps': 'pashto',
+    'fa': 'persian',
+    'pl': 'polish',
+    'pt': 'portuguese',
+    'pa': 'punjabi',
+    'ro': 'romanian',
+    'ru': 'russian',
+    'sm': 'samoan',
+    'gd': 'scots gaelic',
+    'sr': 'serbian',
+    'st': 'sesotho',
+    'sn': 'shona',
+    'sd': 'sindhi',
+    'si': 'sinhala',
+    'sk': 'slovak',
+    'sl': 'slovenian',
+    'so': 'somali',
+    'es': 'spanish',
+    'su': 'sundanese',
+    'sw': 'swahili',
+    'sv': 'swedish',
+    'tg': 'tajik',
+    'ta': 'tamil',
+    'te': 'telugu',
+    'th': 'thai',
+    'tr': 'turkish',
+    'uk': 'ukrainian',
+    'ur': 'urdu',
+    'ug': 'uyghur',
+    'uz': 'uzbek',
+    'vi': 'vietnamese',
+    'cy': 'welsh',
+    'xh': 'xhosa',
+    'yi': 'yiddish',
+    'yo': 'yoruba',
+    'zu': 'zulu'
+}
 
 def googleSearch(query):
     query = query.replace(" ", "+")
@@ -68,6 +183,37 @@ def googleSearch(query):
         del g_clean[10:100]
         return g_clean
 
+def googleSearchImages(query):
+    query = query.replace(" ", "+")
+    g_clean = []
+    if "http" not in query:
+        url = 'https://www.google.com/search?hl=en&tbm=isch&sxsrf=ALeKk01Eh6GNz2vJrxJ-7rB-HY2SE-4xJQ%3A1615321310276&source=hp&biw=1366&bih=657&ei=3thHYNbEDpLZ-gSE-b6oCg&q={}&oq={}&gs_lcp=CgNpbWcQAzIFCAAQsQMyBQgAELEDMgUIABCxAzICCAAyBQgAELEDMgIIADIFCAAQsQMyBQgAELEDMgIIADIFCAAQsQM6BwgjEOoCECc6BAgjECc6CAgAELEDEIMBUOaYC1jTmwtgzJ0LaAFwAHgAgAFiiAHcAZIBATOYAQCgAQGqAQtnd3Mtd2l6LWltZ7ABCg&sclient=img&ved=0ahUKEwjWq5TnhKTvAhWSrJ4KHYS8D6UQ4dUDCAc&uact=5'.format(
+            query, query)
+    else:
+        url = query
+    try:
+        html = requests.get(url)
+        if html.status_code == 200:
+            soup = BeautifulSoup(html.text, 'lxml')
+            a = soup.find_all('a')
+            for i in a:
+                k = i.get('href')
+                try:
+                    m = re.search("(?P<url>https?://[^\s]+)", k)
+                    n = m.group(0)
+                    rul = n.split('&')[0]
+                    domain = urlparse(rul)
+                    if (re.search('google.com', domain.netloc)):
+                        continue
+                    else:
+                        g_clean.append(rul)
+                except:
+                    continue
+    except Exception as ex:
+        print(str(ex))
+    finally:
+        del g_clean[10:100]
+        return g_clean
 
 logging.basicConfig(level=logging.INFO)
 
@@ -112,6 +258,10 @@ def delete_encouragment(index):
         db["encouragements"] = encouragements
 
 
+def reci(hello, there):
+    return f"{there}/{hello}"
+
+
 async def get_quote():
     async with aiohttp.ClientSession() as session:
         async with session.get('https://zenquotes.io/api/random') as resp:
@@ -131,7 +281,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
 
-    msg = message.content
+    msg = message.content.lower()
 
     if db["responding"] == True:
         if "encouragements" in db.keys():
@@ -164,6 +314,15 @@ async def on_message(message):
             )
             slash = SlashCommand(client, sync_commands=True)
             os.execl(sys.executable, sys.executable, *sys.argv)
+    if msg == "/restart":
+        idea = message.author.id
+        if idea == 721093211577385020:
+            await message.reply("Restarting...")
+            await message.reply("Please wait up to 5 minutes, usually takes 1 minute.")
+            os.execl(sys.executable, sys.executable, *sys.argv)
+        else:
+            await message.reply("You're not my creator, go away.")
+            await message.reply("Wait, how did you know about this?")
 
 
 @client.event
@@ -241,7 +400,10 @@ async def _list(ctx):
     if "encouragements" in db.keys():
         encouragements = db["encouragements"]
     await ctx.respond()
-    await ctx.send(f"{encouragements}")
+    length = len(encouragements)
+    await ctx.send("List of responses:")
+    for x in range(0, length):
+        await ctx.send(f"{x+1}. {encouragements[x]}")
 
 
 @slash.slash(
@@ -264,7 +426,10 @@ async def _delete(ctx, argone):
         delete_encouragment(index)
         encouragements = db["encouragements"]
     await ctx.respond()
-    await ctx.send(f"{encouragements}")
+    length = len(encouragements)
+    await ctx.send("List of responses:")
+    for x in range(0, length):
+        await ctx.send(f"{x+1}. {encouragements[x]}")
 
 
 @slash.slash(name="new",
@@ -280,14 +445,22 @@ async def _new(ctx, argone):
     print(f"{ctx.author.name}: /new {argone}")
     encouraging_message = argone
     update_encouragements(encouraging_message)
+    encouragements = []
+    if "encouragements" in db.keys():
+        encouragements = db["encouragements"]
     await ctx.respond()
     await ctx.send(f'New encouraging message added: {encouraging_message}')
+    await ctx.respond()
+    length = len(encouragements)
+    await ctx.send("List of responses:")
+    for x in range(0, length):
+        await ctx.send(f"{x+1}. {encouragements[x]}")
 
 
-@slash.slash(name="clear", description="Delete messages", guild_ids=guild_ids)
+@slash.slash(name="purge", description="Delete messages", guild_ids=guild_ids)
 @commands.has_permissions(manage_messages=True)
-async def _clear(ctx, amount=5):
-    print(f"{ctx.author.name}: /clear {amount}")
+async def _purge(ctx, amount=5):
+    print(f"{ctx.author.name}: /purge {amount}")
     amount = int(amount)
     await ctx.channel.purge(limit=amount + 1)
     await ctx.respond()
@@ -402,6 +575,131 @@ async def _google(ctx, text, results=5):
     else:
         url = query
     await ctx.send(f"URL: {url}")
+
+
+@slash.slash(
+    name="googleimages",
+    description="Search images on Google!",
+    options=[
+        manage_commands.create_option(name="text",
+                                      description="Search it here",
+                                      option_type=3,
+                                      required=True),
+        manage_commands.create_option(
+            name="results",
+            description="How many results? Max is 10 and default is 5",
+            option_type=3,
+            required=False)
+    ],
+    guild_ids=guild_ids)
+async def _googleimages(ctx, text, results=5):
+    print(f"{ctx.author.name}: /googleimages {text} {results}")
+    result = googleSearchImages(text)
+    results = int(results)
+    try:
+        a, b, c, d, e, f, g, h, i, j = result
+        alphabet = [a, b, c, d, e, f, g, h, i, j]
+    except:
+        a, b, c, d, e, f, g, h, i = result
+        alphabet = [a, b, c, d, e, f, g, h, i]
+    await ctx.respond()
+    if results > 10:
+        await ctx.send("Results must be between 1 and 10")
+        return False
+    for x in range(0, results):
+        await ctx.send(alphabet[x])
+    query = text.replace(" ", "+")
+    if "http" not in query:
+        url = 'https://www.google.com/search?hl=en&tbm=isch&sxsrf=ALeKk01Eh6GNz2vJrxJ-7rB-HY2SE-4xJQ%3A1615321310276&source=hp&biw=1366&bih=657&ei=3thHYNbEDpLZ-gSE-b6oCg&q={}&oq={}&gs_lcp=CgNpbWcQAzIFCAAQsQMyBQgAELEDMgUIABCxAzICCAAyBQgAELEDMgIIADIFCAAQsQMyBQgAELEDMgIIADIFCAAQsQM6BwgjEOoCECc6BAgjECc6CAgAELEDEIMBUOaYC1jTmwtgzJ0LaAFwAHgAgAFiiAHcAZIBATOYAQCgAQGqAQtnd3Mtd2l6LWltZ7ABCg&sclient=img&ved=0ahUKEwjWq5TnhKTvAhWSrJ4KHYS8D6UQ4dUDCAc&uact=5'.format(
+            query, query)
+    else:
+        url = query
+    await ctx.send(f"URL: {url}")
+
+
+@slash.slash(
+    name="translate",
+    description="Translate anything on Google Translate!",
+    options=[
+        manage_commands.create_option(name="text",
+                                      description="Search it here",
+                                      option_type=3,
+                                      required=True),
+        manage_commands.create_option(name="output_lang",
+                                      description="First 2 letters of output lang, default en",
+                                      option_type=3,
+                                      required=False),
+        manage_commands.create_option(name="input_lang",
+                                      description="First 2 letters of input_lang, default automatic",
+                                      option_type=3,
+                                      required=False)
+    ],
+    guild_ids=guild_ids)
+async def _translate(ctx, text, output_lang="en", input_lang=None):
+    print(f"{ctx.author.name}: /translate {text} {output_lang} {input_lang}")
+    if input_lang == None:
+        try:
+            output_lang2 = output_lang
+            translator = Translator()
+            translated = translator.translate(text, dest=output_lang2)
+            await ctx.respond()
+            await ctx.send(f"{translated.text}")
+        except Exception as e:
+            print(str(e))
+            await ctx.respond()
+            await ctx.send("ERROR")
+            await ctx.send("Make sure that your output_lang is one of these:")
+            await ctx.send(f"{LANGUAGES}")
+    else:
+        try:
+            output_lang2 = output_lang
+            input_lang2 = input_lang
+            translator = Translator()
+            translated = translator.translate(text, src=input_lang2, dest=output_lang2)
+            await ctx.respond()
+            await ctx.send(f"{translated.text}")
+        except Exception as e:
+            print(str(e))
+            await ctx.respond()
+            await ctx.send("ERROR")
+            await ctx.send("Make sure that your output_lang or input_lang is one of these:")
+            await ctx.send(f"{LANGUAGES}")
+
+
+@slash.slash(
+    name="define",
+    description="Define any word in English!",
+    options=[
+        manage_commands.create_option(name="word",
+                                      description="Type it here",
+                                      option_type=3,
+                                      required=True)
+    ],
+    guild_ids=guild_ids)
+async def _define(ctx, word):
+    print(f"{ctx.author.name}: /define {word}")
+    dictionary = PyDictionary()
+    defined = dictionary.meaning(f"{word}")
+    await ctx.respond()
+    await ctx.send(f"{defined}")
+
+
+@slash.slash(
+    name="reciprocal",
+    description="Sends a reciprocal of a fraction",
+    options=[
+        manage_commands.create_option(name="fraction",
+                                      description="Type it here",
+                                      option_type=3,
+                                      required=True)
+    ],
+    guild_ids=guild_ids)
+async def _reciprocal(ctx, fraction):
+    fr1, fr2 = fraction.split("/")
+    print(f"{ctx.author.name}: /reciprocal")
+    Reci = reci(fr1, fr2)
+    await ctx.respond()
+    await ctx.send(f"{Reci}")
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
@@ -549,7 +847,7 @@ async def _invite(ctx):
 async def _perseverance(ctx):
     print(f"{ctx.author.name}: /perseverance")
     await ctx.respond()
-    await ctx.send(file=discord.File('perseverance.png'))
+    await ctx.send(file=discord.File('preservation.png'))
 
 
 @slash.slash(
@@ -630,7 +928,7 @@ async def _credits(ctx):
     embed.add_field(
         name='Invite the bot!',
         value=
-        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2148002902&scope=bot%20applications.commands)',
         inline=False)
     await ctx.respond()
     await ctx.send(embed=embed)
@@ -750,9 +1048,9 @@ async def _help(ctx, argone):  # noqa: C901
         await ctx.respond()
         await ctx.send(embed=embed)
 
-    elif arg == "clear" or arg == "purge":
+    elif arg == "purge" or arg == "clear":
         embed.add_field(
-            name='/clear number',
+            name='/purge number',
             value=
             'Deletes the number of messages. Default is 5. \nNOTE: requires Manage Messages permission.',
             inline=False)
@@ -794,7 +1092,7 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(
             name='Invite the bot!',
             value=
-            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2148002902&scope=bot%20applications.commands)',
             inline=False)
         await ctx.respond()
         await ctx.send(embed=embed)
@@ -854,7 +1152,7 @@ async def _help(ctx, argone):  # noqa: C901
             value='Unbans a member. \nNOTE: requires Ban Members permission.',
             inline=False)
         embed.add_field(
-            name='/clear number',
+            name='/purge number',
             value=
             'Deletes the number of messages. Default is 5. \nNOTE: requires Manage Messages permission.',
             inline=False)
@@ -872,7 +1170,7 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(
             name='Invite the bot!',
             value=
-            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2148002902&scope=bot%20applications.commands)',
             inline=False)
 
         await ctx.respond()
