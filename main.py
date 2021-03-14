@@ -1,4 +1,7 @@
-# import subprocess
+# NOTE TO SELF: Don't keep this open before you put your laptop to sleep, close first, then close the laptop
+# Otherwise, the bot will stop automatically
+
+import subprocess
 
 # list_files = subprocess.run(["pip", "install", "pynacl"])
 
@@ -13,7 +16,7 @@
 
 # list_files = subprocess.run(["pip", "install", "wikipedia"])
 
-# list_files = subprocess.run(["pip", "install", "googletrans==3.1.0a0"])
+list_files = subprocess.run(["pip", "install", "googletrans==3.1.0a0"])
 
 # list_files = subprocess.run(["pip", "install", "PyDictionary"])
 
@@ -151,6 +154,7 @@ LANGUAGES = {
     'zu': 'zulu'
 }
 
+
 def googleSearch(query):
     query = query.replace(" ", "+")
     g_clean = []
@@ -183,6 +187,7 @@ def googleSearch(query):
         del g_clean[10:100]
         return g_clean
 
+
 def googleSearchImages(query):
     query = query.replace(" ", "+")
     g_clean = []
@@ -214,6 +219,7 @@ def googleSearchImages(query):
     finally:
         del g_clean[10:100]
         return g_clean
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -290,7 +296,7 @@ async def on_message(message):
         if any(word in msg for word in sad_words):
             if "!" not in msg and "." not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
                 await message.reply(random.choice(options))
-        
+
         mention = f'<@!{client.user.id}>'
         if mention in msg:
             await message.reply("You mentioned me!")
@@ -318,7 +324,8 @@ async def on_message(message):
         idea = message.author.id
         if idea == 721093211577385020:
             await message.reply("Restarting...")
-            await message.reply("Please wait up to 5 minutes, usually takes 1 minute.")
+            await message.reply(
+                "Please wait up to 5 minutes, usually takes 1 minute.")
             os.execl(sys.executable, sys.executable, *sys.argv)
         else:
             await message.reply("You're not my creator, go away.")
@@ -625,14 +632,16 @@ async def _googleimages(ctx, text, results=5):
                                       description="Search it here",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(name="output_lang",
-                                      description="First 2 letters of output lang, default en",
-                                      option_type=3,
-                                      required=False),
-        manage_commands.create_option(name="input_lang",
-                                      description="First 2 letters of input_lang, default automatic",
-                                      option_type=3,
-                                      required=False)
+        manage_commands.create_option(
+            name="output_lang",
+            description="First 2 letters of output lang, default en",
+            option_type=3,
+            required=False),
+        manage_commands.create_option(
+            name="input_lang",
+            description="First 2 letters of input_lang, default automatic",
+            option_type=3,
+            required=False)
     ],
     guild_ids=guild_ids)
 async def _translate(ctx, text, output_lang="en", input_lang=None):
@@ -655,45 +664,121 @@ async def _translate(ctx, text, output_lang="en", input_lang=None):
             output_lang2 = output_lang
             input_lang2 = input_lang
             translator = Translator()
-            translated = translator.translate(text, src=input_lang2, dest=output_lang2)
+            translated = translator.translate(text,
+                                              src=input_lang2,
+                                              dest=output_lang2)
             await ctx.respond()
             await ctx.send(f"{translated.text}")
         except Exception as e:
             print(str(e))
             await ctx.respond()
             await ctx.send("ERROR")
-            await ctx.send("Make sure that your output_lang or input_lang is one of these:")
+            await ctx.send(
+                "Make sure that your output_lang or input_lang is one of these:"
+            )
             await ctx.send(f"{LANGUAGES}")
 
 
-@slash.slash(
-    name="define",
-    description="Define any word in English!",
-    options=[
-        manage_commands.create_option(name="word",
-                                      description="Type it here",
-                                      option_type=3,
-                                      required=True)
-    ],
-    guild_ids=guild_ids)
-async def _define(ctx, word):
-    print(f"{ctx.author.name}: /define {word}")
-    dictionary = PyDictionary()
-    defined = dictionary.meaning(f"{word}")
-    await ctx.respond()
-    await ctx.send(f"{defined}")
+@slash.slash(name="define",
+             description="Define any word in English!",
+             options=[
+                 manage_commands.create_option(name="word",
+                                               description="Type it here",
+                                               option_type=3,
+                                               required=True)
+             ],
+             guild_ids=guild_ids)
+async def _define(ctx, word):  # noqa: C901
+    try:
+        print(f"{ctx.author.name}: /define {word}")
+        dictionary = PyDictionary()
+        if "bonk" not in word.lower():
+            defined = dictionary.meaning(f"{word}")
+            await ctx.respond()
+            if defined.get('Noun', 99) != 99:
+                bye1 = defined['Noun']
+                await ctx.send("Noun meaning(s):")
+                for i in range(0, len(bye1)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye1[i]}")
+            if defined.get('Verb', 99) != 99:
+                bye2 = defined['Verb']
+                await ctx.send("Verb meaning(s):")
+                for i in range(0, len(bye2)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye2[i]}")
+            if defined.get('Pronoun', 99) != 99:
+                bye3 = defined['Pronoun']
+                await ctx.send("Pronoun meaning(s):")
+                for i in range(0, len(bye3)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye3[i]}")
+            if defined.get('Adjective', 99) != 99:
+                bye4 = defined['Adjective']
+                await ctx.send("Adjective meaning(s):")
+                for i in range(0, len(bye4)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye4[i]}")
+            if defined.get('Adverb', 99) != 99:
+                bye5 = defined['Adverb']
+                await ctx.send("Adverb meaning(s):")
+                for i in range(0, len(bye5)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye5[i]}")
+            if defined.get('Preposition', 99) != 99:
+                bye6 = defined['Preposition']
+                await ctx.send("Preposition meaning(s):")
+                for i in range(0, len(bye6)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye6[i]}")
+            if defined.get('Conjunction', 99) != 99:
+                bye7 = defined['Conjunction']
+                await ctx.send("Conjunction meaning(s):")
+                for i in range(0, len(bye7)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye7[i]}")
+            if defined.get('Interjection', 99) != 99:
+                bye8 = defined['Interjection']
+                await ctx.send("Interjection meaning(s):")
+                for i in range(0, len(bye8)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye8[i]}")
+            if defined.get('Numeral', 99) != 99:
+                bye9 = defined['Numeral']
+                await ctx.send("Numeral meaning(s):")
+                for i in range(0, len(bye9)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye9[i]}")
+            if defined.get('Article', 99) != 99:
+                bye10 = defined['Article']
+                await ctx.send("Article meaning(s):")
+                for i in range(0, len(bye10)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye10[i]}")
+            if defined.get('Determiner', 99) != 99:
+                bye11 = defined['Determiner']
+                await ctx.send("Determiner meaning(s):")
+                for i in range(0, len(bye11)):
+                    await asyncio.sleep(0.5)
+                    await ctx.send(f"{i+1}. {bye11[i]}")
+        else:
+            pass
+    except Exception as e:
+        print(str(e))
+        print(str(e))
+        print(str(e))
+        await ctx.send("ERROR: Is this not a word? Are you misspelling it?")
 
 
-@slash.slash(
-    name="reciprocal",
-    description="Sends a reciprocal of a fraction",
-    options=[
-        manage_commands.create_option(name="fraction",
-                                      description="Type it here",
-                                      option_type=3,
-                                      required=True)
-    ],
-    guild_ids=guild_ids)
+@slash.slash(name="reciprocal",
+             description="Sends a reciprocal of a fraction",
+             options=[
+                 manage_commands.create_option(name="fraction",
+                                               description="Type it here",
+                                               option_type=3,
+                                               required=True)
+             ],
+             guild_ids=guild_ids)
 async def _reciprocal(ctx, fraction):
     fr1, fr2 = fraction.split("/")
     print(f"{ctx.author.name}: /reciprocal")
@@ -762,15 +847,14 @@ async def _hello(ctx, argone):
 @slash.slash(name="say",
              description="Make the bot say anything",
              options=[
-                 manage_commands.create_option(name="message",
+                 manage_commands.create_option(name="text",
                                                description="Say your message",
                                                option_type=3,
                                                required=True)
              ],
              guild_ids=guild_ids)
-async def _say(ctx, argone):
-    print(f"{ctx.author.name}: /say {argone}")
-    text = argone
+async def _say(ctx, text):
+    print(f"{ctx.author.name}: /say {text}")
     await ctx.respond()
     await ctx.channel.send(text)
     await ctx.message.delete()
@@ -778,20 +862,11 @@ async def _say(ctx, argone):
 
 @slash.slash(name="ping",
              description="This returns the bot latency",
-             options=[
-                 manage_commands.create_option(
-                     name="message",
-                     description="This returns the bot latency",
-                     option_type=3,
-                     required=True)
-             ],
              guild_ids=guild_ids)
-async def _ping(ctx, message: str):
-    print(f"{ctx.author.name}: /ping {message}")
+async def _ping(ctx):
+    print(f"{ctx.author.name}: /ping")
     await ctx.respond()
-    await ctx.send(
-        f'Pong! {round(client.latency * 1000)}ms. You responded with {message}.'
-    )
+    await ctx.send(f'Pong! {round(client.latency * 1000)}ms.')
 
 
 @slash.slash(name="8ball",
