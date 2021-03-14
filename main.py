@@ -770,6 +770,20 @@ async def _define(ctx, word):  # noqa: C901
         await ctx.send("ERROR: Is this not a word? Are you misspelling it?")
 
 
+@slash.slash(name="reverse",
+             description="Reverses your text",
+             options=[
+                 manage_commands.create_option(name="text",
+                                               description="Type it here",
+                                               option_type=3,
+                                               required=True)
+             ],
+             guild_ids=guild_ids)
+async def _reverse(ctx, text):
+    await ctx.respond()
+    await ctx.send(text[::-1])
+
+
 @slash.slash(name="reciprocal",
              description="Sends a reciprocal of a fraction",
              options=[
