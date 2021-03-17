@@ -3,27 +3,13 @@
 
 import subprocess
 
-# list_files = subprocess.run(["pip", "install", "pynacl"])
-
-# list_files = subprocess.run(
-#     ["pip", "install", "-U", "discord-py-slash-command"])
-
-# list_files = subprocess.run(["pip", "install", "googlesearch-python"])
-
-# list_files = subprocess.run(["pip", "install", "lxml"])
-
-# list_files = subprocess.run(["pip", "install", "metadata-parser"])
-
-# list_files = subprocess.run(["pip", "install", "wikipedia"])
-
 list_files = subprocess.run(["pip", "install", "googletrans==3.1.0a0"])
-
-# list_files = subprocess.run(["pip", "install", "PyDictionary"])
 
 import os
 import aiohttp
 import json
 import discord
+import discord.ext as ext
 from discord.ext import commands, tasks
 import logging
 import random
@@ -223,6 +209,7 @@ def googleSearchImages(query):
 
 logging.basicConfig(level=logging.INFO)
 
+banana = discord.Client()
 client = discord.Client(intents=discord.Intents.all())
 slash = SlashCommand(client, sync_commands=True)
 status = cycle([
@@ -278,6 +265,7 @@ async def get_quote():
 
 @client.event
 async def on_ready():
+    await banana.wait_until_ready()
     change_status.start()
     print('We have logged in as {0.user}'.format(client))
     timestamp = datetime.datetime.now()
@@ -363,6 +351,9 @@ async def on_guild_remove(guild):
 @client.event
 async def on_member_join(member):
     print(f'{member} has joined a server!')
+    if member.guild.id == 820419188866547712:
+        role = "Shark"
+        await member.add_roles(discord.utils.get(member.guild.roles, name=role))
 
 
 @client.event
@@ -799,6 +790,78 @@ async def _reciprocal(ctx, fraction):
     Reci = reci(fr1, fr2)
     await ctx.respond()
     await ctx.send(f"{Reci}")
+
+
+@slash.slash(name="nick",
+             description="Sends a reciprocal of a fraction",
+             options=[
+                 manage_commands.create_option(name="member",
+                                               description="Type member here",
+                                               option_type=6,
+                                               required=True),
+                 manage_commands.create_option(name="nick",
+                                               description="Type new nick here",
+                                               option_type=3,
+                                               required=True)
+             ],
+             guild_ids=guild_ids)
+@commands.has_permissions(manage_nicknames=True)
+async def _nick(ctx, member: discord.Member, nick):
+    await ctx.respond()
+    try:
+        await member.edit(nick=nick)
+        await ctx.send(f'Nickname was changed for {member.mention}.')
+    except Exception as e:
+        print(str(e))
+
+
+@slash.slash(name="addrole", description="Adds a role", guild_ids=guild_ids)
+@commands.has_permissions(manage_roles=True)
+async def _addrole(ctx, member: discord.Member, role: discord.Role):
+    await ctx.respond()
+    await member.add_roles(role)
+    await ctx.send(f"{member.mention} got the {role} role.")
+
+
+@slash.slash(name="removerole", description="Removes a role", guild_ids=guild_ids)
+@commands.has_permissions(manage_roles=True)
+async def _removerole(ctx, member: discord.Member, role: discord.Role):
+    await ctx.respond()
+    await member.remove_roles(role)
+    await ctx.send(f"{member.mention} lost the {role} role.")
+
+
+@slash.slash(name="feedback",
+             description="Give feedback!",
+             options=[
+                 manage_commands.create_option(name="feedback",
+                                               description="Type member here",
+                                               option_type=3,
+                                               required=True)
+             ],
+             guild_ids=guild_ids)
+async def _feedback(ctx, feedback):
+    await ctx.respond()
+    idea = ctx.author.id
+    with open("feedback.txt", "a+") as file:
+        file.write(f"{idea}§{feedback}\n")
+    await ctx.send(f"You submitted the following feedback: {feedback}")
+
+
+@slash.slash(name="feedbacklist",
+             description="List feedback!",
+             guild_ids=guild_ids)
+async def _feedbacklist(ctx):
+    await ctx.respond()
+    with open("feedback.txt", "r") as file:
+        for line in file:
+            idea, feedback = line.split("§")
+            print(idea)
+            try:
+                user = await banana.fetch_user(int(idea))
+                await ctx.send(f"{user}: {feedback}")
+            except Exception as e:
+                print(str(e))
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
