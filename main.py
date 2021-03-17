@@ -9,7 +9,6 @@ import os
 import aiohttp
 import json
 import discord
-import discord.ext as ext
 from discord.ext import commands, tasks
 import logging
 import random
