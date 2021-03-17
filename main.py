@@ -265,7 +265,7 @@ async def get_quote():
 
 @client.event
 async def on_ready():
-    await banana.wait_until_ready()
+    #await banana.wait_until_ready()
     change_status.start()
     print('We have logged in as {0.user}'.format(client))
     timestamp = datetime.datetime.now()
@@ -842,10 +842,10 @@ async def _removerole(ctx, member: discord.Member, role: discord.Role):
              guild_ids=guild_ids)
 async def _feedback(ctx, feedback):
     await ctx.respond()
-    idea = ctx.author.id
+    idea = ctx.author.mention
     with open("feedback.txt", "a+") as file:
         file.write(f"{idea}§{feedback}\n")
-    await ctx.send(f"You submitted the following feedback: {feedback}")
+    await ctx.send(f"{idea} submitted the following feedback: {feedback}")
 
 
 @slash.slash(name="feedbacklist",
@@ -854,14 +854,56 @@ async def _feedback(ctx, feedback):
 async def _feedbacklist(ctx):
     await ctx.respond()
     with open("feedback.txt", "r") as file:
+        x = 0
         for line in file:
+            x += 1
             idea, feedback = line.split("§")
-            print(idea)
             try:
-                user = await banana.fetch_user(int(idea))
-                await ctx.send(f"{user}: {feedback}")
+                await ctx.send(f"{x}. {idea}: {feedback}")
             except Exception as e:
                 print(str(e))
+
+
+@slash.slash(
+    name="feedbackclear",
+    description="Clears all of the feedback or the chosen one",
+    options=[
+        manage_commands.create_option(
+            name="number",
+            description=
+            "The feedback message position in the list that you want to clear, try /feedbacklist to see",
+            option_type=4,
+            required=False)
+    ],
+    guild_ids=guild_ids)
+async def _feedbackclear(ctx, number=None):
+    await ctx.respond()
+    idea = ctx.author.id
+    if idea == 721093211577385020:
+        if number == None:
+            open("feedback.txt", "w").close()
+            await ctx.send("Cleared all of the feedback.")
+        else:
+            a_file = open("feedback.txt", "r")
+            lines = a_file.readlines()
+            a_file.close()
+
+            new_file = open("feedback.txt", "w")
+            for index,line in enumerate(lines):
+                if index != (number - 1):
+                    new_file.write(line)
+            new_file.close()
+            await ctx.send(f"Deleted line #{number}.")
+            await ctx.send("List of feedbacks now:")
+            with open("feedback.txt", "r") as file:
+                x = 0
+                for line in file:
+                    x += 1
+                    idea, feedback = line.split("§")
+                    try:
+                        await ctx.send(f"{x}. {idea}: {feedback}")
+                    except Exception as e:
+                        print(str(e))
 
 
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
