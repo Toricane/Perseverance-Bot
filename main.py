@@ -28,6 +28,7 @@ import re
 from urllib.parse import urlparse
 from googletrans import Translator
 from PyDictionary import PyDictionary
+from discord_slash.utils.manage_commands import create_option, create_choice
 
 LANGUAGES = {
     'af': 'afrikaans',
@@ -264,7 +265,6 @@ async def get_quote():
 
 @client.event
 async def on_ready():
-    #await banana.wait_until_ready()
     change_status.start()
     print('We have logged in as {0.user}'.format(client))
     timestamp = datetime.datetime.now()
@@ -678,13 +678,13 @@ async def _translate(ctx, text, output_lang="en", input_lang=None):
                                                required=True)
              ],
              guild_ids=guild_ids)
-async def _define(ctx, word):  # noqa: C901
+async def _define(ctx, word): # noqa: C901
+    await ctx.respond()
     try:
         print(f"{ctx.author.name}: /define {word}")
         dictionary = PyDictionary()
         if "bonk" not in word.lower():
             defined = dictionary.meaning(f"{word}")
-            await ctx.respond()
             if defined.get('Noun', 99) != 99:
                 bye1 = defined['Noun']
                 await ctx.send("Noun meaning(s):")
@@ -757,7 +757,7 @@ async def _define(ctx, word):  # noqa: C901
         print(str(e))
         print(str(e))
         print(str(e))
-        await ctx.send("ERROR: Is this not a word? Are you misspelling it?")
+        await ctx.send("ERROR: Is this a word? Are you misspelling it?")
 
 
 @slash.slash(name="reverse",
@@ -812,6 +812,7 @@ async def _nick(ctx, member: discord.Member, nick):
         await ctx.send(f'Nickname was changed for {member.mention}.')
     except Exception as e:
         print(str(e))
+        await ctx.send("ERROR: is the member in the server?")
 
 
 @slash.slash(name="addrole", description="Adds a role", guild_ids=guild_ids)
@@ -905,6 +906,159 @@ async def _feedbackclear(ctx, number=None):
                         print(str(e))
 
 
+@slash.slash(
+    name="poll",
+    description="Create a poll!",
+    options=[
+        manage_commands.create_option(
+            name="question",
+            description=
+            "What is your question?",
+            option_type=3,
+            required=True),
+        manage_commands.create_option(
+            name="choices",
+            description=
+            "What are the choices? Separate them using /.",
+            option_type=3,
+            required=True),
+        manage_commands.create_option(
+            name="mention",
+            description=
+            "What role to mention",
+            option_type=8,
+            required=False)
+    ],
+    guild_ids=guild_ids)
+async def _poll(ctx, question, choices, mention=""""""): # noqa: C901
+    try:
+        await ctx.respond()
+        content = choices.split("/")
+        if mention != """""":
+            if len(content) > 0:
+                message = f"""
+{mention.mention} {ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+"""
+            if len(content) > 1:
+                message = f"""
+{mention.mention} {ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+"""
+            if len(content) > 2:
+                message = f"""
+{mention.mention} {ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+:three:: {content[2]}
+"""
+            if len(content) > 3:
+                message = f"""
+{mention.mention} {ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+:three:: {content[2]}
+:four:: {content[3]}
+"""
+            if len(content) > 4:
+                message = f"""
+{mention.mention} {ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+:three:: {content[2]}
+:four:: {content[3]}
+:five:: {content[4]}
+"""
+        else:
+            if len(content) > 0:
+                message = f"""
+{ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+"""
+            if len(content) > 1:
+                message = f"""
+{ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+"""
+            if len(content) > 2:
+                message = f"""
+{ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+:three:: {content[2]}
+"""
+            if len(content) > 3:
+                message = f"""
+{ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+:three:: {content[2]}
+:four:: {content[3]}
+"""
+            if len(content) > 4:
+                message = f"""
+{ctx.author.mention} asks: {question}
+
+:one:: {content[0]}
+:two:: {content[1]}
+:three:: {content[2]}
+:four:: {content[3]}
+:five:: {content[4]}
+"""
+
+        messgae = await ctx.send(message)
+        if len(content) > 0:
+            await messgae.add_reaction("1️⃣")
+        if len(content) > 1:
+            await messgae.add_reaction("2️⃣")
+        if len(content) > 2:
+            await messgae.add_reaction("3️⃣")
+        if len(content) > 3:
+            await messgae.add_reaction("4️⃣")
+        if len(content) > 4:
+            await messgae.add_reaction("5️⃣")
+        await ctx.message.delete()
+    except Exception as e:
+        print(str(e))
+
+
+@slash.slash(name="test2",
+             description="This is just a test command, nothing more.",
+             options=[
+               create_option(
+                 name="optone",
+                 description="This is the first option we have.",
+                 option_type=3,
+                 required=False,
+                 choices=[
+                  create_choice(
+                    name="ChoiceOne",
+                    value="DOGE!"
+                  ),
+                  create_choice(
+                    name="ChoiceTwo",
+                    value="NO DOGE"
+                  )
+                ]
+               )
+             ],
+             guild_ids=guild_ids)
+async def _test2(ctx, optone: str):
+  await ctx.respond()
+  await ctx.send(content=f"Wow, you actually chose {optone}? :(")
+
+
 @slash.slash(name="ban", description="Bans a member", guild_ids=guild_ids)
 @commands.has_permissions(ban_members=True)
 async def _ban(ctx, member: discord.Member, *, reason=None):
@@ -974,7 +1128,7 @@ async def _hello(ctx, argone):
 async def _say(ctx, text):
     print(f"{ctx.author.name}: /say {text}")
     await ctx.respond()
-    await ctx.channel.send(text)
+    await ctx.send(text)
     await ctx.message.delete()
 
 
@@ -1028,7 +1182,7 @@ async def _invite(ctx):
     embed.add_field(
         name='Invite the bot!',
         value=
-        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=4260888151&scope=bot%20applications.commands)',
+        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)',
         inline=False)
     await ctx.respond()
     await ctx.send(embed=embed)
@@ -1043,26 +1197,83 @@ async def _perseverance(ctx):
     await ctx.send(file=discord.File('preservation.png'))
 
 
-@slash.slash(
-    name="embed",
-    description="Create an embed",
-    options=[
-        manage_commands.create_option(name="title",
+# @slash.slash(
+#     name="embed",
+#     description="Create an embed",
+#     options=[
+#         manage_commands.create_option(name="title",
+#                                       description="Enter your title here",
+#                                       option_type=3,
+#                                       required=True),
+#         manage_commands.create_option(name="text",
+#                                       description="Enter your text here",
+#                                       option_type=3,
+#                                       required=True),
+#         manage_commands.create_option(
+#             name="color",
+#             description=
+#             "What color should the embed be? Pick 'random' or any color from rainbow",
+#             option_type=3,
+#             required=False)
+#     ],
+#     guild_ids=guild_ids)
+@slash.slash(name="embed",
+             description="Create an embed",
+             options=[
+               manage_commands.create_option(name="title",
                                       description="Enter your title here",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(name="text",
+               manage_commands.create_option(name="text",
                                       description="Enter your text here",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(
-            name="color",
-            description=
-            "What color should the embed be? Pick 'random' or any color from rainbow",
-            option_type=3,
-            required=False)
-    ],
-    guild_ids=guild_ids)
+               create_option(
+                 name="color",
+                 description="What color should the embed be? Pick 'random' or any color from rainbow",
+                 option_type=3,
+                 required=False,
+                 choices=[
+                  create_choice(
+                    name="default",
+                    value="default"
+                  ),
+                  create_choice(
+                    name="red",
+                    value="red"
+                  ),
+                  create_choice(
+                    name="orange",
+                    value="orange"
+                  ),
+                  create_choice(
+                    name="yellow",
+                    value="yellow"
+                  ),
+                  create_choice(
+                    name="green",
+                    value="green"
+                  ),
+                  create_choice(
+                    name="blue",
+                    value="blue"
+                  ),
+                  create_choice(
+                    name="indigo",
+                    value="indigo"
+                  ),
+                  create_choice(
+                    name="purple",
+                    value="purple"
+                  ),
+                  create_choice(
+                    name="random",
+                    value="random"
+                  ),
+                ]
+               )
+             ],
+             guild_ids=guild_ids)
 async def _embed(ctx, title, text, color="default"):
     print(f"{ctx.author.name}: /embed {title} {text} {color}")
     colory = color.lower()
@@ -1121,7 +1332,7 @@ async def _credits(ctx):
     embed.add_field(
         name='Invite the bot!',
         value=
-        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2148002902&scope=bot%20applications.commands)',
+        'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)',
         inline=False)
     await ctx.respond()
     await ctx.send(embed=embed)
@@ -1139,7 +1350,7 @@ async def _credits(ctx):
             required=True)
     ],
     guild_ids=guild_ids)
-async def _help(ctx, argone):  # noqa: C901
+async def _help(ctx, argone): # noqa: C901
     print(f"{ctx.author.name}: /help {argone}")
     embed = discord.Embed(colour=discord.Colour.orange())
     arg = str(argone).lower()
@@ -1285,7 +1496,7 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(
             name='Invite the bot!',
             value=
-            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2148002902&scope=bot%20applications.commands)',
+            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)',
             inline=False)
         await ctx.respond()
         await ctx.send(embed=embed)
@@ -1363,7 +1574,7 @@ async def _help(ctx, argone):  # noqa: C901
         embed.add_field(
             name='Invite the bot!',
             value=
-            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2148002902&scope=bot%20applications.commands)',
+            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)',
             inline=False)
 
         await ctx.respond()
