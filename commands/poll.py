@@ -95,6 +95,5 @@ async def create_poll(ctx, question, choices, mention): # noqa: C901
             await messgae.add_reaction("4️⃣")
         if len(content) > 4:
             await messgae.add_reaction("5️⃣")
-        await ctx.message.delete()
     except Exception as e:
         print(str(e))

@@ -2,7 +2,7 @@ async def create_feedback(ctx, feedback):
     idea = ctx.author.mention
     with open("commands/feedback.txt", "a+") as file:
         file.write(f"{idea}§{feedback}\n")
-    await ctx.send(f"{idea} submitted the following feedback: {feedback}")
+    await ctx.send(f"You submitted the following feedback: {feedback}", hidden=True)
 
 
 async def list_feedback(ctx):
@@ -12,7 +12,7 @@ async def list_feedback(ctx):
             x += 1
             idea, feedback = line.split("§")
             try:
-                await ctx.send(f"{x}. {idea}: {feedback}")
+                await ctx.channel.send(f"{x}. {idea}: {feedback}")
             except Exception as e:
                 print(str(e))
 
@@ -34,13 +34,5 @@ async def delete_feedback(ctx, number):
                     new_file.write(line)
             new_file.close()
             await ctx.send(f"Deleted line #{number}.")
-            await ctx.send("List of feedbacks now:")
-            with open("commands/feedback.txt", "r") as file:
-                x = 0
-                for line in file:
-                    x += 1
-                    idea, feedback = line.split("§")
-                    try:
-                        await ctx.send(f"{x}. {idea}: {feedback}")
-                    except Exception as e:
-                        print(str(e))
+            await ctx.channel.send("List of feedbacks now:")
+            await list_feedback(ctx)
