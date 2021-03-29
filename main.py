@@ -20,21 +20,22 @@ import pyjokes
 from discord_slash.utils.manage_commands import create_option, create_choice
 import inspect
 import string
+from discord.flags import Intents
 
-from commands.credits import show_credits
-from commands.define import define
-from commands.eight_ball import answer
-from commands.embed import create_embed
-from commands.encourage import responses_list, response_delete, new_response, sad_words_list
-from commands.feedback import create_feedback, list_feedback, delete_feedback
-from commands.googlestuff import pls_google, pls_googleimages, pls_translate
-from commands.help import help_embeds
-from commands.inspire import inspire
-from commands.poll import create_poll
+from cmds.credits import show_credits
+from cmds.define import define
+from cmds.eight_ball import answer
+from cmds.embed import create_embed
+from cmds.encourage import responses_list, response_delete, new_response, sad_words_list
+from cmds.feedback import create_feedback, list_feedback, delete_feedback
+from cmds.googlestuff import pls_google, pls_googleimages, pls_translate
+from cmds.help import help_embeds
+from cmds.inspire import inspired
+from cmds.poll import create_poll
 
 logging.basicConfig(level=logging.INFO)
 
-client = commands.Bot(command_prefix=".", intents=discord.Intents.all())
+client = commands.Bot(command_prefix=".", intents=Intents.all())
 slash = SlashCommand(client, sync_commands=True)
 status = cycle([
     '/help help', 'your messages', '/help help', 'Never Gonna Give You Up',
@@ -42,7 +43,6 @@ status = cycle([
 ])
 
 guild_ids = db["id"]
-
 
 @client.event
 async def on_ready():
@@ -97,6 +97,8 @@ async def on_message(message):
         else:
             await message.reply("You're not my creator, go away.")
             await message.reply("Wait, how did you know about this?")
+    
+    await client.process_commands(message)
 
 
 @client.event
@@ -135,12 +137,19 @@ async def on_member_remove(member):
 @client.event
 async def on_slash_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.MissingPermissions):
+        perms_missing = error.missing_perms
         await ctx.send(
-            f"You don't have the required permissions to run this command, {ctx.author.mention}."
+            f"You don't have {perms_missing} permissions to run this command, {ctx.author.mention}."
         )
     else:
         await ctx.send(f"ERROR: {error}")
         print(error)
+
+
+@client.event
+async def on_command_error(ctx, error):
+    await ctx.send(f"ERROR: {error}")
+    print(error)
 
 
 @tasks.loop(seconds=10)
@@ -149,10 +158,20 @@ async def change_status():
         type=discord.ActivityType.watching, name=next(status)))
 
 
+@client.command(name="inspire")
+async def inspire(ctx):
+    print("Command called")
+    try:
+        quoted = await inspired(ctx)
+        await ctx.reply(quoted)
+    except Exception as e:
+        print(str(e))
+
 @slash.slash(name="inspire",
              description="The bot will send a random inspirational quote")
-async def _inspire(ctx):
-    await inspire(ctx)
+async def slash_inspire(ctx):
+    quoted = await inspired(ctx)
+    await ctx.send(quoted)
 
 
 @slash.slash(name="hi", description="The bot will say hello to you")
@@ -186,7 +205,7 @@ async def _list(ctx):
     name="delete",
     description="Deletes an encouraging message, /list to see",
     options=[
-        manage_commands.create_option(
+        create_option(
             name="number",
             description=
             "The encouraging message's position in the list that you want to delete, try /list to see",
@@ -204,7 +223,7 @@ async def _delete(ctx, number):
     name="new",
     description="Add a new encouraging message",
     options=[
-        manage_commands.create_option(name="message",
+        create_option(name="message",
                                       description="Add it here",
                                       option_type=3,
                                       required=True)
@@ -220,7 +239,7 @@ async def _new(ctx, message):
     name="run",
     description="Run some code",
     options=[
-        manage_commands.create_option(name="code",
+        create_option(name="code",
                                       description="Add it here",
                                       option_type=3,
                                       required=True)
@@ -233,7 +252,7 @@ async def _run(ctx, *, code):
             if inspect.isawaitable(res):
                 await ctx.send(await res)
             else:
-                await ctx.send(await res)
+                await ctx.send(res)
         else:
             await ctx.send("No.")
     except Exception as e:
@@ -244,7 +263,7 @@ async def _run(ctx, *, code):
     name="avatar",
     description="View someone's avatar picture",
     options=[
-        manage_commands.create_option(name="member",
+        create_option(name="member",
                                       description="Add the member here",
                                       option_type=6,
                                       required=True)
@@ -287,18 +306,18 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
     name="wikipedia",
     description="Searches for something on Wikipedia",
     options=[
-        manage_commands.create_option(
+        create_option(
             name="text",
             description="What do you want to search?",
             option_type=3,
             required=True),
-        manage_commands.create_option(
+        create_option(
             name="results",
             description=
             "How many results should you randomly recieve 1 result from? Default is 5.",
             option_type=3,
             required=False),
-        manage_commands.create_option(
+        create_option(
             name="lines",
             description="How many lines do you want? Default is 10.",
             option_type=4,
@@ -338,11 +357,11 @@ async def _joke(ctx):
     name="dm",
     description="DM someone!",
     options=[
-        manage_commands.create_option(name="member",
+        create_option(name="member",
                                       description="Who to DM",
                                       option_type=6,
                                       required=True),
-        manage_commands.create_option(name="message",
+        create_option(name="message",
                                       description="What to say",
                                       option_type=3,
                                       required=True)
@@ -358,11 +377,11 @@ async def _dm(ctx, member: discord.Member, message):
     name="google",
     description="Search anything on Google!",
     options=[
-        manage_commands.create_option(name="text",
+        create_option(name="text",
                                       description="Search it here",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(
+        create_option(
             name="results",
             description="How many results? Max is 10 and default is 5",
             option_type=3,
@@ -379,11 +398,11 @@ async def _google(ctx, text, results=5):
     name="googleimages",
     description="Search images on Google!",
     options=[
-        manage_commands.create_option(name="text",
+        create_option(name="text",
                                       description="Search it here",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(
+        create_option(
             name="results",
             description="How many results? Max is 10 and default is 5",
             option_type=3,
@@ -400,16 +419,16 @@ async def _googleimages(ctx, text, results=5):
     name="translate",
     description="Translate anything on Google Translate!",
     options=[
-        manage_commands.create_option(name="text",
+        create_option(name="text",
                                       description="Search it here",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(
+        create_option(
             name="output_lang",
             description="First 2 letters of output lang, default en",
             option_type=3,
             required=False),
-        manage_commands.create_option(
+        create_option(
             name="input_lang",
             description="First 2 letters of input_lang, default automatic",
             option_type=3,
@@ -426,7 +445,7 @@ async def _translate(ctx, text, output_lang="en", input_lang=None):
     name="define",
     description="Define any word in English!",
     options=[
-        manage_commands.create_option(name="word",
+        create_option(name="word",
                                       description="Type it here",
                                       option_type=3,
                                       required=True)
@@ -442,7 +461,7 @@ async def _define(ctx, word):  # noqa: C901
     name="reverse",
     description="Reverses your text",
     options=[
-        manage_commands.create_option(name="text",
+        create_option(name="text",
                                       description="Type it here",
                                       option_type=3,
                                       required=True)
@@ -457,7 +476,7 @@ async def _reverse(ctx, text):
     name="reciprocal",
     description="Sends a reciprocal of a fraction",
     options=[
-        manage_commands.create_option(name="fraction",
+        create_option(name="fraction",
                                       description="Type it here",
                                       option_type=3,
                                       required=True)
@@ -474,11 +493,11 @@ async def _reciprocal(ctx, fraction):
     name="nick",
     description="Sends a reciprocal of a fraction",
     options=[
-        manage_commands.create_option(name="member",
+        create_option(name="member",
                                       description="Type member here",
                                       option_type=6,
                                       required=True),
-        manage_commands.create_option(name="nick",
+        create_option(name="nick",
                                       description="Type new nick here",
                                       option_type=3,
                                       required=True)
@@ -518,7 +537,7 @@ async def _removerole(ctx, member: discord.Member, role: discord.Role):
     name="feedback",
     description="Give feedback!",
     options=[
-        manage_commands.create_option(name="feedback",
+        create_option(name="feedback",
                                       description="Type member here",
                                       option_type=3,
                                       required=True)
@@ -544,7 +563,7 @@ async def _feedbacklist(ctx):
     name="feedbackclear",
     description="Clears all of the feedback or the chosen one",
     options=[
-        manage_commands.create_option(
+        create_option(
             name="number",
             description=
             "The feedback message position in the list that you want to clear, try /feedbacklist to see",
@@ -562,16 +581,16 @@ async def _feedbackclear(ctx, number=None):
     name="poll",
     description="Create a poll!",
     options=[
-        manage_commands.create_option(name="question",
+        create_option(name="question",
                                       description="What is your question?",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(
+        create_option(
             name="choices",
             description="What are the choices? Separate them using /.",
             option_type=3,
             required=True),
-        manage_commands.create_option(name="mention",
+        create_option(name="mention",
                                       description="What role to mention",
                                       option_type=8,
                                       required=False)
@@ -599,7 +618,7 @@ async def _ban(ctx, member: discord.Member, *, reason=None):
     name="unban",
     description="Unbans a member",
     options=[
-        manage_commands.create_option(name="member",
+        create_option(name="member",
                                       description="Add the member name here",
                                       option_type=3,
                                       required=True)
@@ -625,7 +644,7 @@ async def _unban(ctx, argone):
     name="hello",
     description="Say hello to someone",
     options=[
-        manage_commands.create_option(
+        create_option(
             name="name",
             description='Put either "there" or the name',
             option_type=3,
@@ -647,7 +666,7 @@ async def _hello(ctx, name):
     name="say",
     description="Make the bot say anything",
     options=[
-        manage_commands.create_option(name="text",
+        create_option(name="text",
                                       description="Say your message",
                                       option_type=3,
                                       required=True)
@@ -674,7 +693,7 @@ async def _ping(ctx):
     name="8ball",
     description="Returns yes or no to your question",
     options=[
-        manage_commands.create_option(name="question",
+        create_option(name="question",
                                       description="Enter your question here",
                                       option_type=3,
                                       required=True)
@@ -716,17 +735,17 @@ async def _perseverance(ctx):
     name="password",
     description="Returns yes or no to your question",
     options=[
-        manage_commands.create_option(name="length",
+        create_option(name="length",
                                       description="How long should your password be?",
                                       option_type=4,
                                       required=True),
-        manage_commands.create_option(name="dm",
+        create_option(name="dm",
                                       description="Should I DM the password? Default False",
                                       option_type=5,
                                       required=False)
     ]
 )
-async def _password(ctx, length, dm=False):
+async def _password(ctx, length, dm=True):
     print(f"{ctx.author.name}: /password {length} {dm}")
     password_characters = string.ascii_letters + string.digits + string.punctuation
     password = []
@@ -745,11 +764,11 @@ async def _password(ctx, length, dm=False):
     name="embed",
     description="Create an embed",
     options=[
-        manage_commands.create_option(name="title",
+        create_option(name="title",
                                       description="Enter your title here",
                                       option_type=3,
                                       required=True),
-        manage_commands.create_option(name="text",
+        create_option(name="text",
                                       description="Enter your text here",
                                       option_type=3,
                                       required=True),
@@ -792,7 +811,7 @@ async def _credits(ctx):
     name="help",
     description="Shows all the possible commands and how to use them",
     options=[
-        manage_commands.create_option(
+        create_option(
             name="command",
             description=
             'Will show the specific command that you want to know about, or type "help" for all the commands',

@@ -10,8 +10,7 @@ async def get_quote():
             return (quote)
 
 
-async def inspire(ctx):
+async def inspired(ctx):
     print(f"{ctx.author.name}: /inspire")
-    await ctx.defer()
     quote = await get_quote()
-    await ctx.send(quote)
+    return quote
