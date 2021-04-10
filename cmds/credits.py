@@ -24,6 +24,11 @@ async def show_credits(ctx):
         'https://discordpy.readthedocs.io/en/latest/\nhttps://discord-py-slash-command.readthedocs.io/en/latest/',
         inline=False)
     embed.add_field(
+        name='Website:',
+        value=
+        'https://perseverance-bot.toricane.repl.co/',
+        inline=False)
+    embed.add_field(
         name='Invite the bot!',
         value=
         'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)',
