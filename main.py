@@ -98,7 +98,7 @@ async def on_message(message):
             os.execl(sys.executable, sys.executable, *sys.argv)
         else:
             await message.add_reaction('<:no:828741445069963274>')
-    
+
     await client.process_commands(message)
 
 
