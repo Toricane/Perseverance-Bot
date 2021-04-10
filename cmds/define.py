@@ -2,7 +2,7 @@ from PyDictionary import PyDictionary
 import asyncio
 
 
-async def define(ctx, word):  # noqa: C901
+async def pls_define(ctx, word):  # noqa: C901
     dictionary = PyDictionary()
     try:
         defined = dictionary.meaning(f"{word}")

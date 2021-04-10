@@ -4,7 +4,7 @@ import discord
 async def show_credits(ctx):
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.set_author(name='Credits')
-    embed.add_field(name='Created by Toricane#6391',
+    embed.add_field(name='Created by Toricane#0001',
                     value='"Thank you for using my bot!" - Toricane',
                     inline=False)
     embed.add_field(name='Hosted by Repl.it',

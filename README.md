@@ -4,4 +4,4 @@
 
 [Replit code](https://replit.com/@Toricane/Perseverance-Bot/)
 
-This is a Discord bot made by Toricane#6391. If you have any questions, please feel free to join the Discord: https://discord.gg/QFcMcCQGbU
+This is a Discord bot made by Toricane#0001. If you have any questions, please feel free to join the Discord: https://discord.gg/QFcMcCQGbU

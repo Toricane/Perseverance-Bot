@@ -1,4 +1,5 @@
 from replit import db
+import asyncio
 
 if "responding" not in db.keys():
     db["responding"] = True
@@ -27,23 +28,19 @@ async def responses_list(ctx):
     length = len(encouragements)
     await ctx.send("List of responses:")
     for x in range(0, length):
-        await ctx.send(f"{x+1}. {encouragements[x]}")
+        await ctx.channel.send(f"{x+1}. {encouragements[x]}")
+        asyncio.sleep(1)
 
 
 async def response_delete(ctx, number):
-    encouragements = []
     if "encouragements" in db.keys():
         number -= 1
         delete_encouragment(number)
-        encouragements = db["encouragements"]
     await responses_list(ctx)
 
 
 async def new_response(ctx, message):
     update_encouragements(message)
-    encouragements = []
-    if "encouragements" in db.keys():
-        encouragements = db["encouragements"]
     await ctx.send(f'New encouraging message added: {message}')
     await responses_list(ctx)
 

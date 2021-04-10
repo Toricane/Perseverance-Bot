@@ -11,6 +11,5 @@ async def get_quote():
 
 
 async def inspired(ctx):
-    print(f"{ctx.author.name}: /inspire")
     quote = await get_quote()
     return quote
