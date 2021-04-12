@@ -68,9 +68,15 @@ async def get_command_help_embed(ctx, command):
 
 async def get_all_help(ctx):
     embed = discord.Embed(colour=discord.Colour.orange())
-    embed.add_field(name="<:perseverance:828089686399778856>  List of Commands", value="Use `.help command` or `/help command` to know more about a specific command!\n**Important Links:**\n[Invite the Bot](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)")
+    embed.add_field(name="<:perseverance:828089686399778856>  List of Commands", value="Use `.help command` or `/help command` to know more about a specific command!\n**Important Links:**\n[Invite the Bot](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands) | [Discord](https://discord.gg/QFcMcCQGbU) | [Website](https://Perseverance-Bot.toricane.repl.co)")
     embed.add_field(name="<:mod:830265633542635550>  Moderation:", value="`addrole`, `removerole`, `kick`, `ban`, `unban`", inline=False)
-    embed.add_field(name="<:fun:828743810837643276>  Fun:", value="`8ball`, `say`, `hi`, `hello`, `bye`, `joke`", inline=False)
+    embed.add_field(name="<:fun:831018113293746187>  Fun:", value="`8ball`, `hi`, `hello`, `bye`, `joke`, `inspire`", inline=False)
+    embed.add_field(name="<:google:831015776893927454>  Google Related:", value="`google`, `googleimages`, `translate`, `define`, `wikipedia`", inline=False)
+    embed.add_field(name="<:text:831021740259147856>  Text Related:", value="`morsetotext`, `texttomorse`, `binarytotext`, `texttobinary`, `say`, `reciprocal`, `password`, `reverse`", inline=False)
+    embed.add_field(name="<:useful:831028975698444288>  Useful:", value="`poll`, `avatar`, `purge`, `credits`, `embed`, `nick`, `invite`", inline=False)
+    embed.add_field(name="<:feedback:831205687152345148>  Feedback:", value="`feedback`, `feedbacklist`", inline=False)
+    embed.add_field(name="<:lightbulb:831206935839506482>  Encouraging:", value="`list`, `new`", inline=False)
+    embed.add_field(name="<:miscellaneous:831207806719361065>  Miscellaneous:", value="`ping`, `perseverance`", inline=False)
     embed.set_footer(text="The prefix for the bot is both \".\" and \"/\".")
     await ctx.send(embed=embed)
 
@@ -85,3 +91,46 @@ async def help_embeds2(ctx, command):
             
     except Exception as e:
         raise e
+
+all_commands = [""" 
+  addrole       x
+  avatar        x
+  ban           x
+  binarytotext  x
+  bye           x
+  credits       x
+  define        x
+  delete        x
+  eightball     x
+  embed         x
+  feedback      x
+  feedbackclear x
+  feedbacklist  x
+  google        x
+  googleimages  x
+  hello         x
+  help          x
+  hi            x
+  inspire       x
+  invite        x
+  joke          x
+  kick          x
+  list          x
+  morsetotext   x
+  new           x
+  nick          x
+  password      x
+  perseverance  x
+  ping          x
+  poll          x
+  purge         x
+  reciprocal    x
+  removerole    x
+  reverse       x
+  say           x
+  texttobinary  x
+  texttomorse   x
+  translate     x
+  unban         x
+  wikipedia     x
+  """]

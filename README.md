@@ -5,4 +5,5 @@
 [Replit code](https://replit.com/@Toricane/Perseverance-Bot/)
 
 Perseverance is a multi-purpose bot coded in Python. It has moderation, fun, and text commands, with many more in the future. Perseverance is currently being developed by a single person. Perseverance was created on February 16, 2021 by Toricane#0001. Join Perseverance's Discord server to learn how to use it and to give feedback!
-https://discord.gg/QFcMcCQGbU
+
+[Discord Server](https://discord.gg/QFcMcCQGbU)

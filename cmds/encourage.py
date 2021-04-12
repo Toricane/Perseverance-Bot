@@ -1,5 +1,6 @@
 from replit import db
 import asyncio
+from cmds.words import words
 
 if "responding" not in db.keys():
     db["responding"] = True
@@ -40,9 +41,12 @@ async def response_delete(ctx, number):
 
 
 async def new_response(ctx, message):
-    update_encouragements(message)
-    await ctx.send(f'New encouraging message added: {message}')
-    await responses_list(ctx)
+    if words(message) == False:
+        update_encouragements(message)
+        await ctx.send(f'New encouraging message added: {message}')
+        await responses_list(ctx)
+    else:
+        await ctx.add_reaction('<:no:828741445069963274>')
 
 
 def sad_words_list():

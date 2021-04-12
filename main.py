@@ -98,6 +98,13 @@ async def on_message(message):
             os.execl(sys.executable, sys.executable, *sys.argv)
         else:
             await message.add_reaction('<:no:828741445069963274>')
+    
+    if message.guild.id == 782422624004210688:
+        if message.author.id != 811277990913769523:
+            replies = ["oh ok", "nicee", "whoa", "ok then", "rpg p", "oh hi", "whoa hi", "how", "oops", "ok", "okok", "lol"]
+            chance = random.randint(1, 10)
+            if chance > 9:
+                await message.reply(random.choice(replies), mention_author=False)
 
     await client.process_commands(message)
 
@@ -491,33 +498,6 @@ async def _joke(ctx):
 
 
 @client.command()
-async def dm(ctx, member: discord.Member, *, message):
-    print(f"{ctx.author.name}: .dm {member} {message}")
-    await member.send(message)
-    await ctx.send(f"The message was successfully sent to {member}", hidden=True)
-
-@slash.slash(
-    name="dm",
-    description="DM someone!",
-    options=[
-        create_option(name="member",
-                                      description="Who to DM",
-                                      option_type=6,
-                                      required=True),
-        create_option(name="message",
-                                      description="What to say",
-                                      option_type=3,
-                                      required=True)
-    ],
-)
-async def _dm(ctx, member: discord.Member, message):
-    print(f"{ctx.author.name}: /dm {member} {message}")
-    await member.send(message)
-    await ctx.send(f"The message was successfully sent to {member}", hidden=True)
-
-
-
-@client.command()
 async def google(ctx, text, results=5):
     print(f"{ctx.author.name}: .google {text} {results}")
     await pls_google(ctx, text, results)
@@ -695,7 +675,6 @@ async def nick(ctx, member: discord.Member, *, nick):
 )
 @commands.has_permissions(manage_nicknames=True)
 async def _nick(ctx, member: discord.Member, nick):
-    await ctx.defer()
     try:
         await member.edit(nick=nick)
         await ctx.send(f'Nickname was changed for {member.mention}.')
