@@ -75,7 +75,6 @@ async def get_all_help(ctx):
     embed.add_field(name="<:text:831021740259147856>  Text Related:", value="`morsetotext`, `texttomorse`, `binarytotext`, `texttobinary`, `say`, `reciprocal`, `password`, `reverse`", inline=False)
     embed.add_field(name="<:useful:831028975698444288>  Useful:", value="`poll`, `avatar`, `purge`, `credits`, `embed`, `nick`, `invite`", inline=False)
     embed.add_field(name="<:feedback:831205687152345148>  Feedback:", value="`feedback`, `feedbacklist`", inline=False)
-    embed.add_field(name="<:lightbulb:831206935839506482>  Encouraging:", value="`list`, `new`", inline=False)
     embed.add_field(name="<:miscellaneous:831207806719361065>  Miscellaneous:", value="`ping`, `perseverance`", inline=False)
     embed.set_footer(text="The prefix for the bot is both \".\" and \"/\".")
     await ctx.send(embed=embed)

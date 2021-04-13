@@ -28,7 +28,6 @@ from cmds.credits import show_credits
 from cmds.define import pls_define
 from cmds.eight_ball import answer
 from cmds.embed import create_embed
-from cmds.encourage import responses_list, response_delete, new_response, sad_words_list
 from cmds.feedback import create_feedback, list_feedback, delete_feedback
 from cmds.googlestuff import pls_google, pls_googleimages, pls_translate
 from cmds.help import help_embeds2
@@ -62,18 +61,6 @@ async def on_message(message):
 
     msg = message.content.lower()
 
-    if db["responding"] == True:
-        if "encouragements" in db.keys():
-            options = db["encouragements"]
-
-        if any(word in msg for word in sad_words_list()):
-            if "!" not in msg and "." not in msg and "not" not in msg and "n't" not in msg and "aint" not in msg and "never" not in msg:
-                await message.reply(random.choice(options), mention_author=False)
-
-        mention = f'<@!{client.user.id}>'
-        if mention in msg:
-            await message.reply("You mentioned me!", mention_author=False)
-
     if msg == "/setup":
         if message.author.id == 721093211577385020:
             print('/setup')
@@ -98,13 +85,6 @@ async def on_message(message):
             os.execl(sys.executable, sys.executable, *sys.argv)
         else:
             await message.add_reaction('<:no:828741445069963274>')
-    
-    if message.guild.id == 782422624004210688:
-        if message.author.id != 811277990913769523:
-            replies = ["oh ok", "nicee", "whoa", "ok then", "rpg p", "oh hi", "whoa hi", "how", "oops", "ok", "okok", "lol"]
-            chance = random.randint(1, 10)
-            if chance > 9:
-                await message.reply(random.choice(replies), mention_author=False)
 
     await client.process_commands(message)
 
@@ -130,7 +110,7 @@ async def on_guild_remove(guild):
 
 @client.event
 async def on_member_join(member):
-    print(f'{member} has joined a server!')
+    print(f'{member} has joined {member.guild.name}')
     if member.guild.id == 820419188866547712:
         role = "Shark"
         await member.add_roles(discord.utils.get(member.guild.roles,
@@ -139,7 +119,7 @@ async def on_member_join(member):
 
 @client.event
 async def on_member_remove(member):
-    print(f'{member} has left a server.')
+    print(f'{member} has left {member.guild.name}')
 
 
 @client.event
@@ -215,70 +195,6 @@ async def _bye(ctx):
     print(f"{ctx.author.name}: /bye")
     await ctx.defer()
     await ctx.send('Bye!')
-
-
-
-@client.command(name="list")
-async def ext_list(ctx):
-    print(f"{ctx.author.name}: .list")
-    await responses_list(ctx)
-
-@slash.slash(
-    name="list",
-    description="Lists the encouraging messages",
-)
-async def _list(ctx):
-    await ctx.defer()
-    print(f"{ctx.author.name}: /list")
-    await responses_list(ctx)
-
-
-
-@client.command(aliases=["del"])
-async def delete(ctx, number):
-    if ctx.author.id == 721093211577385020:
-        print(f"{ctx.author.name}: /delete {number}")
-        await response_delete(ctx, number)
-
-@slash.slash(
-    name="delete",
-    description="Deletes an encouraging message, /list to see",
-    options=[
-        create_option(
-            name="number",
-            description=
-            "The encouraging message's position in the list that you want to delete, try /list to see",
-            option_type=4,
-            required=True)
-    ],
-)
-async def _delete(ctx, number):
-    if ctx.author.id == 721093211577385020:
-        print(f"{ctx.author.name}: /delete {number}")
-        await ctx.defer()
-        await response_delete(ctx, number)
-
-
-
-@client.command()
-async def new(ctx, message):
-    print(f"{ctx.author.name}: .new {message}")
-    await new_response(ctx, message)
-
-@slash.slash(
-    name="new",
-    description="Add a new encouraging message",
-    options=[
-        create_option(name="message",
-                                      description="Add it here",
-                                      option_type=3,
-                                      required=True)
-    ],
-)
-async def _new(ctx, message):
-    print(f"{ctx.author.name}: /new {message}")
-    await ctx.defer()
-    await new_response(ctx, message)
 
 
 
