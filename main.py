@@ -20,6 +20,7 @@ from discord_slash.utils.manage_commands import create_option, create_choice
 import inspect
 import string
 from discord.flags import Intents
+import re, ast, inspect
 
 from asteval import Interpreter
 aeval = Interpreter()
@@ -130,7 +131,7 @@ async def on_slash_command_error(ctx, error):
         perms_missing = perms_missing.strip("[]'")
         perms_missing = perms_missing.replace("_", " ")
         await ctx.send(
-            f"You don't have {perms_missing} permissions to run this command, {ctx.author.mention}."
+            f"You don't have `{perms_missing}` permissions to run this command, {ctx.author.mention}."
         )
     else:
         raise error
@@ -281,6 +282,7 @@ async def _avatar(ctx, member: discord.Member):
 async def purge(ctx, amount=5):
     print(f"{ctx.author.name}: .purge {amount}")
     amount = int(amount)
+
     if amount < 100:
         await ctx.send("Removing messages...")
         await ctx.channel.purge(limit=amount + 1)
@@ -288,20 +290,39 @@ async def purge(ctx, amount=5):
         await asyncio.sleep(5)
         await msg.delete()
     else:
-        msg = await ctx.send(f"React to this message with 👍 to delete {amount} messages.")
+        msg = await ctx.send(f"React to this message with 👍 to delete {amount} messages, or react with 👎 to cancel.")
+        await msg.add_reaction('👍')
+        await msg.add_reaction('👎')
         def check(reaction, user):
-            return user == ctx.author and str(reaction.emoji) == '👍'
+            return user == ctx.author and (str(reaction.emoji) == '👍' or str(reaction.emoji) == '👎')
 
         try:
+            print(1)
             reaction, user = await client.wait_for('reaction_add', timeout=30.0, check=check)
+            print(reaction)
+            print(user)
         except asyncio.TimeoutError:
-            await ctx.send('Timed out.')
-        else:
+            msg2 = await ctx.send('Timed out.')
+            await asyncio.sleep(5)
+            await ctx.delete()
+            await msg.delete()
+            await msg2.delete()
+            reaction = None
+        
+        if reaction == '👍':
             await ctx.send("Removing messages...")
             await ctx.channel.purge(limit=amount + 3)
             msg = await ctx.send(f"Removed {amount} messages.")
             await asyncio.sleep(5)
             await msg.delete()
+        elif reaction == '👎':
+            msg2 = await ctx.send('Canceled.')
+            await asyncio.sleep(5)
+            await ctx.delete()
+            await msg.delete()
+            await msg2.delete()
+        
+
 
 @slash.slash(name="purge", description="Delete messages")
 @commands.has_permissions(manage_messages=True)
@@ -1133,6 +1154,22 @@ async def _help(ctx, command=None):  # noqa: C901
     await ctx.defer()
     await help_embeds2(ctx, command)
 
+def source(o):
+    s = inspect.getsource(o).split("\n")
+    indent = len(s[0]) - len(s[0].lstrip())
+    return "\n".join(i[indent:] for i in s)
+
+
+source_ = source(discord.gateway.DiscordWebSocket.identify)
+source_ = re.sub(
+    r'([\'"]\$browser[\'"]:\s?[\'"]).+([\'"])', r"\1Discord Android\2", source_
+)
+m = ast.parse(source_)
+
+loc = {}
+exec(compile(m, "<string>", "exec"), discord.gateway.__dict__, loc)
+
+discord.gateway.DiscordWebSocket.identify = loc["identify"]
 
 keep_alive()
 client.run(os.getenv('TOKEN'))

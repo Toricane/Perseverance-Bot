@@ -26,7 +26,7 @@ async def show_credits(ctx):
     embed.add_field(
         name='Website:',
         value=
-        'https://perseverance-bot.toricane.repl.co/',
+        'https://PerseveranceBot.repl.co',
         inline=False)
     embed.add_field(
         name='Invite the bot!',

@@ -24,7 +24,7 @@ lxml = "^4.6.2"
 "discord.py" = "^1.6.0"
 asteval = "^0.9.23"
 contextlib3 = "^3.10.0"
-discord-py-slash-command = "^1.1.1"
+discord-py-slash-command = "^1.1.2"
 
 [tool.poetry.dev-dependencies]
 
