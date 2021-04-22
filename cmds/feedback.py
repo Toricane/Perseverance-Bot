@@ -1,4 +1,5 @@
 from cmds.reply import maybe_reply
+import discord
 
 async def create_feedback(ctx, feedback):
     idea = ctx.author.mention
@@ -17,7 +18,7 @@ async def list_feedback(ctx):
             x += 1
             idea, feedback = line.split("§")
             try:
-                await ctx.channel.send(f"{x}. {idea}: {feedback}")
+                await ctx.channel.send(f"{x}. {idea}: {feedback}", allowed_mentions=discord.AllowedMentions.none())
             except Exception as e:
                 print(str(e))
 

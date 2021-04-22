@@ -1,6 +1,7 @@
 import subprocess
 
 list_files = subprocess.run(["pip", "install", "googletrans==3.1.0a0"])
+list_files = subprocess.run(["pip", "install", "sqlite"])
 
 import os
 import discord
@@ -17,7 +18,6 @@ import datetime
 import wikipedia as wiki
 import pyjokes
 from discord_slash.utils.manage_commands import create_option, create_choice
-import inspect
 import string
 from discord.flags import Intents
 import re, ast, inspect
@@ -36,11 +36,16 @@ from cmds.inspire import inspired
 from cmds.poll import create_poll
 from cmds.morse import encrypt, decrypt
 from cmds.reply import maybe_reply as meply
+from cmds.purge import purge_msgs
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('discord')
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
-client = commands.Bot(command_prefix=".", intents=Intents.all(), help_command=None)
-slash = SlashCommand(client, sync_commands=True)
+bot = commands.Bot(command_prefix=".", intents=Intents.all(), help_command=None)
+slash = SlashCommand(bot, sync_commands=True)
 status = cycle([
     '/help or .help', 'your messages', '/help or .help', 'Never Gonna Give You Up',
     '/help or .help', 'hello there!'
@@ -48,16 +53,16 @@ status = cycle([
 
 guild_ids = db["id"]
 
-@client.event
+@bot.event
 async def on_ready():
     change_status.start()
-    print('We have logged in as {0.user}'.format(client))
+    print('We have logged in as {0.user}'.format(bot))
     timestamp = datetime.datetime.now()
     print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
     print(guild_ids)
 
 
-@client.event
+@bot.event
 async def on_message(message):
 
     msg = message.content.lower()
@@ -87,10 +92,10 @@ async def on_message(message):
         else:
             await message.add_reaction('<:no:828741445069963274>')
 
-    await client.process_commands(message)
+    await bot.process_commands(message)
 
 
-@client.event
+@bot.event
 async def on_guild_join(guild):
     for channel in guild.text_channels:
         if channel.permissions_for(guild.me).send_messages:
@@ -100,7 +105,7 @@ async def on_guild_join(guild):
         break
 
 
-@client.event
+@bot.event
 async def on_guild_remove(guild):
     ido = int(guild.id)
     ids = db["id"]
@@ -109,7 +114,7 @@ async def on_guild_remove(guild):
     print(db["id"])
 
 
-@client.event
+@bot.event
 async def on_member_join(member):
     print(f'{member} has joined {member.guild.name}')
     if member.guild.id == 820419188866547712:
@@ -118,12 +123,12 @@ async def on_member_join(member):
                                                  name=role))
 
 
-@client.event
+@bot.event
 async def on_member_remove(member):
     print(f'{member} has left {member.guild.name}')
 
 
-@client.event
+@bot.event
 async def on_slash_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.MissingPermissions):
         perms_missing = error.missing_perms
@@ -137,7 +142,7 @@ async def on_slash_command_error(ctx, error):
         raise error
 
 
-@client.event
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.MissingPermissions):
         perms_missing = error.missing_perms
@@ -153,12 +158,12 @@ async def on_command_error(ctx, error):
 
 @tasks.loop(seconds=15)
 async def change_status():
-    await client.change_presence(activity=discord.Activity(
+    await bot.change_presence(activity=discord.Activity(
         type=discord.ActivityType.watching, name=next(status)))
 
 
 
-@client.command()
+@bot.command()
 async def inspire(ctx):
     print(f"{ctx.author.name}: .inspire")
     quoted = await inspired(ctx)
@@ -174,7 +179,7 @@ async def _inspire(ctx):
 
 
 
-@client.command()
+@bot.command()
 async def hi(ctx):
     await meply(ctx, "Hello!")
 
@@ -186,7 +191,7 @@ async def _hi(ctx):
 
 
 
-@client.command()
+@bot.command()
 async def bye(ctx):
     print(f"{ctx.author.name}: .bye")
     await meply(ctx, "Bye!")
@@ -199,7 +204,7 @@ async def _bye(ctx):
 
 
 
-@client.command()
+@bot.command()
 async def run(ctx, *, code):
     print(f"{ctx.author.name}: .run {code}")
     try:
@@ -242,7 +247,7 @@ async def _run(ctx, code):
 
 
 
-@client.command(aliases=["pfp"])
+@bot.command(aliases=["pfp"])
 async def avatar(ctx, member: discord.Member):
     print(f"{ctx.author.name}: .avatar {member}")
     try:
@@ -277,50 +282,11 @@ async def _avatar(ctx, member: discord.Member):
 
 
 
-@client.command()
+@bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, amount=5):
     print(f"{ctx.author.name}: .purge {amount}")
-    amount = int(amount)
-
-    if amount < 100:
-        await ctx.send("Removing messages...")
-        await ctx.channel.purge(limit=amount + 1)
-        msg = await ctx.send(f"Removed {amount} messages.")
-        await asyncio.sleep(5)
-        await msg.delete()
-    else:
-        msg = await ctx.send(f"React to this message with 👍 to delete {amount} messages, or react with 👎 to cancel.")
-        await msg.add_reaction('👍')
-        await msg.add_reaction('👎')
-        def check(reaction, user):
-            return user == ctx.author and (str(reaction.emoji) == '👍' or str(reaction.emoji) == '👎')
-
-        try:
-            print(1)
-            reaction, user = await client.wait_for('reaction_add', timeout=30.0, check=check)
-            print(reaction)
-            print(user)
-        except asyncio.TimeoutError:
-            msg2 = await ctx.send('Timed out.')
-            await asyncio.sleep(5)
-            await ctx.delete()
-            await msg.delete()
-            await msg2.delete()
-            reaction = None
-        
-        if reaction == '👍':
-            await ctx.send("Removing messages...")
-            await ctx.channel.purge(limit=amount + 3)
-            msg = await ctx.send(f"Removed {amount} messages.")
-            await asyncio.sleep(5)
-            await msg.delete()
-        elif reaction == '👎':
-            msg2 = await ctx.send('Canceled.')
-            await asyncio.sleep(5)
-            await ctx.delete()
-            await msg.delete()
-            await msg2.delete()
+    await purge_msgs(ctx, amount, bot)
         
 
 
@@ -329,16 +295,11 @@ async def purge(ctx, amount=5):
 async def _purge(ctx, amount=5):
     print(f"{ctx.author.name}: /purge {amount}")
     await ctx.defer()
-    amount = int(amount)
-    await ctx.send("Removing messages...")
-    await ctx.channel.purge(limit=amount + 1)
-    msg = await ctx.channel.send(f"Removed {amount} messages.")
-    await asyncio.sleep(5)
-    await msg.delete()
+    await purge_msgs(ctx, amount, bot)
 
 
 
-@client.command()
+@bot.command()
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason=None):
     print(f"{ctx.author.name}: .kick {member} {reason}")
@@ -355,7 +316,7 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
 
 
 
-@client.command(aliases=["wiki"], description="Searches for something on wikipedia")
+@bot.command(aliases=["wiki"], description="Searches for something on wikipedia")
 async def wikipedia(ctx, text: str, results: int=1, lines: int=5):
     print(f"{ctx.author.name}: .wikipedia {text} {results} {lines}")
     result = wiki.search(text, results)
@@ -421,7 +382,7 @@ async def _wikipedia(ctx, text, results=1, lines=5):
 
 
 
-@client.command()
+@bot.command()
 async def joke(ctx):
     print(f"{ctx.author.name}: .joke")
     await ctx.send(pyjokes.get_joke())
@@ -434,7 +395,7 @@ async def _joke(ctx):
 
 
 
-@client.command()
+@bot.command()
 async def google(ctx, text, results=5):
     print(f"{ctx.author.name}: .google {text} {results}")
     await pls_google(ctx, text, results)
@@ -461,7 +422,7 @@ async def _google(ctx, text, results=5):
 
 
 
-@client.command(aliases=["gpics"])
+@bot.command(aliases=["gpics"])
 async def googleimages(ctx, text, results: int=5):
     print(f"{ctx.author.name}: /googleimages {text} {results}")
     await pls_googleimages(ctx, text, results)
@@ -488,7 +449,7 @@ async def _googleimages(ctx, text, results=5):
 
 
 
-@client.command()
+@bot.command()
 async def translate(ctx, text, output_lang="en", input_lang=None):
     print(f"{ctx.author.name}: /translate {text} {output_lang} {input_lang}")
     await pls_translate(ctx, text, output_lang, input_lang)
@@ -520,7 +481,7 @@ async def _translate(ctx, text, output_lang="en", input_lang=None):
 
 
 
-@client.command(aliases=["def"])
+@bot.command(aliases=["def"])
 async def define(ctx, word):
     print(f"{ctx.author.name}: .define {word}")
     await pls_define(ctx, word)
@@ -542,7 +503,7 @@ async def _define(ctx, word):  # noqa: C901
 
 
 
-@client.command(aliases=["r", "rev"])
+@bot.command(aliases=["r", "rev"])
 async def reverse(ctx, *, text):
     await ctx.send(text[::-1])
 
@@ -562,7 +523,7 @@ async def _reverse(ctx, text):
 
 
 
-@client.command(aliases=["reci"])
+@bot.command(aliases=["reci"])
 async def reciprocal(ctx, *, fraction):
     print(f"{ctx.author.name}: .reciprocal {fraction}")
     fr1, fr2 = fraction.split("/")
@@ -580,13 +541,12 @@ async def reciprocal(ctx, *, fraction):
 )
 async def _reciprocal(ctx, fraction):
     print(f"{ctx.author.name}: /reciprocal")
-    await ctx.defer()
     fr1, fr2 = fraction.split("/")
     await ctx.send(f"{fr2}/{fr1}")
 
 
 
-@client.command(aliases=["nickname"])
+@bot.command(aliases=["nickname"])
 @commands.has_permissions(manage_nicknames=True)
 async def nick(ctx, member: discord.Member, *, nick):
     try:
@@ -621,7 +581,7 @@ async def _nick(ctx, member: discord.Member, nick):
 
 
 
-@client.command(aliases=["ar"])
+@bot.command(aliases=["ar"])
 @commands.has_permissions(manage_roles=True)
 async def addrole(ctx, member: discord.Member, role: discord.Role):
     print(f"{ctx.author.name}: .addrole {member} {role}")
@@ -631,13 +591,14 @@ async def addrole(ctx, member: discord.Member, role: discord.Role):
 @slash.slash(name="addrole", description="Adds a role")
 @commands.has_permissions(manage_roles=True)
 async def _addrole(ctx, member: discord.Member, role: discord.Role):
+    print(f"{ctx.author.name}: /addrole {member} {role}")
     await ctx.defer()
     await member.add_roles(role)
     await ctx.send(f"{member.mention} got the {role} role.")
 
 
 
-@client.command(aliases=["rr"])
+@bot.command(aliases=["rr"])
 @commands.has_permissions(manage_roles=True)
 async def removerole(ctx, member: discord.Member, role: discord.Role):
     print(f"{ctx.author.name}: .removerole {member} {role}")
@@ -653,9 +614,8 @@ async def _removerole(ctx, member: discord.Member, role: discord.Role):
 
 
 
-@client.command(aliases=["fb"])
+@bot.command(aliases=["fb"])
 async def feedback(ctx, *, feedback):
-    await ctx.defer()
     print(f"{ctx.author.name}: .feedback {feedback}")
     await create_feedback(ctx, feedback)
 
@@ -671,12 +631,11 @@ async def feedback(ctx, *, feedback):
 )
 async def _feedback(ctx, feedback):
     print(f"{ctx.author.name}: /feedback {feedback}")
-    await ctx.defer()
     await create_feedback(ctx, feedback)
 
 
 
-@client.command(aliases=["fblist"])
+@bot.command(aliases=["fblist"])
 async def feedbacklist(ctx):
     print(f"{ctx.author.name}: .feedbacklist")
     await ctx.send("List of feedbacks:")
@@ -691,7 +650,7 @@ async def _feedbacklist(ctx):
 
 
 
-@client.command(aliases=["fbclear"])
+@bot.command(aliases=["fbclear"])
 async def feedbackclear(ctx, number=None):
     print(f"{ctx.author.name}: /feedbackclear {number}")
     await delete_feedback(ctx, number)
@@ -715,7 +674,7 @@ async def _feedbackclear(ctx, number=None):
 
 
 
-@client.command()
+@bot.command()
 async def poll(ctx, question, choices, mention=None):  # noqa: C901
     print(f"{ctx.author.name}: /poll {question} {choices} {mention}")
     await create_poll(ctx, question, choices, mention)
@@ -749,7 +708,7 @@ async def _poll(ctx, question, choices, mention=None):  # noqa: C901
 
 
 
-@client.command()
+@bot.command()
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason=None):
     print(f"{ctx.author.name}: /ban {member} {reason}")
@@ -766,7 +725,7 @@ async def _ban(ctx, member: discord.Member, reason=None):
 
 
 
-@client.command()
+@bot.command()
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, member):
     print(f"{ctx.author.name}: .unban {member}")
@@ -808,7 +767,7 @@ async def _unban(ctx, member):
 
 
 
-@client.command()
+@bot.command()
 async def hello(ctx, *, name):
     print(f"{ctx.author.name}: .hello {name}")
     name = name.capitalize()
@@ -840,11 +799,12 @@ async def _hello(ctx, name):
 
 
 
-@client.command()
+@bot.command()
 async def say(ctx, *, text):
     print(f"{ctx.author.name}: .say {text}")
-    await ctx.send(text)
+    await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
     await ctx.message.delete()
+    logger.info(f"{ctx.author.name}: .say {text}")
 
 @slash.slash(
     name="say",
@@ -858,26 +818,26 @@ async def say(ctx, *, text):
 )
 async def _say(ctx, text):
     print(f"{ctx.author.name}: /say {text}")
-    msg = await ctx.send(text)
+    msg = await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
     await msg.delete()
-    await ctx.channel.send(text)
+    await ctx.channel.send(text, allowed_mentions=discord.AllowedMentions.none())
 
 
 
-@client.command()
+@bot.command()
 async def ping(ctx):
     print(f"{ctx.author.name}: /ping")
-    await ctx.send(f'Pong! {round(client.latency * 1000)}ms.')
+    await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 @slash.slash(name="ping", description="This returns the bot latency")
 async def _ping(ctx):
     print(f"{ctx.author.name}: .ping")
     await ctx.defer()
-    await ctx.send(f'Pong! {round(client.latency * 1000)}ms.')
+    await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 
 
-@client.command(aliases=["8ball"])
+@bot.command(aliases=["8ball"])
 async def eightball(ctx, *, question):
     print(f"{ctx.author.name}: .8ball {question}")
     await ctx.send(answer())
@@ -899,7 +859,7 @@ async def _8ball(ctx, question):
 
 
 
-@client.command()
+@bot.command()
 async def invite(ctx):
     print(f"{ctx.author.name}: .invite")
     embed = discord.Embed(colour=discord.Colour.orange())
@@ -924,7 +884,7 @@ async def _invite(ctx):
 
 
 
-@client.command()
+@bot.command()
 async def perseverance(ctx):
     print(f"{ctx.author.name}: .perseverance")
     await ctx.send("Profile Picture:")
@@ -941,7 +901,7 @@ async def _perseverance(ctx):
 
 
 
-@client.command(aliases=["pw", "pass"])
+@bot.command(aliases=["pw", "pass"])
 async def password(ctx, length: int, dm=False):
     print(f"{ctx.author.name}: .password {length} {dm}")
     if dm == "true" or dm == "yes":
@@ -990,7 +950,7 @@ async def _password(ctx, length, dm=False):
 
 
 
-@client.command(aliases=["btt"])
+@bot.command(aliases=["btt"])
 async def binarytotext(ctx, *, text):
     ascii_string = "".join([chr(int(binary, 2)) for binary in text.split(" ")])
     await ctx.reply(f"```py\n{ascii_string}```")
@@ -1012,7 +972,7 @@ async def binaryToText(ctx, text):
 
 
 
-@client.command(aliases=["ttb"])
+@bot.command(aliases=["ttb"])
 async def texttobinary(ctx, *, text):
     res = ' '.join(format(ord(i), '08b') for i in text)
     await ctx.reply(f"```py\n{res}```")
@@ -1034,7 +994,7 @@ async def _texttobinary(ctx, text):
 
 
 
-@client.command(aliases=["ttm"])
+@bot.command(aliases=["ttm"])
 async def texttomorse(ctx, *, message):
     result = encrypt(message.upper())
     await ctx.reply(f"```py\n{result}```")
@@ -1055,7 +1015,7 @@ async def _texttomorse(ctx, message):
 
 
 
-@client.command(aliases=["mtt"])
+@bot.command(aliases=["mtt"])
 async def morsetotext(ctx, *, message):
     result = decrypt(message)
     await ctx.reply(f"```py\n{result}```")
@@ -1076,7 +1036,7 @@ async def _morsetotext(ctx, message):
 
 
 
-@client.command()
+@bot.command()
 async def embed(ctx, title, text, color="default"):
     print(f"{ctx.author.name}: .embed {title} {text} {color}")
     await create_embed(ctx, title, text, color)
@@ -1119,7 +1079,7 @@ async def _embed(ctx, title, text, color="default"):
 
 
 
-@client.command(aliases=["info", "about"])
+@bot.command(aliases=["info", "about"])
 async def credits(ctx):
     print(f"{ctx.author.name}: .credits")
     await show_credits(ctx)
@@ -1132,7 +1092,7 @@ async def _credits(ctx):
 
 
 
-@client.command(aliases=["h"])
+@bot.command(aliases=["h"])
 async def help(ctx, *, command=None):
     print(f"{ctx.author.name}: .help {command}")
     await help_embeds2(ctx, command)
@@ -1172,4 +1132,4 @@ exec(compile(m, "<string>", "exec"), discord.gateway.__dict__, loc)
 discord.gateway.DiscordWebSocket.identify = loc["identify"]
 
 keep_alive()
-client.run(os.getenv('TOKEN'))
+bot.run(os.getenv('TOKEN'))

@@ -81,9 +81,9 @@ async def get_all_help(ctx):
 
 async def help_embeds2(ctx, command):
     try:
-        if command != None:
+        if command != None and any(map(command.__contains__,list(help_dict_list.keys()))):
             command = command.lower()
-        if command != None and command in list(help_dict_list.keys()):
+            command = command.replace(" ", "")
             await get_command_help_embed(ctx, command)
         else:
             await get_all_help(ctx)

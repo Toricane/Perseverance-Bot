@@ -8,7 +8,7 @@ async def show_credits(ctx):
                     value='"Thank you for using my bot!" - Toricane',
                     inline=False)
     embed.add_field(name='Hosted by Repl.it',
-                    value='https://repl.it/@Toricane/Perseverance-Bot#main.py',
+                    value='https://replit.com/@PerseveranceBot/PerseveranceBot',
                     inline=False)
     embed.add_field(name='Saved in GitHub',
                     value='https://github.com/Toricane/Perseverance-Bot/',
