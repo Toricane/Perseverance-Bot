@@ -37,6 +37,7 @@ from cmds.poll import create_poll
 from cmds.morse import encrypt, decrypt
 from cmds.reply import maybe_reply as meply
 from cmds.purge import purge_msgs
+from cmds.ytactivity import group_say
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)
@@ -56,10 +57,13 @@ guild_ids = db["id"]
 @bot.event
 async def on_ready():
     change_status.start()
-    print('We have logged in as {0.user}'.format(bot))
+    logger.info('We have logged in as {0.user}'.format(bot))
+    logger.info('We have logged in as {0.user}'.format(bot))
     timestamp = datetime.datetime.now()
-    print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
-    print(guild_ids)
+    logger.info(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
+    logger.info(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
+    logger.info(f"guild_ids={guild_ids}")
+    logger.info(f"guild_ids={guild_ids}")
 
 
 @bot.event
@@ -69,13 +73,13 @@ async def on_message(message):
 
     if msg == "/setup":
         if message.author.id == 721093211577385020:
-            print('/setup')
+            logger.info('/setup')
             ido = message.guild.id
             if ido not in db["id"]:
                 ids = db["id"]
                 ids.append(ido)
                 db["id"] = ids
-                print(db["id"])
+                logger.info(db["id"])
                 await message.reply(
                     "Server has been set up! The bot is restarting! If the error persists, contact Toricane#0001 in Discord to restart the bot!"
                 )
@@ -111,12 +115,12 @@ async def on_guild_remove(guild):
     ids = db["id"]
     ids.remove(ido)
     db["id"] = ids
-    print(db["id"])
+    logger.info(db["id"])
 
 
 @bot.event
 async def on_member_join(member):
-    print(f'{member} has joined {member.guild.name}')
+    logger.info(f'{member} has joined {member.guild.name}')
     if member.guild.id == 820419188866547712:
         role = "Shark"
         await member.add_roles(discord.utils.get(member.guild.roles,
@@ -125,7 +129,7 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-    print(f'{member} has left {member.guild.name}')
+    logger.info(f'{member} has left {member.guild.name}')
 
 
 @bot.event
@@ -165,7 +169,7 @@ async def change_status():
 
 @bot.command()
 async def inspire(ctx):
-    print(f"{ctx.author.name}: .inspire")
+    logger.info(f"{ctx.author.name}: .inspire")
     quoted = await inspired(ctx)
     await meply(ctx, quoted)
 
@@ -173,7 +177,7 @@ async def inspire(ctx):
              description="The bot will send a random inspirational quote")
 async def _inspire(ctx):
     await ctx.defer()
-    print(f"{ctx.author.name}: /inspire")
+    logger.info(f"{ctx.author.name}: /inspire")
     quoted = await inspired(ctx)
     await meply(ctx, quoted)
 
@@ -186,19 +190,19 @@ async def hi(ctx):
 @slash.slash(name="hi", description="The bot will say hello to you")
 async def _hi(ctx):
     await ctx.defer()
-    print(f"{ctx.author.name}: /hi")
+    logger.info(f"{ctx.author.name}: /hi")
     await ctx.send('Hello!')
 
 
 
 @bot.command()
 async def bye(ctx):
-    print(f"{ctx.author.name}: .bye")
+    logger.info(f"{ctx.author.name}: .bye")
     await meply(ctx, "Bye!")
 
 @slash.slash(name="bye", description="The bot will say bye to you")
 async def _bye(ctx):
-    print(f"{ctx.author.name}: /bye")
+    logger.info(f"{ctx.author.name}: /bye")
     await ctx.defer()
     await ctx.send('Bye!')
 
@@ -206,7 +210,7 @@ async def _bye(ctx):
 
 @bot.command()
 async def run(ctx, *, code):
-    print(f"{ctx.author.name}: .run {code}")
+    logger.info(f"{ctx.author.name}: .run {code}")
     try:
         if ctx.author.id == 721093211577385020:
             res = eval(code)
@@ -219,7 +223,7 @@ async def run(ctx, *, code):
         else:
             await ctx.message.add_reaction('<:no:828741445069963274>')
     except Exception as e:
-        print(str(e))
+        logger.info(str(e))
 
 @slash.slash(
     name="run",
@@ -232,7 +236,7 @@ async def run(ctx, *, code):
     ],
 )
 async def _run(ctx, code):
-    print(f"{ctx.author.name}: /run {code}")
+    logger.info(f"{ctx.author.name}: /run {code}")
     try:
         if ctx.author.id == 721093211577385020:
             res = eval(code)
@@ -243,13 +247,13 @@ async def _run(ctx, code):
         else:
             await ctx.send("No.")
     except Exception as e:
-        print(str(e))
+        logger.info(str(e))
 
 
 
 @bot.command(aliases=["pfp"])
 async def avatar(ctx, member: discord.Member):
-    print(f"{ctx.author.name}: .avatar {member}")
+    logger.info(f"{ctx.author.name}: .avatar {member}")
     try:
         embed = discord.Embed(colour=discord.Colour.orange())
         url = member.avatar_url
@@ -257,7 +261,7 @@ async def avatar(ctx, member: discord.Member):
         embed.set_image(url=url)
         await ctx.send(embed=embed)
     except Exception as e:
-        print(str(e))
+        logger.info(str(e))
 
 @slash.slash(
     name="avatar",
@@ -270,7 +274,7 @@ async def avatar(ctx, member: discord.Member):
     ],
 )
 async def _avatar(ctx, member: discord.Member):
-    print(f"{ctx.author.name}: /avatar {member}")
+    logger.info(f"{ctx.author.name}: /avatar {member}")
     try:
         embed = discord.Embed(colour=discord.Colour.orange())
         url = member.avatar_url
@@ -278,38 +282,59 @@ async def _avatar(ctx, member: discord.Member):
         embed.set_image(url=url)
         await ctx.send(embed=embed)
     except Exception as e:
-        print(str(e))
+        logger.info(str(e))
 
 
 
 @bot.command()
-@commands.has_permissions(manage_messages=True)
-async def purge(ctx, amount=5):
-    print(f"{ctx.author.name}: .purge {amount}")
-    await purge_msgs(ctx, amount, bot)
-        
+async def yt(ctx, channel : discord.ChannelType):
+    await group_say(ctx, channel)
+
+@slash.slash(name="yt", description="Watch YouTube", options=[
+        create_option(name="channel",
+                                      description="Voice Channel",
+                                      option_type=7,
+                                      required=True)
+    ])
+async def _yt(ctx, channel : discord.ChannelType):
+    await group_say(ctx, channel)
 
 
-@slash.slash(name="purge", description="Delete messages")
+@bot.command()
 @commands.has_permissions(manage_messages=True)
-async def _purge(ctx, amount=5):
-    print(f"{ctx.author.name}: /purge {amount}")
+async def purge(ctx, amount=5, user : discord.Member=None):
+    logger.info(f"{ctx.author.name}: .purge {amount}")
+    await purge_msgs(ctx, amount, usere=user, client=bot, method="dpy")
+
+@slash.slash(name="purge", description="Delete messages", options=[
+        create_option(name="amount",
+                                      description="Amount or range of messages to delete",
+                                      option_type=4,
+                                      required=True),
+        create_option(name="user",
+                                      description="Who's messages to delete",
+                                      option_type=6,
+                                      required=False)
+    ])
+@commands.has_permissions(manage_messages=True)
+async def _purge(ctx, amount=5, user=None):
+    logger.info(f"{ctx.author.name}: /purge {amount}")
     await ctx.defer()
-    await purge_msgs(ctx, amount, bot)
+    await purge_msgs(ctx, amount, user=user, client=bot, method="dpy")
 
 
 
 @bot.command()
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason=None):
-    print(f"{ctx.author.name}: .kick {member} {reason}")
+    logger.info(f"{ctx.author.name}: .kick {member} {reason}")
     await member.kick(reason=reason)
     await ctx.send(f"Kicked {member} because {reason}.")
 
 @slash.slash(name="kick", description="Kicks a member")
 @commands.has_permissions(kick_members=True)
 async def _kick(ctx, member: discord.Member, *, reason=None):
-    print(f"{ctx.author.name}: /kick {member} {reason}")
+    logger.info(f"{ctx.author.name}: /kick {member} {reason}")
     await ctx.defer()
     await member.kick(reason=reason)
     await ctx.send(f"Kicked {member} because {reason}.")
@@ -318,7 +343,7 @@ async def _kick(ctx, member: discord.Member, *, reason=None):
 
 @bot.command(aliases=["wiki"], description="Searches for something on wikipedia")
 async def wikipedia(ctx, text: str, results: int=1, lines: int=5):
-    print(f"{ctx.author.name}: .wikipedia {text} {results} {lines}")
+    logger.info(f"{ctx.author.name}: .wikipedia {text} {results} {lines}")
     result = wiki.search(text, results)
     try:
         end = random.choice(result)
@@ -332,7 +357,7 @@ async def wikipedia(ctx, text: str, results: int=1, lines: int=5):
     except discord.errors.NotFound:
         await ctx.send("Please try again.")
     except Exception as e:
-        print(e)
+        logger.info(e)
         await ctx.send(
             "ERROR, there may be too many to choose from, or a module error.")
         await ctx.send(f"ERROR: {e}")
@@ -360,7 +385,7 @@ async def wikipedia(ctx, text: str, results: int=1, lines: int=5):
     ],
 )
 async def _wikipedia(ctx, text, results=1, lines=5):
-    print(f"{ctx.author.name}: /wikipedia {text} {results} {lines}")
+    logger.info(f"{ctx.author.name}: /wikipedia {text} {results} {lines}")
     await ctx.defer()
     result = wiki.search(text, results)
     try:
@@ -375,7 +400,7 @@ async def _wikipedia(ctx, text, results=1, lines=5):
     except discord.errors.NotFound:
         await ctx.send("Please try again.")
     except Exception as e:
-        print(e)
+        logger.info(e)
         await ctx.send(
             "ERROR, there may be too many to choose from, or a module error.")
         await ctx.send(f"ERROR: {e}")
@@ -384,12 +409,12 @@ async def _wikipedia(ctx, text, results=1, lines=5):
 
 @bot.command()
 async def joke(ctx):
-    print(f"{ctx.author.name}: .joke")
+    logger.info(f"{ctx.author.name}: .joke")
     await ctx.send(pyjokes.get_joke())
 
 @slash.slash(name="joke", description="Gives you a joke")
 async def _joke(ctx):
-    print(f"{ctx.author.name}: /joke")
+    logger.info(f"{ctx.author.name}: /joke")
     await ctx.defer()
     await ctx.send(pyjokes.get_joke())
 
@@ -397,7 +422,7 @@ async def _joke(ctx):
 
 @bot.command()
 async def google(ctx, text, results=5):
-    print(f"{ctx.author.name}: .google {text} {results}")
+    logger.info(f"{ctx.author.name}: .google {text} {results}")
     await pls_google(ctx, text, results)
 
 @slash.slash(
@@ -416,7 +441,7 @@ async def google(ctx, text, results=5):
     ],
 )
 async def _google(ctx, text, results=5):
-    print(f"{ctx.author.name}: /google {text} {results}")
+    logger.info(f"{ctx.author.name}: /google {text} {results}")
     await ctx.defer()
     await pls_google(ctx, text, results)
 
@@ -424,7 +449,7 @@ async def _google(ctx, text, results=5):
 
 @bot.command(aliases=["gpics"])
 async def googleimages(ctx, text, results: int=5):
-    print(f"{ctx.author.name}: /googleimages {text} {results}")
+    logger.info(f"{ctx.author.name}: /googleimages {text} {results}")
     await pls_googleimages(ctx, text, results)
 
 @slash.slash(
@@ -443,7 +468,7 @@ async def googleimages(ctx, text, results: int=5):
     ],
 )
 async def _googleimages(ctx, text, results=5):
-    print(f"{ctx.author.name}: /googleimages {text} {results}")
+    logger.info(f"{ctx.author.name}: /googleimages {text} {results}")
     await ctx.defer()
     await pls_googleimages(ctx, text, results)
 
@@ -451,7 +476,7 @@ async def _googleimages(ctx, text, results=5):
 
 @bot.command()
 async def translate(ctx, text, output_lang="en", input_lang=None):
-    print(f"{ctx.author.name}: /translate {text} {output_lang} {input_lang}")
+    logger.info(f"{ctx.author.name}: /translate {text} {output_lang} {input_lang}")
     await pls_translate(ctx, text, output_lang, input_lang)
 
 @slash.slash(
@@ -475,7 +500,7 @@ async def translate(ctx, text, output_lang="en", input_lang=None):
     ],
 )
 async def _translate(ctx, text, output_lang="en", input_lang=None):
-    print(f"{ctx.author.name}: /translate {text} {output_lang} {input_lang}")
+    logger.info(f"{ctx.author.name}: /translate {text} {output_lang} {input_lang}")
     await ctx.defer()
     await pls_translate(ctx, text, output_lang, input_lang)
 
@@ -483,7 +508,7 @@ async def _translate(ctx, text, output_lang="en", input_lang=None):
 
 @bot.command(aliases=["def"])
 async def define(ctx, word):
-    print(f"{ctx.author.name}: .define {word}")
+    logger.info(f"{ctx.author.name}: .define {word}")
     await pls_define(ctx, word)
 
 @slash.slash(
@@ -498,7 +523,7 @@ async def define(ctx, word):
 )
 async def _define(ctx, word):  # noqa: C901
     await ctx.defer()
-    print(f"{ctx.author.name}: /define {word}")
+    logger.info(f"{ctx.author.name}: /define {word}")
     await pls_define(ctx, word)
 
 
@@ -525,7 +550,7 @@ async def _reverse(ctx, text):
 
 @bot.command(aliases=["reci"])
 async def reciprocal(ctx, *, fraction):
-    print(f"{ctx.author.name}: .reciprocal {fraction}")
+    logger.info(f"{ctx.author.name}: .reciprocal {fraction}")
     fr1, fr2 = fraction.split("/")
     await ctx.send(f"{fr2}/{fr1}")
 
@@ -540,7 +565,7 @@ async def reciprocal(ctx, *, fraction):
     ],
 )
 async def _reciprocal(ctx, fraction):
-    print(f"{ctx.author.name}: /reciprocal")
+    logger.info(f"{ctx.author.name}: /reciprocal")
     fr1, fr2 = fraction.split("/")
     await ctx.send(f"{fr2}/{fr1}")
 
@@ -553,7 +578,7 @@ async def nick(ctx, member: discord.Member, *, nick):
         await member.edit(nick=nick)
         await ctx.send(f'Nickname was changed for {member.mention}.')
     except Exception as e:
-        print(str(e))
+        logger.info(str(e))
         await ctx.send("ERROR: is the member in the server?")
 
 @slash.slash(
@@ -576,7 +601,7 @@ async def _nick(ctx, member: discord.Member, nick):
         await member.edit(nick=nick)
         await ctx.send(f'Nickname was changed for {member.mention}.')
     except Exception as e:
-        print(str(e))
+        logger.info(str(e))
         await ctx.send("ERROR: is the member in the server?")
 
 
@@ -584,14 +609,14 @@ async def _nick(ctx, member: discord.Member, nick):
 @bot.command(aliases=["ar"])
 @commands.has_permissions(manage_roles=True)
 async def addrole(ctx, member: discord.Member, role: discord.Role):
-    print(f"{ctx.author.name}: .addrole {member} {role}")
+    logger.info(f"{ctx.author.name}: .addrole {member} {role}")
     await member.add_roles(role)
     await ctx.send(f"{member.mention} got the {role} role.")
 
 @slash.slash(name="addrole", description="Adds a role")
 @commands.has_permissions(manage_roles=True)
 async def _addrole(ctx, member: discord.Member, role: discord.Role):
-    print(f"{ctx.author.name}: /addrole {member} {role}")
+    logger.info(f"{ctx.author.name}: /addrole {member} {role}")
     await ctx.defer()
     await member.add_roles(role)
     await ctx.send(f"{member.mention} got the {role} role.")
@@ -601,7 +626,7 @@ async def _addrole(ctx, member: discord.Member, role: discord.Role):
 @bot.command(aliases=["rr"])
 @commands.has_permissions(manage_roles=True)
 async def removerole(ctx, member: discord.Member, role: discord.Role):
-    print(f"{ctx.author.name}: .removerole {member} {role}")
+    logger.info(f"{ctx.author.name}: .removerole {member} {role}")
     await member.remove_roles(role)
     await ctx.send(f"{member.mention} lost the {role} role.")
 
@@ -616,7 +641,7 @@ async def _removerole(ctx, member: discord.Member, role: discord.Role):
 
 @bot.command(aliases=["fb"])
 async def feedback(ctx, *, feedback):
-    print(f"{ctx.author.name}: .feedback {feedback}")
+    logger.info(f"{ctx.author.name}: .feedback {feedback}")
     await create_feedback(ctx, feedback)
 
 @slash.slash(
@@ -630,20 +655,20 @@ async def feedback(ctx, *, feedback):
     ],
 )
 async def _feedback(ctx, feedback):
-    print(f"{ctx.author.name}: /feedback {feedback}")
+    logger.info(f"{ctx.author.name}: /feedback {feedback}")
     await create_feedback(ctx, feedback)
 
 
 
 @bot.command(aliases=["fblist"])
 async def feedbacklist(ctx):
-    print(f"{ctx.author.name}: .feedbacklist")
+    logger.info(f"{ctx.author.name}: .feedbacklist")
     await ctx.send("List of feedbacks:")
     await list_feedback(ctx)
 
 @slash.slash(name="feedbacklist", description="List feedback!")
 async def _feedbacklist(ctx):
-    print(f"{ctx.author.name}: /feedbacklist")
+    logger.info(f"{ctx.author.name}: /feedbacklist")
     await ctx.defer()
     await ctx.send("List of feedbacks:")
     await list_feedback(ctx)
@@ -652,7 +677,7 @@ async def _feedbacklist(ctx):
 
 @bot.command(aliases=["fbclear"])
 async def feedbackclear(ctx, number=None):
-    print(f"{ctx.author.name}: /feedbackclear {number}")
+    logger.info(f"{ctx.author.name}: /feedbackclear {number}")
     await delete_feedback(ctx, number)
 
 @slash.slash(
@@ -668,7 +693,7 @@ async def feedbackclear(ctx, number=None):
     ],
 )
 async def _feedbackclear(ctx, number=None):
-    print(f"{ctx.author.name}: /feedbackclear {number}")
+    logger.info(f"{ctx.author.name}: /feedbackclear {number}")
     await ctx.defer()
     await delete_feedback(ctx, number)
 
@@ -676,7 +701,7 @@ async def _feedbackclear(ctx, number=None):
 
 @bot.command()
 async def poll(ctx, question, choices, mention=None):  # noqa: C901
-    print(f"{ctx.author.name}: /poll {question} {choices} {mention}")
+    logger.info(f"{ctx.author.name}: /poll {question} {choices} {mention}")
     await create_poll(ctx, question, choices, mention)
 
 @slash.slash(
@@ -699,26 +724,26 @@ async def poll(ctx, question, choices, mention=None):  # noqa: C901
     ],
 )
 async def _poll(ctx, question, choices, mention=None):  # noqa: C901
-    print(f"{ctx.author.name}: /poll {question} {choices} {mention}")
+    logger.info(f"{ctx.author.name}: /poll {question} {choices} {mention}")
     await ctx.defer()
     try:
         await create_poll(ctx, question, choices, mention)
     except Exception as e:
-        print(str(e))
+        logger.info(str(e))
 
 
 
 @bot.command()
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason=None):
-    print(f"{ctx.author.name}: /ban {member} {reason}")
+    logger.info(f"{ctx.author.name}: /ban {member} {reason}")
     await member.ban(reason=reason)
     await ctx.send(f"Banned {member.mention} because {reason}.")
 
 @slash.slash(name="ban", description="Bans a member")
 @commands.has_permissions(ban_members=True)
 async def _ban(ctx, member: discord.Member, reason=None):
-    print(f"{ctx.author.name}: /ban {member} {reason}")
+    logger.info(f"{ctx.author.name}: /ban {member} {reason}")
     await member.ban(reason=reason)
     await ctx.defer()
     await ctx.send(f"Banned {member.mention} because {reason}.")
@@ -728,7 +753,7 @@ async def _ban(ctx, member: discord.Member, reason=None):
 @bot.command()
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, member):
-    print(f"{ctx.author.name}: .unban {member}")
+    logger.info(f"{ctx.author.name}: .unban {member}")
     banned_users = await ctx.guild.bans()
     member_name, member_discriminator = member.split('#')
     for ban_entry in banned_users:
@@ -752,7 +777,7 @@ async def unban(ctx, member):
 )
 @commands.has_permissions(ban_members=True)
 async def _unban(ctx, member):
-    print(f"{ctx.author.name}: /unban {member}")
+    logger.info(f"{ctx.author.name}: /unban {member}")
     await ctx.defer()
     banned_users = await ctx.guild.bans()
     member_name, member_discriminator = member.split('#')
@@ -769,7 +794,7 @@ async def _unban(ctx, member):
 
 @bot.command()
 async def hello(ctx, *, name):
-    print(f"{ctx.author.name}: .hello {name}")
+    logger.info(f"{ctx.author.name}: .hello {name}")
     name = name.capitalize()
     if name == "There":
         await ctx.send("General Kenobi!")
@@ -790,7 +815,7 @@ async def hello(ctx, *, name):
 )
 async def _hello(ctx, name):
     await ctx.defer()
-    print(f"{ctx.author.name}: /hello {name}")
+    logger.info(f"{ctx.author.name}: /hello {name}")
     name = name.capitalize()
     if name == "There":
         await ctx.send("General Kenobi!")
@@ -801,7 +826,7 @@ async def _hello(ctx, name):
 
 @bot.command()
 async def say(ctx, *, text):
-    print(f"{ctx.author.name}: .say {text}")
+    logger.info(f"{ctx.author.name}: .say {text}")
     await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
     await ctx.message.delete()
     logger.info(f"{ctx.author.name}: .say {text}")
@@ -817,7 +842,7 @@ async def say(ctx, *, text):
     ],
 )
 async def _say(ctx, text):
-    print(f"{ctx.author.name}: /say {text}")
+    logger.info(f"{ctx.author.name}: /say {text}")
     msg = await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
     await msg.delete()
     await ctx.channel.send(text, allowed_mentions=discord.AllowedMentions.none())
@@ -826,12 +851,12 @@ async def _say(ctx, text):
 
 @bot.command()
 async def ping(ctx):
-    print(f"{ctx.author.name}: /ping")
+    logger.info(f"{ctx.author.name}: /ping")
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 @slash.slash(name="ping", description="This returns the bot latency")
 async def _ping(ctx):
-    print(f"{ctx.author.name}: .ping")
+    logger.info(f"{ctx.author.name}: .ping")
     await ctx.defer()
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
@@ -839,7 +864,7 @@ async def _ping(ctx):
 
 @bot.command(aliases=["8ball"])
 async def eightball(ctx, *, question):
-    print(f"{ctx.author.name}: .8ball {question}")
+    logger.info(f"{ctx.author.name}: .8ball {question}")
     await ctx.send(answer())
 
 @slash.slash(
@@ -853,7 +878,7 @@ async def eightball(ctx, *, question):
     ],
 )
 async def _8ball(ctx, question):
-    print(f"{ctx.author.name}: /8ball {question}")
+    logger.info(f"{ctx.author.name}: /8ball {question}")
     await ctx.defer()
     await ctx.send(answer())
 
@@ -861,7 +886,7 @@ async def _8ball(ctx, question):
 
 @bot.command()
 async def invite(ctx):
-    print(f"{ctx.author.name}: .invite")
+    logger.info(f"{ctx.author.name}: .invite")
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.add_field(
         name='Invite the bot!',
@@ -872,7 +897,7 @@ async def invite(ctx):
 
 @slash.slash(name="invite", description="Shows the invite link for the bot")
 async def _invite(ctx):
-    print(f"{ctx.author.name}: /invite")
+    logger.info(f"{ctx.author.name}: /invite")
     embed = discord.Embed(colour=discord.Colour.orange())
     embed.add_field(
         name='Invite the bot!',
@@ -886,7 +911,7 @@ async def _invite(ctx):
 
 @bot.command()
 async def perseverance(ctx):
-    print(f"{ctx.author.name}: .perseverance")
+    logger.info(f"{ctx.author.name}: .perseverance")
     await ctx.send("Profile Picture:")
     await ctx.send(file=discord.File('preservation.png'))
 
@@ -895,7 +920,7 @@ async def perseverance(ctx):
     description="Shows the profile picture of Perseverance",
 )
 async def _perseverance(ctx):
-    print(f"{ctx.author.name}: /perseverance")
+    logger.info(f"{ctx.author.name}: /perseverance")
     await ctx.send("Profile Picture:")
     await ctx.send(file=discord.File('preservation.png'))
 
@@ -903,7 +928,7 @@ async def _perseverance(ctx):
 
 @bot.command(aliases=["pw", "pass"])
 async def password(ctx, length: int, dm=False):
-    print(f"{ctx.author.name}: .password {length} {dm}")
+    logger.info(f"{ctx.author.name}: .password {length} {dm}")
     if dm == "true" or dm == "yes":
         dm = True
     else:
@@ -935,7 +960,7 @@ async def password(ctx, length: int, dm=False):
     ]
 )
 async def _password(ctx, length, dm=False):
-    print(f"{ctx.author.name}: /password {length} {dm}")
+    logger.info(f"{ctx.author.name}: /password {length} {dm}")
     password_characters = string.ascii_letters + string.digits + string.punctuation
     password = []
     for i in range(length):
@@ -1038,7 +1063,7 @@ async def _morsetotext(ctx, message):
 
 @bot.command()
 async def embed(ctx, title, text, color="default"):
-    print(f"{ctx.author.name}: .embed {title} {text} {color}")
+    logger.info(f"{ctx.author.name}: .embed {title} {text} {color}")
     await create_embed(ctx, title, text, color)
 
 @slash.slash(
@@ -1073,7 +1098,7 @@ async def embed(ctx, title, text, color="default"):
     ],
 )
 async def _embed(ctx, title, text, color="default"):
-    print(f"{ctx.author.name}: /embed {title} {text} {color}")
+    logger.info(f"{ctx.author.name}: /embed {title} {text} {color}")
     await ctx.defer()
     await create_embed(ctx, title, text, color)
 
@@ -1081,12 +1106,12 @@ async def _embed(ctx, title, text, color="default"):
 
 @bot.command(aliases=["info", "about"])
 async def credits(ctx):
-    print(f"{ctx.author.name}: .credits")
+    logger.info(f"{ctx.author.name}: .credits")
     await show_credits(ctx)
 
 @slash.slash(name="credits", description="Shows the credits")
 async def _credits(ctx):
-    print(f"{ctx.author.name}: /credits")
+    logger.info(f"{ctx.author.name}: /credits")
     await ctx.defer()
     await show_credits(ctx)
 
@@ -1094,7 +1119,7 @@ async def _credits(ctx):
 
 @bot.command(aliases=["h"])
 async def help(ctx, *, command=None):
-    print(f"{ctx.author.name}: .help {command}")
+    logger.info(f"{ctx.author.name}: .help {command}")
     await help_embeds2(ctx, command)
 
 @slash.slash(
@@ -1110,7 +1135,7 @@ async def help(ctx, *, command=None):
     ],
 )
 async def _help(ctx, command=None):  # noqa: C901
-    print(f"{ctx.author.name}: /help {command}")
+    logger.info(f"{ctx.author.name}: /help {command}")
     await ctx.defer()
     await help_embeds2(ctx, command)
 

@@ -76,10 +76,8 @@ async def pls_define(ctx, word):  # noqa: C901
                     await ctx.channel.send(f"{i+1}. {bye11[i]}")
             else:
                 pass
-        except Exception as e:
-            print(str(e))
-            await ctx.send("ERROR: Is this a word? Are you misspelling it?")
-            await ctx.channel.send(f"ERROR: {e}")
+        except Exception:
+            await ctx.send(f"`{word.capitalize()}` is not in this dictionary.")
     elif ctx.channel.is_nsfw() == True:
         dictionary = PyDictionary()
         try:
@@ -152,8 +150,7 @@ async def pls_define(ctx, word):  # noqa: C901
                     await ctx.channel.send(f"{i+1}. {bye11[i]}")
             else:
                 pass
-        except Exception as e:
-            print(str(e))
-            await ctx.send("ERROR: Is this a word? Are you misspelling it?")
+        except Exception:
+            await ctx.send(f"`{word.capitalize()}` is not in this dictionary.")
     else:
         await ctx.send("You can only send NSFW things in NSFW channels.")

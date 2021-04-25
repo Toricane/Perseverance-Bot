@@ -1,3 +1,17 @@
-2021-04-22 00:59:30,283:INFO:discord.client: logging in using static token
-2021-04-22 00:59:30,605:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
-2021-04-22 00:59:30,724:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-t28d",{"micros":80987,"calls":["discord-sessions-prd-2-125",{"micros":78370,"calls":["start_session",{"micros":42062,"calls":["api-prd-main-j9rt",{"micros":36718,"calls":["get_user",{"micros":2912},"add_authorized_ip",{"micros":2509},"get_guilds",{"micros":5594},"coros_wait",{"micros":0}]}]},"guilds_connect",{"micros":5,"calls":[]},"presence_connect",{"micros":2,"calls":[]}]}]}] (Session ID: 51cc1a6daf07ac6f498f3047a83fcd26).
+2021-04-25 02:57:48,173:INFO:discord.client: logging in using static token
+2021-04-25 02:57:48,428:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
+2021-04-25 02:57:48,575:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-x9sf",{"micros":108179,"calls":["discord-sessions-prd-2-111",{"micros":106371,"calls":["start_session",{"micros":65421,"calls":["api-prd-main-kld9",{"micros":61203,"calls":["get_user",{"micros":12015},"add_authorized_ip",{"micros":3621},"get_guilds",{"micros":9900},"coros_wait",{"micros":1}]}]},"guilds_connect",{"micros":9,"calls":[]},"presence_connect",{"micros":1,"calls":[]}]}]}] (Session ID: 0195a69255f1c30d5a579db070f60184).
+2021-04-25 02:57:50,797:INFO:discord: We have logged in as Perseverance#5012
+2021-04-25 02:57:50,797:INFO:discord: We have logged in as Perseverance#5012
+2021-04-25 02:57:50,797:INFO:discord: Sunday, Apr 25, 2021, 02:57 AM UTC
+2021-04-25 02:57:50,797:INFO:discord: Sunday, Apr 25, 2021, 02:57 AM UTC
+2021-04-25 02:57:50,797:INFO:discord: guild_ids=[824862561328562176]
+2021-04-25 02:57:50,797:INFO:discord: guild_ids=[824862561328562176]
+2021-04-25 03:07:52,341:INFO:discord: PGamerX#2809 has joined Perseverance Bot Official Server
+2021-04-25 03:17:41,813:INFO:discord: Toricane: .help None
+2021-04-25 03:17:59,910:INFO:discord: PGamerX: .invite
+2021-04-25 03:19:29,086:INFO:discord: Toricane: .credits
+2021-04-25 03:22:24,553:INFO:discord: Toricane: /google can i google myself 5
+2021-04-25 03:22:26,501:INFO:discord: PGamerX: /google PGamerX 5
+2021-04-25 03:27:06,478:INFO:discord: Toricane: /google angry birds star wars 2 5
+2021-04-25 03:27:50,181:INFO:discord: Toricane: /google jason liu 5

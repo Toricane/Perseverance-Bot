@@ -197,11 +197,11 @@ async def pls_google(ctx, text, results): # noqa: C901
             await ctx.send("Results must be between 1 and 10")
             return False
         await ctx.send("Results:")
-        asyncio.sleep(1)
+        await asyncio.sleep(1)
         for x in range(0, results):
             if words(alphabet[x]) == False:
                 await ctx.channel.send(alphabet[x])
-                asyncio.sleep(1)
+                await asyncio.sleep(1)
         query = text.replace(" ", "+")
         if "http" not in query:
             url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(
@@ -223,11 +223,11 @@ async def pls_google(ctx, text, results): # noqa: C901
             await ctx.send("Results must be between 1 and 10")
             return False
         await ctx.send("Results:")
-        asyncio.sleep(1)
+        await asyncio.sleep(1)
         for x in range(0, results):
             if words(alphabet[x]) == False:
                 await ctx.channel.send(alphabet[x])
-                asyncio.sleep(1)
+                await asyncio.sleep(1)
         query = text.replace(" ", "+")
         if "http" not in query:
             url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(
@@ -254,11 +254,11 @@ async def pls_googleimages(ctx, text, results): # noqa: C901
             await ctx.send("Results must be between 1 and 10")
             return False
         await ctx.send("Results:")
-        asyncio.sleep(1)
+        await asyncio.sleep(1)
         for x in range(0, results):
             if words(alphabet[x]) == False:
                 await ctx.channel.send(alphabet[x])
-                asyncio.sleep(1)
+                await asyncio.sleep(1)
         query = text.replace(" ", "+")
         if "http" not in query:
             url = 'https://www.google.com/search?hl=en&tbm=isch&sxsrf=ALeKk01Eh6GNz2vJrxJ-7rB-HY2SE-4xJQ%3A1615321310276&source=hp&biw=1366&bih=657&ei=3thHYNbEDpLZ-gSE-b6oCg&q={}&oq={}&gs_lcp=CgNpbWcQAzIFCAAQsQMyBQgAELEDMgUIABCxAzICCAAyBQgAELEDMgIIADIFCAAQsQMyBQgAELEDMgIIADIFCAAQsQM6BwgjEOoCECc6BAgjECc6CAgAELEDEIMBUOaYC1jTmwtgzJ0LaAFwAHgAgAFiiAHcAZIBATOYAQCgAQGqAQtnd3Mtd2l6LWltZ7ABCg&sclient=img&ved=0ahUKEwjWq5TnhKTvAhWSrJ4KHYS8D6UQ4dUDCAc&uact=5'.format(
@@ -280,11 +280,11 @@ async def pls_googleimages(ctx, text, results): # noqa: C901
             await ctx.send("Results must be between 1 and 10")
             return False
         await ctx.send("Results:")
-        asyncio.sleep(1)
+        await asyncio.sleep(1)
         for x in range(0, results):
             if words(alphabet[x]) == False:
                 await ctx.channel.send(alphabet[x])
-                asyncio.sleep(1)
+                await asyncio.sleep(1)
         query = text.replace(" ", "+")
         if "http" not in query:
             url = 'https://www.google.com/search?hl=en&tbm=isch&sxsrf=ALeKk01Eh6GNz2vJrxJ-7rB-HY2SE-4xJQ%3A1615321310276&source=hp&biw=1366&bih=657&ei=3thHYNbEDpLZ-gSE-b6oCg&q={}&oq={}&gs_lcp=CgNpbWcQAzIFCAAQsQMyBQgAELEDMgUIABCxAzICCAAyBQgAELEDMgIIADIFCAAQsQMyBQgAELEDMgIIADIFCAAQsQM6BwgjEOoCECc6BAgjECc6CAgAELEDEIMBUOaYC1jTmwtgzJ0LaAFwAHgAgAFiiAHcAZIBATOYAQCgAQGqAQtnd3Mtd2l6LWltZ7ABCg&sclient=img&ved=0ahUKEwjWq5TnhKTvAhWSrJ4KHYS8D6UQ4dUDCAc&uact=5'.format(
