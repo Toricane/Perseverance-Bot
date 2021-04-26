@@ -1,17 +1,7 @@
-2021-04-25 02:57:48,173:INFO:discord.client: logging in using static token
-2021-04-25 02:57:48,428:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
-2021-04-25 02:57:48,575:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-x9sf",{"micros":108179,"calls":["discord-sessions-prd-2-111",{"micros":106371,"calls":["start_session",{"micros":65421,"calls":["api-prd-main-kld9",{"micros":61203,"calls":["get_user",{"micros":12015},"add_authorized_ip",{"micros":3621},"get_guilds",{"micros":9900},"coros_wait",{"micros":1}]}]},"guilds_connect",{"micros":9,"calls":[]},"presence_connect",{"micros":1,"calls":[]}]}]}] (Session ID: 0195a69255f1c30d5a579db070f60184).
-2021-04-25 02:57:50,797:INFO:discord: We have logged in as Perseverance#5012
-2021-04-25 02:57:50,797:INFO:discord: We have logged in as Perseverance#5012
-2021-04-25 02:57:50,797:INFO:discord: Sunday, Apr 25, 2021, 02:57 AM UTC
-2021-04-25 02:57:50,797:INFO:discord: Sunday, Apr 25, 2021, 02:57 AM UTC
-2021-04-25 02:57:50,797:INFO:discord: guild_ids=[824862561328562176]
-2021-04-25 02:57:50,797:INFO:discord: guild_ids=[824862561328562176]
-2021-04-25 03:07:52,341:INFO:discord: PGamerX#2809 has joined Perseverance Bot Official Server
-2021-04-25 03:17:41,813:INFO:discord: Toricane: .help None
-2021-04-25 03:17:59,910:INFO:discord: PGamerX: .invite
-2021-04-25 03:19:29,086:INFO:discord: Toricane: .credits
-2021-04-25 03:22:24,553:INFO:discord: Toricane: /google can i google myself 5
-2021-04-25 03:22:26,501:INFO:discord: PGamerX: /google PGamerX 5
-2021-04-25 03:27:06,478:INFO:discord: Toricane: /google angry birds star wars 2 5
-2021-04-25 03:27:50,181:INFO:discord: Toricane: /google jason liu 5
+2021-04-26 01:34:16,926:INFO:discord.client: logging in using static token
+2021-04-26 01:34:17,264:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
+2021-04-26 01:34:17,439:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-jrpd",{"micros":89908,"calls":["discord-sessions-prd-2-85",{"micros":86683,"calls":["start_session",{"micros":38935,"calls":["api-prd-main-81sr",{"micros":34919,"calls":["get_user",{"micros":7157},"add_authorized_ip",{"micros":1348},"get_guilds",{"micros":5585},"coros_wait",{"micros":1}]}]},"guilds_connect",{"micros":14,"calls":[]},"presence_connect",{"micros":23883,"calls":[]}]}]}] (Session ID: a716d6188c2e807306261341e370e5d0).
+2021-04-26 01:34:19,831:INFO:discord: We have logged in as Perseverance#5012
+2021-04-26 01:34:19,832:INFO:discord: Monday, Apr 26, 2021, 01:34 AM UTC
+2021-04-26 01:34:19,832:INFO:discord: guild_ids=[824862561328562176]
+2021-04-26 01:34:19,832:INFO:discord: In 17 servers

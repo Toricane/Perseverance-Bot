@@ -1,7 +1,7 @@
 import subprocess
 
+list_files = subprocess.run(["pip", "install", "--upgrade", "pip"])
 list_files = subprocess.run(["pip", "install", "googletrans==3.1.0a0"])
-list_files = subprocess.run(["pip", "install", "sqlite"])
 
 import os
 import discord
@@ -48,8 +48,7 @@ logger.addHandler(handler)
 bot = commands.Bot(command_prefix=".", intents=Intents.all(), help_command=None)
 slash = SlashCommand(bot, sync_commands=True)
 status = cycle([
-    '/help or .help', 'your messages', '/help or .help', 'Never Gonna Give You Up',
-    '/help or .help', 'hello there!'
+    '/help or .help', 'your messages', '/help or .help', 'Never Gonna Give You Up', '/help or .help', 'hello there!', '/help or .help', f'{len(bot.guilds)} servers'
 ])
 
 guild_ids = db["id"]
@@ -57,13 +56,15 @@ guild_ids = db["id"]
 @bot.event
 async def on_ready():
     change_status.start()
-    logger.info('We have logged in as {0.user}'.format(bot))
+    print('We have logged in as {0.user}'.format(bot))
     logger.info('We have logged in as {0.user}'.format(bot))
     timestamp = datetime.datetime.now()
+    print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
     logger.info(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
-    logger.info(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
+    print(f"guild_ids={guild_ids}")
     logger.info(f"guild_ids={guild_ids}")
-    logger.info(f"guild_ids={guild_ids}")
+    print(f"In {len(bot.guilds)} servers")
+    logger.info(f"In {len(bot.guilds)} servers")
 
 
 @bot.event
@@ -286,18 +287,52 @@ async def _avatar(ctx, member: discord.Member):
 
 
 
-@bot.command()
-async def yt(ctx, channel : discord.ChannelType):
-    await group_say(ctx, channel)
+@bot.command(aliases=["act", "play"])
+async def activities(ctx, *, activity_type):
+    number = None
+    if activity_type.lower() == "youtube together":
+        number = "755600276941176913"
+        await group_say(ctx, number)
+    elif activity_type.lower() in "betrayal.io":
+        number = "773336526917861400"
+        await group_say(ctx, number)
+    elif activity_type.lower() in "poker night":
+        number = "755827207812677713"
+        await group_say(ctx, number)
+    elif activity_type.lower() in "fishington.io":
+        number = "814288819477020702"
+        await group_say(ctx, number)
+    else:
+        await ctx.send("Invalid activity.")
 
-@slash.slash(name="yt", description="Watch YouTube", options=[
-        create_option(name="channel",
-                                      description="Voice Channel",
-                                      option_type=7,
-                                      required=True)
+@slash.slash(name="activities", description="Do stuff", options=[
+        {          
+            "name": "activity_type",
+            "description": "Type of activity.",
+            "required": True,
+            "type": 3,
+            "choices": [
+                {
+                    "name": "YouTube Together",
+                    "value": "755600276941176913"
+                },
+                {
+                    "name": "Betrayal.io",
+                    "value": "773336526917861400"
+                },
+                {
+                    "name": "Poker Night",
+                    "value": "755827207812677713"
+                },
+                {
+                    "name": "Fishington.io",
+                    "value": "814288819477020702"
+                }
+            ]
+        }
     ])
-async def _yt(ctx, channel : discord.ChannelType):
-    await group_say(ctx, channel)
+async def _activities(ctx, activity_type):
+    await group_say(ctx, activity_type)
 
 
 @bot.command()
