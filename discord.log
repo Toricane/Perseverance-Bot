@@ -1,7 +1,12 @@
-2021-04-26 01:34:16,926:INFO:discord.client: logging in using static token
-2021-04-26 01:34:17,264:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
-2021-04-26 01:34:17,439:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-jrpd",{"micros":89908,"calls":["discord-sessions-prd-2-85",{"micros":86683,"calls":["start_session",{"micros":38935,"calls":["api-prd-main-81sr",{"micros":34919,"calls":["get_user",{"micros":7157},"add_authorized_ip",{"micros":1348},"get_guilds",{"micros":5585},"coros_wait",{"micros":1}]}]},"guilds_connect",{"micros":14,"calls":[]},"presence_connect",{"micros":23883,"calls":[]}]}]}] (Session ID: a716d6188c2e807306261341e370e5d0).
-2021-04-26 01:34:19,831:INFO:discord: We have logged in as Perseverance#5012
-2021-04-26 01:34:19,832:INFO:discord: Monday, Apr 26, 2021, 01:34 AM UTC
-2021-04-26 01:34:19,832:INFO:discord: guild_ids=[824862561328562176]
-2021-04-26 01:34:19,832:INFO:discord: In 17 servers
+2021-05-30 00:13:23,512:INFO:discord.client: logging in using static token
+2021-05-30 00:13:25,607:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
+2021-05-30 00:13:25,742:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-w2dn",{"micros":106450,"calls":["discord-sessions-green-prd-2-169",{"micros":105236,"calls":["start_session",{"micros":50628,"calls":["api-prd-main-0f25",{"micros":45360,"calls":["get_user",{"micros":4255},"add_authorized_ip",{"micros":2516},"get_guilds",{"micros":12762},"coros_wait",{"micros":0}]}]},"guilds_connect",{"micros":8,"calls":[]},"presence_connect",{"micros":3,"calls":[]}]}]}] (Session ID: c29aac4f7dcc1beb9f4c0a4a119c325e).
+2021-05-30 00:13:33,724:INFO:discord: We have logged in as Perseverance#5012
+2021-05-30 00:13:33,726:INFO:discord: Sunday, May 30, 2021, 12:13 AM UTC
+2021-05-30 00:13:33,727:INFO:discord: guild_ids=[824862561328562176]
+2021-05-30 00:13:33,728:INFO:discord: In 16 servers
+2021-05-30 00:14:18,804:INFO:discord: Toricane: /ping
+2021-05-30 00:20:47,319:INFO:discord: Emojis#3841 has joined RVS Class
+2021-05-30 00:28:38,448:INFO:discord.client: Got a request to RESUME the websocket.
+2021-05-30 00:28:38,674:INFO:discord.gateway: Shard ID None has sent the RESUME payload.
+2021-05-30 00:28:38,717:INFO:discord.gateway: Shard ID None has successfully RESUMED session c29aac4f7dcc1beb9f4c0a4a119c325e under trace ["gateway-prd-main-xhzz",{"micros":1258,"calls":["discord-sessions-green-prd-2-169",{"micros":43}]}].

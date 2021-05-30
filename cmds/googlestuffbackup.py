@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 from googletrans import Translator
 from cmds.words import words
 import asyncio
-import discord
 
 LANGUAGES = {
     'af': 'afrikaans',
@@ -197,38 +196,12 @@ async def pls_google(ctx, text, results): # noqa: C901
         if results > 10:
             await ctx.send("Results must be between 1 and 10")
             return False
-        embed = discord.Embed(colour=discord.Colour.orange())
+        await ctx.send("Results:")
+        await asyncio.sleep(1)
         for x in range(0, results):
             if words(alphabet[x]) == False:
-                response = requests.get(alphabet[x])
-                soup = BeautifulSoup(response.text)
-                metas = soup.find_all('meta')
-                try:
-                    title = str(soup.title.string)
-                except:
-                    title = "[]"
-                description = str([meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description'])
-                if title == "[]":
-                    titleadd = False
-                else:
-                    titleadd = True
-                if description == "[]":
-                    descadd = False
-                else:
-                    description = description[2:]
-                    description = description[:-2]
-                    descadd = True
-                if titleadd == True and descadd == True:
-                    embed.add_field(name=f"{title}", value=f"[{description}]({alphabet[x]})", inline=False)
-                elif titleadd == True and descadd == False:
-                    embed.add_field(name=f"{title}", value=f"[No description]({alphabet[x]})", inline=False)
-                elif titleadd == False and descadd == True:
-                    embed.add_field(name="No title", value=f"[{description}]({alphabet[x]})", inline=False)
-                else:
-                    embed.add_field(name="No title", value=f"[No details]({alphabet[x]})", inline=False)
-                # await ctx.channel.send(alphabet[x])
-                # await asyncio.sleep(1)
-        await ctx.send(embed=embed)
+                await ctx.channel.send(alphabet[x])
+                await asyncio.sleep(1)
         query = text.replace(" ", "+")
         if "http" not in query:
             url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(
@@ -249,38 +222,12 @@ async def pls_google(ctx, text, results): # noqa: C901
         if results > 10:
             await ctx.send("Results must be between 1 and 10")
             return False
-        embed = discord.Embed(colour=discord.Colour.orange())
+        await ctx.send("Results:")
+        await asyncio.sleep(1)
         for x in range(0, results):
             if words(alphabet[x]) == False:
-                response = requests.get(alphabet[x])
-                soup = BeautifulSoup(response.text)
-                metas = soup.find_all('meta')
-                try:
-                    title = str(soup.title.string)
-                except:
-                    title = "[]"
-                description = str([meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description'])
-                if title == "[]":
-                    titleadd = False
-                else:
-                    titleadd = True
-                if description == "[]":
-                    descadd = False
-                else:
-                    description = description[2:]
-                    description = description[:-2]
-                    descadd = True
-                if titleadd == True and descadd == True:
-                    embed.add_field(name=f"{title}", value=f"[{description}]({alphabet[x]})", inline=False)
-                elif titleadd == True and descadd == False:
-                    embed.add_field(name=f"{title}", value=f"[No description]({alphabet[x]})", inline=False)
-                elif titleadd == False and descadd == True:
-                    embed.add_field(name="No title", value=f"[{description}]({alphabet[x]})", inline=False)
-                else:
-                    embed.add_field(name="No title", value=f"[No details]({alphabet[x]})", inline=False)
-                # await ctx.channel.send(alphabet[x])
-                # await asyncio.sleep(1)
-        await ctx.send(embed=embed)
+                await ctx.channel.send(alphabet[x])
+                await asyncio.sleep(1)
         query = text.replace(" ", "+")
         if "http" not in query:
             url = 'https://www.google.com/search?client=ubuntu&channel=fs&q={}&ie=utf-8&oe=utf-8'.format(
@@ -292,6 +239,62 @@ async def pls_google(ctx, text, results): # noqa: C901
     else:
         await ctx.send("You can only search NSFW things in an NSFW channel.")
 
+
+async def pls_googleimages(ctx, text, results): # noqa: C901
+    if words(text) == False:
+        result = googleSearchImages(text)
+        results = int(results)
+        try:
+            a, b, c, d, e, f, g, h, i, j = result
+            alphabet = [a, b, c, d, e, f, g, h, i, j]
+        except:
+            a, b, c, d, e, f, g, h, i = result
+            alphabet = [a, b, c, d, e, f, g, h, i]
+        if results > 10:
+            await ctx.send("Results must be between 1 and 10")
+            return False
+        await ctx.send("Results:")
+        await asyncio.sleep(1)
+        for x in range(0, results):
+            if words(alphabet[x]) == False:
+                await ctx.channel.send(alphabet[x])
+                await asyncio.sleep(1)
+        query = text.replace(" ", "+")
+        if "http" not in query:
+            url = 'https://www.google.com/search?hl=en&tbm=isch&sxsrf=ALeKk01Eh6GNz2vJrxJ-7rB-HY2SE-4xJQ%3A1615321310276&source=hp&biw=1366&bih=657&ei=3thHYNbEDpLZ-gSE-b6oCg&q={}&oq={}&gs_lcp=CgNpbWcQAzIFCAAQsQMyBQgAELEDMgUIABCxAzICCAAyBQgAELEDMgIIADIFCAAQsQMyBQgAELEDMgIIADIFCAAQsQM6BwgjEOoCECc6BAgjECc6CAgAELEDEIMBUOaYC1jTmwtgzJ0LaAFwAHgAgAFiiAHcAZIBATOYAQCgAQGqAQtnd3Mtd2l6LWltZ7ABCg&sclient=img&ved=0ahUKEwjWq5TnhKTvAhWSrJ4KHYS8D6UQ4dUDCAc&uact=5'.format(
+                query, query)
+        else:
+            url = query
+        if words(url) == False:
+            await ctx.channel.send(f"URL: {url}")
+    elif ctx.channel.is_nsfw() == True:
+        result = googleSearchImages(text)
+        results = int(results)
+        try:
+            a, b, c, d, e, f, g, h, i, j = result
+            alphabet = [a, b, c, d, e, f, g, h, i, j]
+        except:
+            a, b, c, d, e, f, g, h, i = result
+            alphabet = [a, b, c, d, e, f, g, h, i]
+        if results > 10:
+            await ctx.send("Results must be between 1 and 10")
+            return False
+        await ctx.send("Results:")
+        await asyncio.sleep(1)
+        for x in range(0, results):
+            if words(alphabet[x]) == False:
+                await ctx.channel.send(alphabet[x])
+                await asyncio.sleep(1)
+        query = text.replace(" ", "+")
+        if "http" not in query:
+            url = 'https://www.google.com/search?hl=en&tbm=isch&sxsrf=ALeKk01Eh6GNz2vJrxJ-7rB-HY2SE-4xJQ%3A1615321310276&source=hp&biw=1366&bih=657&ei=3thHYNbEDpLZ-gSE-b6oCg&q={}&oq={}&gs_lcp=CgNpbWcQAzIFCAAQsQMyBQgAELEDMgUIABCxAzICCAAyBQgAELEDMgIIADIFCAAQsQMyBQgAELEDMgIIADIFCAAQsQM6BwgjEOoCECc6BAgjECc6CAgAELEDEIMBUOaYC1jTmwtgzJ0LaAFwAHgAgAFiiAHcAZIBATOYAQCgAQGqAQtnd3Mtd2l6LWltZ7ABCg&sclient=img&ved=0ahUKEwjWq5TnhKTvAhWSrJ4KHYS8D6UQ4dUDCAc&uact=5'.format(
+                query, query)
+        else:
+            url = query
+        if words(url) == False:
+            await ctx.channel.send(f"URL: {url}")
+    else:
+        await ctx.send("You can only search NSFW things in an NSFW channel.")
 
 
 async def pls_translate(ctx, text, output_lang, input_lang):

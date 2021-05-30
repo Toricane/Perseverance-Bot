@@ -25,6 +25,8 @@ lxml = "^4.6.2"
 asteval = "^0.9.23"
 contextlib3 = "^3.10.0"
 discord-py-slash-command = "^1.1.2"
+apiclient = "^1.0.4"
+youtube_dl = "^2021.4.26"
 
 [tool.poetry.dev-dependencies]
 
