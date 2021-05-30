@@ -23,6 +23,7 @@ from discord.flags import Intents
 import re, ast, inspect
 from discord.utils import get
 import youtube_dl
+from pretty_help import PrettyHelp
 
 from asteval import Interpreter
 
@@ -53,15 +54,20 @@ handler.setFormatter(
     logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-bot = commands.Bot(command_prefix="<>",
+bot = commands.Bot(command_prefix="\\",
                    intents=Intents.all(),
-                   help_command=None)
-slash = SlashCommand(bot, sync_commands=True)
+                   help_command=PrettyHelp(
+                       color=discord.Colour.orange(),
+                       page_left="◀️",
+                       page_right="▶️",
+                       remove="❌",
+                   ))
+slash = SlashCommand(bot, sync_commands=True, sync_on_cog_reload=True)
 servers = len(bot.guilds)
 status = cycle([
-    '/help or .help', 'your messages', '/help or .help',
-    'Never Gonna Give You Up', '/help or .help', 'hello there!',
-    '/help or .help', f'{servers} servers'
+    '/help or \\help', 'your messages', '/help or \\help',
+    'Never Gonna Give You Up', '/help or \\help', 'hello there!',
+    '/help or \\help', f'{servers} servers'
 ])
 
 guild_ids = db["id"]
@@ -114,7 +120,7 @@ async def on_message(message):
                     "Server already setup! The bot is restarting! If the error persists, contact <@!721093211577385020> in Discord to restart the bot!"
                 )
                 os.execl(sys.executable, sys.executable, *sys.argv)
-    if msg == "/restart" or msg == ".restart":
+    if msg == "/restart" or msg == "\\restart":
         if message.author.id == 721093211577385020:
             await message.add_reaction('🆗')
             os.execl(sys.executable, sys.executable, *sys.argv)
@@ -195,7 +201,7 @@ async def change_status():
         type=discord.ActivityType.watching, name=next(status)))
 
 
-@bot.command()
+@bot.command(help="Gives a random inspirational quote.")
 async def inspire(ctx):
     logger.info(f"{ctx.author.name}: .inspire")
     quoted = await inspired(ctx)
@@ -211,7 +217,7 @@ async def _inspire(ctx):
     await ctx.send(quoted)
 
 
-@bot.command()
+@bot.command(help="The bot will say hello to you!")
 async def hi(ctx):
     await meply(ctx, "Hello!")
 
@@ -223,7 +229,7 @@ async def _hi(ctx):
     await ctx.send('Hello!')
 
 
-@bot.command()
+@bot.command(help="The bot will say bye to you.")
 async def bye(ctx):
     logger.info(f"{ctx.author.name}: .bye")
     await meply(ctx, "Bye!")
@@ -236,7 +242,7 @@ async def _bye(ctx):
     await ctx.send('Bye!')
 
 
-@bot.command()
+@bot.command(help="Get an AI response!")
 async def ai(ctx, *, msg):
     if "shark" in msg:
         await ctx.send("Sharks are the BEST!")
@@ -259,7 +265,7 @@ async def _ai(ctx, msg):
         await ai_response(ctx, msg)
 
 
-@bot.command()
+@bot.command(help="Run some code!\nRequires you to be Toricane#0818.")
 async def run(ctx, *, code):
     logger.info(f"{ctx.author.name}: .run {code}")
     try:
@@ -300,7 +306,7 @@ async def _run(ctx, code):
         logger.info(str(e))
 
 
-@bot.command(aliases=["pfp"])
+@bot.command(aliases=["pfp"], help="View someone's profile picture")
 async def avatar(ctx, member: discord.Member):
     logger.info(f"{ctx.author.name}: .avatar {member}")
     try:
@@ -315,7 +321,7 @@ async def avatar(ctx, member: discord.Member):
 
 @slash.slash(
     name="avatar",
-    description="View someone's avatar picture",
+    description="View someone's profile picture",
     options=[
         create_option(name="member",
                       description="Add the member here",
@@ -335,7 +341,7 @@ async def _avatar(ctx, member: discord.Member):
         logger.info(str(e))
 
 
-@bot.command(aliases=["act"])
+@bot.command(aliases=["act"], help="Play games in the vc!")
 async def activities(ctx, *, activity_type):
     number = None
     if activity_type.lower() == "youtube together":
@@ -395,7 +401,7 @@ async def _activities(ctx, activity_type):
     await group_say(ctx, activity_type)
 
 
-@bot.command()
+@bot.command(help="Delete some messages!\nDefault 5.\nRequires Manage Messages permission to use.")
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, amount=5, user: discord.Member = None):
     logger.info(f"{ctx.author.name}: .purge {amount}")
@@ -422,25 +428,9 @@ async def _purge(ctx, amount=5, user=None):
     await purge_msgs(ctx, amount, usere=user, client=bot, method="dpy")
 
 
-@bot.command()
-@commands.has_permissions(kick_members=True)
-async def kick(ctx, member: discord.Member, *, reason=None):
-    logger.info(f"{ctx.author.name}: .kick {member} {reason}")
-    await member.kick(reason=reason)
-    await ctx.send(f"Kicked {member} because {reason}.")
-
-
-@slash.slash(name="kick", description="Kicks a member")
-@commands.has_permissions(kick_members=True)
-async def _kick(ctx, member: discord.Member, *, reason=None):
-    logger.info(f"{ctx.author.name}: /kick {member} {reason}")
-    await ctx.defer()
-    await member.kick(reason=reason)
-    await ctx.send(f"Kicked {member} because {reason}.")
-
-
 @bot.command(aliases=["wiki"],
-             description="Searches for something on wikipedia")
+             description="Searches for something on wikipedia",
+             help="Search anything on Wikipedia!\nResults is set to 1 as default.\nLines is set to 5 as default.\n\nMore than one result will make the bot choose one at random.")
 async def wikipedia(ctx, text: str, results: int = 1, lines: int = 5):
     logger.info(f"{ctx.author.name}: .wikipedia {text} {results} {lines}")
     result = wiki.search(text, results)
@@ -450,7 +440,7 @@ async def wikipedia(ctx, text: str, results: int = 1, lines: int = 5):
         if len(info) <= 2000:
             await ctx.send(info)
         else:
-            await ctx.send("The message is too long, please use less lines.")
+            await ctx.send("The message is too long, please use fewer lines.")
     except IndexError:
         await ctx.send("No results found.")
     except discord.errors.NotFound:
@@ -504,7 +494,7 @@ async def _wikipedia(ctx, text, results=1, lines=5):
         await ctx.send(f"ERROR: {e}")
 
 
-@bot.command()
+@bot.command(help="Gives a random joke.")
 async def joke(ctx, *, joke=None):
     logger.info(f"{ctx.author.name}: .joke")
     if joke == None:
@@ -568,7 +558,7 @@ async def image(ctx, *, joke=None):
         await get_image(ctx, joke)
 
 
-@bot.command()
+@bot.command(help="Google anything with this command!")
 async def google(ctx, text, results=5):
     logger.info(f"{ctx.author.name}: .google {text} {results}")
     await pls_google(ctx, text, results)
@@ -595,7 +585,7 @@ async def _google(ctx, text, results=5):
     await pls_google(ctx, text, results)
 
 
-@bot.command()
+@bot.command(help="Translate text on Google Translate!\nOutput language is set to English as default.\nInput language is set to Detect Language as default.")
 async def translate(ctx, text, output_lang="en", input_lang=None):
     logger.info(
         f"{ctx.author.name}: /translate {text} {output_lang} {input_lang}")
@@ -628,7 +618,7 @@ async def _translate(ctx, text, output_lang="en", input_lang=None):
     await pls_translate(ctx, text, output_lang, input_lang)
 
 
-@bot.command(aliases=["def"])
+@bot.command(aliases=["def"], help="Define any word in English.")
 async def define(ctx, word):
     logger.info(f"{ctx.author.name}: .define {word}")
     await pls_define(ctx, word)
@@ -650,7 +640,7 @@ async def _define(ctx, word):  # noqa: C901
     await pls_define(ctx, word)
 
 
-@bot.command(aliases=["r", "rev"])
+@bot.command(aliases=["r", "rev"], help="Reverse your text!")
 async def reverse(ctx, *, text):
     await ctx.send(text[::-1])
 
@@ -670,7 +660,7 @@ async def _reverse(ctx, text):
     await ctx.send(text[::-1])
 
 
-@bot.command(aliases=["reci"])
+@bot.command(aliases=["reci"], help="Get a reciprocal of a fraction!")
 async def reciprocal(ctx, *, fraction):
     logger.info(f"{ctx.author.name}: .reciprocal {fraction}")
     fr1, fr2 = fraction.split("/")
@@ -693,7 +683,7 @@ async def _reciprocal(ctx, fraction):
     await ctx.send(f"{fr2}/{fr1}")
 
 
-@bot.command(aliases=["nickname"])
+@bot.command(aliases=["nickname"], help="Change someone's nickname.\nRequires Manage Nicknames permission.")
 @commands.has_permissions(manage_nicknames=True)
 async def nick(ctx, member: discord.Member, *, nick):
     try:
@@ -728,40 +718,7 @@ async def _nick(ctx, member: discord.Member, nick):
         await ctx.send("ERROR: is the member in the server?")
 
 
-@bot.command(aliases=["ar"])
-@commands.has_permissions(manage_roles=True)
-async def addrole(ctx, member: discord.Member, role: discord.Role):
-    logger.info(f"{ctx.author.name}: .addrole {member} {role}")
-    await member.add_roles(role)
-    await ctx.send(f"{member.mention} got the {role} role.")
-
-
-@slash.slash(name="addrole", description="Adds a role")
-@commands.has_permissions(manage_roles=True)
-async def _addrole(ctx, member: discord.Member, role: discord.Role):
-    logger.info(f"{ctx.author.name}: /addrole {member} {role}")
-    await ctx.defer()
-    await member.add_roles(role)
-    await ctx.send(f"{member.mention} got the {role} role.")
-
-
-@bot.command(aliases=["rr"])
-@commands.has_permissions(manage_roles=True)
-async def removerole(ctx, member: discord.Member, role: discord.Role):
-    logger.info(f"{ctx.author.name}: .removerole {member} {role}")
-    await member.remove_roles(role)
-    await ctx.send(f"{member.mention} lost the {role} role.")
-
-
-@slash.slash(name="removerole", description="Removes a role")
-@commands.has_permissions(manage_roles=True)
-async def _removerole(ctx, member: discord.Member, role: discord.Role):
-    await ctx.defer()
-    await member.remove_roles(role)
-    await ctx.send(f"{member.mention} lost the {role} role.")
-
-
-@bot.command(aliases=["fb"])
+@bot.command(aliases=["fb"], help="Send feedback for the bot!")
 async def feedback(ctx, *, feedback):
     logger.info(f"{ctx.author.name}: .feedback {feedback}")
     await create_feedback(ctx, feedback)
@@ -782,7 +739,7 @@ async def _feedback(ctx, feedback):
     await create_feedback(ctx, feedback)
 
 
-@bot.command(aliases=["fblist"])
+@bot.command(aliases=["fblist"], help="List the feedback.")
 async def feedbacklist(ctx):
     logger.info(f"{ctx.author.name}: .feedbacklist")
     await ctx.send("List of feedbacks:")
@@ -797,7 +754,7 @@ async def _feedbacklist(ctx):
     await list_feedback(ctx)
 
 
-@bot.command(aliases=["fbclear"])
+@bot.command(aliases=["fbclear"], help="Clear or delete feedback!\nRequires you to be Toricane#0818.\nTo find the number to delete, try using `/list` or `.list`.")
 async def feedbackclear(ctx, number=None):
     logger.info(f"{ctx.author.name}: /feedbackclear {number}")
     await delete_feedback(ctx, number)
@@ -821,7 +778,7 @@ async def _feedbackclear(ctx, number=None):
     await delete_feedback(ctx, number)
 
 
-@bot.command()
+@bot.command(help="Create a quick and easy poll!\nSeparate the choices with \"/\".")
 async def poll(ctx, question, choices, mention=None):  # noqa: C901
     logger.info(f"{ctx.author.name}: /poll {question} {choices} {mention}")
     await create_poll(ctx, question, choices, mention)
@@ -855,96 +812,7 @@ async def _poll(ctx, question, choices, mention=None):  # noqa: C901
         logger.info(str(e))
 
 
-@bot.command()
-@commands.has_permissions(ban_members=True)
-async def ban(ctx, member: discord.Member, *, reason=None):
-    logger.info(f"{ctx.author.name}: /ban {member} {reason}")
-    await member.ban(reason=reason)
-    await ctx.send(f"Banned {member.mention} because {reason}.")
-
-
-@slash.slash(name="ban", description="Bans a member")
-@commands.has_permissions(ban_members=True)
-async def _ban(ctx, member: discord.Member, reason=None):
-    logger.info(f"{ctx.author.name}: /ban {member} {reason}")
-    await member.ban(reason=reason)
-    await ctx.defer()
-    await ctx.send(f"Banned {member.mention} because {reason}.")
-
-
-@bot.command()
-@commands.has_permissions(ban_members=True)
-async def unban(ctx, member):
-    logger.info(f"{ctx.author.name}: .unban {member}")
-    banned_users = await ctx.guild.bans()
-    member_name, member_discriminator = member.split('#')
-    for ban_entry in banned_users:
-        user = ban_entry.user
-        if (user.name, user.discriminator) == (member_name,
-                                               member_discriminator):
-            await ctx.guild.unban(user)
-            person = f"{user.name}#{user.discriminator}"
-            await ctx.send(f"Unbanned {person}.")
-            return
-
-
-@slash.slash(
-    name="unban",
-    description="Unbans a member",
-    options=[
-        create_option(name="member",
-                      description="Add the member name here",
-                      option_type=3,
-                      required=True)
-    ],
-)
-@commands.has_permissions(ban_members=True)
-async def _unban(ctx, member):
-    logger.info(f"{ctx.author.name}: /unban {member}")
-    await ctx.defer()
-    banned_users = await ctx.guild.bans()
-    member_name, member_discriminator = member.split('#')
-    for ban_entry in banned_users:
-        user = ban_entry.user
-        if (user.name, user.discriminator) == (member_name,
-                                               member_discriminator):
-            await ctx.guild.unban(user)
-            person = f"{user.name}#{user.discriminator}"
-            await ctx.send(f"Unbanned {person}.")
-            return
-
-
-@bot.command()
-async def tictactoe(ctx, p1: discord.Member, p2: discord.Member):
-    await tictactoe_(ctx, p1, p2)
-
-
-@bot.command()
-async def place(ctx, pos: int):
-    await place_(ctx, pos)
-
-
-@tictactoe.error
-async def tictactoe_error(ctx, error):
-    print(error)
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Please mention 2 players for this command.")
-    elif isinstance(error, commands.BadArgument):
-        await ctx.send(
-            "Please make sure to mention/ping players (ie. <@688534433879556134>)."
-        )
-
-
-@place.error
-async def place_error(ctx, error):
-    print(error)
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Please enter a position you would like to mark.")
-    elif isinstance(error, commands.BadArgument):
-        await ctx.send("Please make sure to enter an integer.")
-
-
-@bot.command()
+@bot.command(help="Say hello to someone!")
 async def hello(ctx, *, name):
     logger.info(f"{ctx.author.name}: .hello {name}")
     name = name.capitalize()
@@ -975,7 +843,7 @@ async def _hello(ctx, name):
         await ctx.send(f"Hello {name}!")
 
 
-@bot.command()
+@bot.command(help="Make the bot say anything!")
 async def say(ctx, *, text):
     logger.info(f"{ctx.author.name}: .say {text}")
     await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
@@ -1001,7 +869,7 @@ async def _say(ctx, text):
                            allowed_mentions=discord.AllowedMentions.none())
 
 
-@bot.command()
+@bot.command(help="Returns pong with the latency in milliseconds.")
 async def ping(ctx):
     logger.info(f"{ctx.author.name}: /ping")
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
@@ -1014,7 +882,7 @@ async def _ping(ctx):
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 
-@bot.command(aliases=["8ball"])
+@bot.command(aliases=["8ball"], help="Ask a question, and the bot tells your fortune.")
 async def eightball(ctx, *, question):
     logger.info(f"{ctx.author.name}: .8ball {question}")
     await ctx.send(answer())
@@ -1036,7 +904,7 @@ async def _8ball(ctx, question):
     await ctx.send(answer())
 
 
-@bot.command()
+@bot.command(help="Get the invite link for the bot!")
 async def invite(ctx):
     logger.info(f"{ctx.author.name}: .invite")
     embed = discord.Embed(colour=discord.Colour.orange())
@@ -1061,7 +929,7 @@ async def _invite(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command()
+@bot.command(help="Shows the bot's profile picture.")
 async def perseverance(ctx):
     logger.info(f"{ctx.author.name}: .perseverance")
     await ctx.send("Profile Picture:")
@@ -1078,7 +946,7 @@ async def _perseverance(ctx):
     await ctx.send(file=discord.File('preservation.png'))
 
 
-@bot.command(aliases=["pw", "pass"])
+@bot.command(aliases=["pw", "pass"], help="Generate a strong, random password.")
 async def password(ctx, length: int, dm=False):
     logger.info(f"{ctx.author.name}: .password {length} {dm}")
     if dm == "true" or dm == "yes":
@@ -1128,7 +996,7 @@ async def _password(ctx, length, dm=False):
                        hidden=True)
 
 
-@bot.command(aliases=["btt"])
+@bot.command(aliases=["btt"], help="Convert binary numbers to text.")
 async def binarytotext(ctx, *, text):
     ascii_string = "".join([chr(int(binary, 2)) for binary in text.split(" ")])
     await ctx.reply(f"```py\n{ascii_string}```")
@@ -1148,7 +1016,7 @@ async def binaryToText(ctx, text):
     await ctx.send(f"```py\n{ascii_string}```")
 
 
-@bot.command(aliases=["ttb"])
+@bot.command(aliases=["ttb"], help="Convert text to binary!")
 async def texttobinary(ctx, *, text):
     res = ' '.join(format(ord(i), '08b') for i in text)
     await ctx.reply(f"```py\n{res}```")
@@ -1168,7 +1036,7 @@ async def _texttobinary(ctx, text):
     await ctx.send(f"```py\n{res}```")
 
 
-@bot.command(aliases=["ttm"])
+@bot.command(aliases=["ttm"], help="Convert text to morse!")
 async def texttomorse(ctx, *, message):
     result = encrypt(message.upper())
     await ctx.reply(f"```py\n{result}```")
@@ -1187,7 +1055,7 @@ async def _texttomorse(ctx, message):
     await ctx.send(f"```py\n{result}```")
 
 
-@bot.command(aliases=["mtt"])
+@bot.command(aliases=["mtt"], help="Get text from morse code.")
 async def morsetotext(ctx, *, message):
     result = decrypt(message)
     await ctx.reply(f"```py\n{result}```")
@@ -1206,7 +1074,7 @@ async def _morsetotext(ctx, message):
     await ctx.send(f"```py\n{result.lower()}```")
 
 
-@bot.command()
+@bot.command(help="Create an embed using the bot!")
 async def embed(ctx, title, text, color="default"):
     logger.info(f"{ctx.author.name}: .embed {title} {text} {color}")
     await create_embed(ctx, title, text, color)
@@ -1249,7 +1117,7 @@ async def _embed(ctx, title, text, color="default"):
     await create_embed(ctx, title, text, color)
 
 
-@bot.command(aliases=["info", "about"])
+@bot.command(aliases=["info", "about"], help="Displays the credits.")
 async def credits(ctx):
     logger.info(f"{ctx.author.name}: .credits")
     await show_credits(ctx)
@@ -1306,7 +1174,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                    data=data)
 
 
-@bot.command()
+@bot.command(help="Play a song in the VC!")
 async def play(ctx, *, url=None):
     channel = ctx.message.author.voice.channel
     if not channel:
@@ -1362,7 +1230,7 @@ async def play(ctx, *, url=None):
         await ctx.send("Please send a URL in the command!")
 
 
-@bot.command()
+@bot.command(help="Stop a song from playing in the VC, and make the bot leave!")
 async def stop(ctx):
     try:
         channelid = ctx.message.author.voice.channel.id
@@ -1381,28 +1249,13 @@ async def stop(ctx):
             await ctx.send("The bot is not in a voice channel!")
 
 
-@bot.command(aliases=["h"])
-async def help(ctx, *, command=None):
-    logger.info(f"{ctx.author.name}: .help {command}")
-    await help_embeds2(ctx, command)
-
-
 @slash.slash(
     name="help",
-    description="Shows all the possible commands and how to use them",
-    options=[
-        create_option(
-            name="command",
-            description=
-            'Will show the specific command that you want to know about, or type "help" for all the commands',
-            option_type=3,
-            required=False)
-    ],
+    description="Shows all the possible commands and how to use them"
 )
-async def _help(ctx, command=None):  # noqa: C901
-    logger.info(f"{ctx.author.name}: /help {command}")
-    await ctx.defer()
-    await help_embeds2(ctx, command)
+async def _help(ctx):  # noqa: C901
+    logger.info(f"{ctx.author.name}: /help")
+    await ctx.send("Please use `\help` instead.")
 
 
 def source(o):
@@ -1420,6 +1273,10 @@ loc = {}
 exec(compile(m, "<string>", "exec"), discord.gateway.__dict__, loc)
 
 discord.gateway.DiscordWebSocket.identify = loc["identify"]
+
+
+bot.load_extension("cogs.moderation")
+
 
 keep_alive()
 bot.run(os.getenv('TOKEN'))
