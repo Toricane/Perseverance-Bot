@@ -1,15 +1,17 @@
 import subprocess
 
-list_files = subprocess.run(["pip", "install", "--upgrade", "pip"])
-list_files = subprocess.run(["pip", "install", "googletrans==3.1.0a0"])
-list_files = subprocess.run(["pip", "install", "prsaw"])
+# list_files = subprocess.run(["sudo", "pip3", "install", "--upgrade", "pip"])
+# list_files = subprocess.run(["sudo", "pip3", "install", "googletrans==3.1.0a0"])
+# list_files = subprocess.run(["sudo", "pip3", "install", "prsaw"])
+
+from dotenv import load_dotenv
+load_dotenv()
 
 import os
 import discord
 from discord.ext import commands, tasks
 import logging
 import random
-from replit import db
 from website.keep_alive import keep_alive
 import asyncio
 from itertools import cycle
@@ -26,9 +28,6 @@ import youtube_dl
 from pretty_help import PrettyHelp
 from asyncio import coroutine
 import traceback
-
-from asteval import Interpreter
-aeval = Interpreter()
 
 from cogwatch import Watcher
 
@@ -70,7 +69,7 @@ status = cycle([
     '\\help', f'{servers} servers'
 ])
 
-guild_ids = db["id"]
+guild_ids = [824862561328562176]
 
 
 @bot.event
@@ -103,24 +102,6 @@ async def on_message(message):
 
     msg = message.content.lower()
 
-    if msg == "/setup":
-        if message.author.id == 721093211577385020:
-            await used('/setup')
-            ido = message.guild.id
-            if ido not in db["id"]:
-                ids = db["id"]
-                ids.append(ido)
-                db["id"] = ids
-                await used(db["id"])
-                await message.reply(
-                    "Server has been set up! The bot is restarting! If the error persists, contact <@!721093211577385020> in Discord to restart the bot!"
-                )
-                os.execl(sys.executable, sys.executable, *sys.argv)
-            else:
-                await message.reply(
-                    "Server already setup! The bot is restarting! If the error persists, contact <@!721093211577385020> in Discord to restart the bot!"
-                )
-                os.execl(sys.executable, sys.executable, *sys.argv)
     if msg == "/restart" or msg == "\\restart":
         if message.author.id == 721093211577385020:
             await message.add_reaction('🆗')
@@ -148,11 +129,6 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    ido = int(guild.id)
-    ids = db["id"]
-    ids.remove(ido)
-    db["id"] = ids
-    await used(db["id"])
     with open("guilds.txt", "w") as f:
         f.write(f"{len(bot.guilds)}")
 

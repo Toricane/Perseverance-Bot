@@ -43,3 +43,21 @@ We have logged in as Perseverance#5012
 Saturday, Jul 03, 2021, 09:05 AM UTC
 guild_ids=[824862561328562176]
 In 17 servers
+We have logged in as Perseverance#5012
+Saturday, Jul 03, 2021, 11:06 AM UTC
+guild_ids=[824862561328562176]
+In 17 servers
+Toricane: /ping
+Toricane: /ping
+Sakarto: /ping
+peopleperson: /ping
+We have logged in as Perseverance#5012
+Saturday, Jul 03, 2021, 11:15 AM UTC
+guild_ids=[824862561328562176]
+In 17 servers
+Toricane: /ping
+Toricane: /ping
+Toricane: /ping
+peopleperson: /ping
+Toricane: /ping
+Toricane: /ping

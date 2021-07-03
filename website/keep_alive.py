@@ -3,7 +3,7 @@ from threading import Thread
 import os
 
 app = Flask(__name__)
-app.secret_key = str(os.environ['secret'])
+app.secret_key = str(os.environ['SECRET'])
 app.config['SESSION_TYPE'] = 'filesystem'
 
 
