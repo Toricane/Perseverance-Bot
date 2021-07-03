@@ -1,125 +1,118 @@
-import discord
-from discord.ext import commands
+import asyncio
 import random
+import typing
 
-player1 = ""
-player2 = ""
-turn = ""
-gameOver = True
+import discord
+import discord_slash.model
+from discord.ext import commands
+from discord_slash import cog_ext, SlashContext, ComponentContext
+from discord_slash.cog_ext import cog_component
+from discord_slash.utils import manage_commands, manage_components
+from discord_slash.model import ButtonStyle
 
-board = []
-
-winningConditions = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-]
-
-async def tictactoe_(ctx, p1: discord.Member, p2: discord.Member):
-    global count
-    global player1
-    global player2
-    global turn
-    global gameOver
-
-    if gameOver:
-        global board
-        board = [":white_large_square:", ":white_large_square:", ":white_large_square:",
-                 ":white_large_square:", ":white_large_square:", ":white_large_square:",
-                 ":white_large_square:", ":white_large_square:", ":white_large_square:"]
-        turn = ""
-        gameOver = False
-        count = 0
-
-        player1 = p1
-        player2 = p2
-
-        # print the board
-        embed = discord.Embed()
-        line = ""
-        content = ""
-        for x in range(len(board)):
-            if x == 2 or x == 5 or x == 8:
-                line += " " + board[x] + "\n"
-                content += line
-                line = ""
-            else:
-                line += " " + board[x]
-                content += line
-                line = ""
-        embed.add_field(name="Tic-Tac-Toe", value=content, )
-        await ctx.send(embed=embed)
-        # determine who goes first
-        num = random.randint(1, 2)
-        if num == 1:
-            turn = player1
-            await ctx.send("It is <@" + str(player1.id) + ">'s turn.")
-        elif num == 2:
-            turn = player2
-            await ctx.send("It is <@" + str(player2.id) + ">'s turn.")
-    else:
-        await ctx.send("A game is already in progress! Finish it before starting a new one.")
-
-async def place_(ctx, pos: int):
-    global turn
-    global player1
-    global player2
-    global board
-    global count
-    global gameOver
-
-    if not gameOver:
-        mark = ""
-        if turn == ctx.author:
-            if turn == player1:
-                mark = ":regional_indicator_x:"
-            elif turn == player2:
-                mark = ":o2:"
-            if 0 < pos < 10 and board[pos - 1] == ":white_large_square:" :
-                board[pos - 1] = mark
-                count += 1
-
-                # print the board
-                embed = discord.Embed()
-                line = ""
-                content = ""
-                for x in range(len(board)):
-                    if x == 2 or x == 5 or x == 8:
-                        line += " " + board[x] + "\n"
-                        content += line
-                        line = ""
-                    else:
-                        line += " " + board[x] + "\n"
-                        content += line
-                        line = ""
-
-                checkWinner(winningConditions, mark)
-                if gameOver == True:
-                    await ctx.send(mark + " won!")
-                elif count >= 9:
-                    gameOver = True
-                    await ctx.send("It's a tie!")
-
-                # switch turns
-                if turn == player1:
-                    turn = player2
-                elif turn == player2:
-                    turn = player1
-            else:
-                await ctx.send("Be sure to choose an integer between 1 and 9 (inclusive) and an unmarked tile.")
-        else:
-            await ctx.send("It is not your turn.")
-    else:
-        await ctx.send("Please start a new game using the !tictactoe command.")
+guild_ids = [764683397528158259]
 
 
-def checkWinner(winningConditions, mark):
-    global gameOver
-    for condition in winningConditions:
-        if board[condition[0]] == mark and board[condition[1]] == mark and board[condition[2]] == mark:
-            gameOver = True
+def duplicates(lst, item):
+    return [i for i, x in enumerate(lst) if x == item]
+
+
+def create_board():
+    """Creates the tic tac toe board"""
+    buttons = []
+    for i in range(9):
+        buttons.append(
+            manage_components.create_button(
+                style=ButtonStyle.grey,
+                label="‎",
+                custom_id=f"tic_tac_toe_button||{i}"))
+    action_rows = manage_components.spread_to_rows(*buttons, max_in_row=3)
+    return action_rows
+
+
+def checkWin(b, m):
+    return ((b[0] == m and b[1] == m and b[2] == m) or  # H top
+            (b[3] == m and b[4] == m and b[5] == m) or  # H mid
+            (b[6] == m and b[7] == m and b[8] == m) or  # H bot
+            (b[0] == m and b[3] == m and b[6] == m) or  # V left
+            (b[1] == m and b[4] == m and b[7] == m) or  # V centre
+            (b[2] == m and b[5] == m and b[8] == m) or  # V right
+            (b[0] == m and b[4] == m and b[8] == m) or  # LR diag
+            (b[2] == m and b[4] == m and b[6] == m))  # RL diag
+
+
+def checkDraw(b):
+    return ' ' not in b
+
+
+def getBoardCopy(b):
+    # Make a duplicate of the board. When testing moves we don't want to
+    # change the actual board
+    dupeBoard = []
+    for j in b:
+        dupeBoard.append(j)
+    return dupeBoard
+
+
+def testWinMove(b, mark, i):
+    # b = the board
+    # mark = 0 or X
+    # i = the square to check if makes a win
+    bCopy = getBoardCopy(b)
+    bCopy[i] = mark
+    return checkWin(bCopy, mark)
+
+
+def testForkMove(b, mark, i):
+    # Determines if a move opens up a fork
+    bCopy = getBoardCopy(b)
+    bCopy[i] = mark
+    winningMoves = 0
+    for j in range(0, 9):
+        if testWinMove(bCopy, mark, j) and bCopy[j] == ' ':
+            winningMoves += 1
+    return winningMoves >= 2
+
+
+def getComputerMove(b):
+    # Check computer win moves
+    for i in range(0, 9):
+        if b[i] == ' ' and testWinMove(b, 'enemy', i):
+            return i
+    # Check player win moves
+    for i in range(0, 9):
+        if b[i] == ' ' and testWinMove(b, 'player', i):
+            return i
+    # Check computer fork opportunities
+    for i in range(0, 9):
+        if b[i] == ' ' and testForkMove(b, 'X', i):
+            return i
+    # Check player fork opportunities, incl. two forks
+    playerForks = 0
+    for i in range(0, 9):
+        if b[i] == ' ' and testForkMove(b, '0', i):
+            playerForks += 1
+            tempMove = i
+    if playerForks == 1:
+        return tempMove
+    elif playerForks == 2:
+        for j in [1, 3, 5, 7]:
+            if b[j] == ' ':
+                return j
+    # Play center
+    if b[4] == ' ':
+        return 4
+    # Play side for special case
+    norm = b[0] == "player" and b[4] == "enemy" and b[8] == "player" and len(duplicates(b, ' ')) == 6 or b[6] == "player" and b[4] == "enemy" and b[2] == "player" and len(duplicates(b, ' ')) == 6
+    if norm:
+        for i in [1, 3, 5, 7]:
+            if b[i] == ' ':
+                return i
+    # Play a corner
+    for i in [0, 2, 6, 8]:
+        if b[i] == ' ':
+            return i
+    #Play a side
+    for i in [1, 3, 5, 7]:
+        if b[i] == ' ':
+            return i

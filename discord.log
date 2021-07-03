@@ -1,7 +1,0 @@
-2021-05-30 21:51:50,747:INFO:discord.client: logging in using static token
-2021-05-30 21:51:50,978:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
-2021-05-30 21:51:51,253:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-6r63",{"micros":229941,"calls":["discord-sessions-green-prd-2-72",{"micros":228001,"calls":["start_session",{"micros":158210,"calls":["api-prd-main-67tr",{"micros":155029,"calls":["get_user",{"micros":9893},"add_authorized_ip",{"micros":8321},"get_guilds",{"micros":30324},"coros_wait",{"micros":1}]}]},"guilds_connect",{"micros":7,"calls":[]},"presence_connect",{"micros":1,"calls":[]}]}]}] (Session ID: 2ec8ede1eed151c2a24ab41378d935a2).
-2021-05-30 21:51:53,417:INFO:discord: We have logged in as Perseverance#5012
-2021-05-30 21:51:53,418:INFO:discord: Sunday, May 30, 2021, 09:51 PM UTC
-2021-05-30 21:51:53,418:INFO:discord: guild_ids=[824862561328562176]
-2021-05-30 21:51:53,418:INFO:discord: In 16 servers

@@ -201,7 +201,7 @@ async def pls_google(ctx, text, results): # noqa: C901
         for x in range(0, results):
             if words(alphabet[x]) == False:
                 response = requests.get(alphabet[x])
-                soup = BeautifulSoup(response.text)
+                soup = BeautifulSoup(response.text, features="lxml")
                 metas = soup.find_all('meta')
                 try:
                     title = str(soup.title.string)
@@ -253,7 +253,7 @@ async def pls_google(ctx, text, results): # noqa: C901
         for x in range(0, results):
             if words(alphabet[x]) == False:
                 response = requests.get(alphabet[x])
-                soup = BeautifulSoup(response.text)
+                soup = BeautifulSoup(response.text, features="lxml")
                 metas = soup.find_all('meta')
                 try:
                     title = str(soup.title.string)
