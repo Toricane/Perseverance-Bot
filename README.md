@@ -6,7 +6,7 @@
 
 Perseverance is a multi-purpose bot coded in Python. It has moderation, fun, and text commands, with many more in the future. It is also 24/7! Perseverance is currently being developed by a single person. Perseverance was created on February 16, 2021, by Toricane#0818. Join Perseverance's Discord server to learn how to use it and to give feedback!
 
-The prefix for the bot is "\" (backslash). Use \help to find all of the commands, and \help <command> to know more about a specific command. 
+The prefix for the bot is "\\" (one backslash). Use \help to find all of the commands, and \help <command> to know more about a specific command. 
 
 The bot also has slash commands. Type "/" in the text box and the list of commands will appear.
 
