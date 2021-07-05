@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 import subprocess
 
 # list_files = subprocess.run(["sudo", "pip3", "install", "--upgrade", "pip"])
@@ -94,7 +95,7 @@ async def on_ready():
             'Never Gonna Give You Up', '\\help', 'hello there!',
             '\\help', f'{servers} servers'
         ])
-    watcher = Watcher(bot, path="cogs", preload=True)
+    watcher = Watcher(bot, path="/home/pi/Desktop/DiscordBots/Perseverance-Bot/cogs", preload=True)
     await watcher.start()
 
 @bot.event
@@ -107,7 +108,7 @@ async def on_message(message):
             await message.add_reaction('🆗')
             await bot.change_presence(status=discord.Status.invisible)
             await asyncio.sleep(1)
-            os.system("python main.py")
+            os.system("python3 main.py")
             sys.exit(0)
         else:
             await message.add_reaction('<:no:828741445069963274>')
@@ -197,7 +198,7 @@ async def load(ctx, extension=None):
     if ctx.author.id == 721093211577385020:
         if extension == None:
             try:
-                for filename in os.listdir("./cogs"):
+                for filename in os.listdir("/home/pi/Desktop/DiscordBots/Perseverance-Bot/cogs"):
                     if filename.endswith(".py"):
                         bot.load_extension(f"cogs.{filename[:-3]}")
                 await ctx.send("Successfully loaded all extensions.")
@@ -215,7 +216,7 @@ async def unload(ctx, extension=None):
     if ctx.author.id == 721093211577385020:
         if extension == None:
             try:
-                for filename in os.listdir("./cogs"):
+                for filename in os.listdir("/home/pi/Desktop/DiscordBots/Perseverance-Bot/cogs"):
                     if filename.endswith(".py"):
                         bot.unload_extension(f"cogs.{filename[:-3]}")
                 await ctx.send("Successfully unloaded all extensions.")
@@ -233,13 +234,13 @@ async def reload(ctx, extension=None):
     if ctx.author.id == 721093211577385020:
         if extension == None:
             try:
-                for filename in os.listdir("./cogs"):
+                for filename in os.listdir("/home/pi/Desktop/DiscordBots/Perseverance-Bot/cogs"):
                     if filename.endswith(".py"):
                         bot.unload_extension(f"cogs.{filename[:-3]}")
             except Exception as e:
                 await ctx.send(f"{e}")
             try:
-                for filename in os.listdir("./cogs"):
+                for filename in os.listdir("/home/pi/Desktop/DiscordBots/Perseverance-Bot/cogs"):
                     if filename.endswith(".py"):
                         bot.load_extension(f"cogs.{filename[:-3]}")
             except Exception as e:
@@ -575,10 +576,21 @@ async def _help(ctx):
     await ctx.send("Please use `\help` instead.")
 
 
-
-for filename in os.listdir("./cogs"):
-    if filename.endswith(".py"):
-        bot.load_extension(f"cogs.{filename[:-3]}")
+try:
+    for filename in os.listdir("/home/pi/Desktop/DiscordBots/Perseverance-Bot/cogs"):
+        try:
+            if filename.endswith(".py"):
+                try:
+                    bot.load_extension(f"cogs.{filename[:-3]}")
+                except Exception:
+                    print("inside")
+                    raise Exception
+        except Exception:
+            print("middle")
+            raise Exception
+except Exception:
+    print("outside")
+    raise Exception
 
 bot.load_extension("jishaku")
 
