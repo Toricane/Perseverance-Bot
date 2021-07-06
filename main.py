@@ -13,7 +13,6 @@ import discord
 from discord.ext import commands, tasks
 import logging
 import random
-from website.keep_alive import keep_alive
 import asyncio
 from itertools import cycle
 from discord_slash import SlashCommand
@@ -79,8 +78,8 @@ async def on_ready():
     print(f'We have logged in as {bot.user}')
     await used(f'We have logged in as {bot.user}')
     timestamp = datetime.datetime.now()
-    print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
-    await used(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p UTC"))
+    print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
+    await used(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
     print(f"guild_ids={guild_ids}")
     await used(f"guild_ids={guild_ids}")
     print(f"In {len(bot.guilds)} servers")
@@ -594,5 +593,4 @@ except Exception:
 
 bot.load_extension("jishaku")
 
-keep_alive()
 bot.run(os.getenv('TOKEN'))
