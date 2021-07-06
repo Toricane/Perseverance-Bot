@@ -1,9 +1,4 @@
 #! /usr/bin/python3
-import subprocess
-
-# list_files = subprocess.run(["sudo", "pip3", "install", "--upgrade", "pip"])
-# list_files = subprocess.run(["sudo", "pip3", "install", "googletrans==3.1.0a0"])
-# list_files = subprocess.run(["sudo", "pip3", "install", "prsaw"])
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,40 +6,22 @@ load_dotenv()
 import os
 import discord
 from discord.ext import commands, tasks
-import logging
-import random
 import asyncio
 from itertools import cycle
 from discord_slash import SlashCommand
 import sys
 import datetime
-import wikipedia as wiki
-from discord_slash.utils.manage_commands import create_option, create_choice
-import string
+from discord_slash.utils.manage_commands import create_option
 from discord.flags import Intents
-import re, ast, inspect
+import inspect
 from discord.utils import get
 import youtube_dl
 from pretty_help import PrettyHelp
-from asyncio import coroutine
-import traceback
 
 from cogwatch import Watcher
 
-from cmds.credits import show_credits
-from cmds.define import pls_define
-from cmds.eight_ball import answer
-from cmds.embed import create_embed
 from cmds.feedback import create_feedback, list_feedback, delete_feedback
-from cmds.googlestuff import pls_google, pls_translate
-from cmds.help import help_embeds2
-from cmds.inspire import inspired
-from cmds.poll import create_poll
-from cmds.morse import encrypt, decrypt
-from cmds.reply import maybe_reply as meply
-from cmds.purge import purge_msgs
 from cmds.ytactivity import group_say
-from cmds.ai import ai_response, get_a_joke, get_image
 
 from log import used, error
 
