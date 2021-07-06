@@ -1,6 +1,0 @@
-.env
-.lock
-.toml
-.log
-.txt
-__pycache__
