@@ -85,9 +85,9 @@ async def on_ready():
     await used(f"guild_ids={guild_ids}")
     print(f"In {len(bot.guilds)} servers")
     await used(f"In {len(bot.guilds)} servers")
-    with open("guilds.txt", "w") as f:
+    with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "w") as f:
         f.write(f"{len(bot.guilds)}")
-    with open("guilds.txt", "r") as f:
+    with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "r") as f:
         servers = f.read()
         global status
         status = cycle([
@@ -124,13 +124,13 @@ async def on_guild_join(guild):
                 'Thank you for inviting me! If you have any issues, DM <@!721093211577385020> or join the Discord bot server here: https://discord.gg/QFcMcCQGbU'
             )
             break
-    with open("guilds.txt", "w") as f:
+    with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "w") as f:
         f.write(f"{len(bot.guilds)}")
 
 
 @bot.event
 async def on_guild_remove(guild):
-    with open("guilds.txt", "w") as f:
+    with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "w") as f:
         f.write(f"{len(bot.guilds)}")
 
 
