@@ -53,14 +53,14 @@ guild_ids = [824862561328562176]
 async def on_ready():
     change_status.start()
     print(f'We have logged in as {bot.user}')
-    await used(f'We have logged in as {bot.user}')
+    used(f'We have logged in as {bot.user}')
     timestamp = datetime.datetime.now()
     print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
-    await used(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
+    used(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
     print(f"guild_ids={guild_ids}")
-    await used(f"guild_ids={guild_ids}")
+    used(f"guild_ids={guild_ids}")
     print(f"In {len(bot.guilds)} servers")
-    await used(f"In {len(bot.guilds)} servers")
+    used(f"In {len(bot.guilds)} servers")
     with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "w") as f:
         f.write(f"{len(bot.guilds)}")
     with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "r") as f:
@@ -112,7 +112,7 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_member_join(member):
-    await used(f'{member} has joined {member.guild.name}')
+    used(f'{member} has joined {member.guild.name}')
     if member.guild.id == 820419188866547712:
         role = "Shark"
         await member.add_roles(discord.utils.get(member.guild.roles,
@@ -121,12 +121,12 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-    await used(f'{member} has left {member.guild.name}')
+    used(f'{member} has left {member.guild.name}')
 
 
 @bot.event
-async def on_slash_command_error(ctx, error):
-    if isinstance(error, discord.ext.commands.errors.MissingPermissions):
+async def on_slash_command_error(ctx, ex):
+    if isinstance(ex, discord.ext.commands.errors.MissingPermissions):
         perms_missing = error.missing_perms
         perms_missing = f"{perms_missing}"
         perms_missing = perms_missing.strip("[]'")
@@ -135,7 +135,7 @@ async def on_slash_command_error(ctx, error):
             f"You don't have `{perms_missing}` permissions to run this command, {ctx.author.mention}."
         )
     else:
-        raise error
+        raise ex
 
 
 @bot.event
@@ -235,7 +235,7 @@ async def reload(ctx, extension=None):
 
 @bot.command(help="Run some code!\nRequires you to be Toricane#0818.")
 async def run(ctx, *, code):
-    await used(f"{ctx.author.name}: .run {code}")
+    used(f"{ctx.author.name}: .run {code}")
     try:
         if ctx.author.id == 721093211577385020:
             res = eval(code)
@@ -248,7 +248,7 @@ async def run(ctx, *, code):
         else:
             await ctx.message.add_reaction('<:no:828741445069963274>')
     except Exception as e:
-        await used(str(e))
+        used(str(e))
 
 
 @slash.slash(name="run",
@@ -260,7 +260,7 @@ async def run(ctx, *, code):
                                required=True)
              ])
 async def _run(ctx, code):
-    await used(f"{ctx.author.name}: /run {code}")
+    used(f"{ctx.author.name}: /run {code}")
     try:
         if ctx.author.id == 721093211577385020:
             res = eval(code)
@@ -271,7 +271,7 @@ async def _run(ctx, code):
         else:
             await ctx.message.add_reaction('<:no:828741445069963274>')
     except Exception as e:
-        await used(str(e))
+        used(str(e))
 
 
 @bot.command(aliases=["act"], help="Play games in the vc!")
@@ -336,7 +336,7 @@ async def _activities(ctx, activity_type):
 
 @bot.command(aliases=["fb"], help="Send feedback for the bot!")
 async def feedback(ctx, *, feedback):
-    await used(f"{ctx.author.name}: .feedback {feedback}")
+    used(f"{ctx.author.name}: .feedback {feedback}")
     await create_feedback(ctx, feedback)
 
 
@@ -351,20 +351,20 @@ async def feedback(ctx, *, feedback):
     ],
 )
 async def _feedback(ctx, feedback):
-    await used(f"{ctx.author.name}: /feedback {feedback}")
+    used(f"{ctx.author.name}: /feedback {feedback}")
     await create_feedback(ctx, feedback)
 
 
 @bot.command(aliases=["fblist"], help="List the feedback.")
 async def feedbacklist(ctx):
-    await used(f"{ctx.author.name}: .feedbacklist")
+    used(f"{ctx.author.name}: .feedbacklist")
     await ctx.send("List of feedbacks:")
     await list_feedback(ctx)
 
 
 @slash.slash(name="feedbacklist", description="List feedback!")
 async def _feedbacklist(ctx):
-    await used(f"{ctx.author.name}: /feedbacklist")
+    used(f"{ctx.author.name}: /feedbacklist")
     await ctx.defer()
     await ctx.send("List of feedbacks:")
     await list_feedback(ctx)
@@ -372,7 +372,7 @@ async def _feedbacklist(ctx):
 
 @bot.command(aliases=["fbclear"], help="Clear or delete feedback!\nRequires you to be Toricane#0818.\nTo find the number to delete, try using `/list` or `.list`.")
 async def feedbackclear(ctx, number=None):
-    await used(f"{ctx.author.name}: /feedbackclear {number}")
+    used(f"{ctx.author.name}: /feedbackclear {number}")
     await delete_feedback(ctx, number)
 
 
@@ -389,27 +389,27 @@ async def feedbackclear(ctx, number=None):
     ],
 )
 async def _feedbackclear(ctx, number=None):
-    await used(f"{ctx.author.name}: /feedbackclear {number}")
+    used(f"{ctx.author.name}: /feedbackclear {number}")
     await ctx.defer()
     await delete_feedback(ctx, number)
 
 
 @bot.command(help="Returns pong with the latency in milliseconds.")
 async def ping(ctx):
-    await used(f"{ctx.author.name}: /ping")
+    used(f"{ctx.author.name}: /ping")
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 
 @slash.slash(name="ping", description="This returns the bot latency")
 async def _ping(ctx):
-    await used(f"{ctx.author.name}: .ping")
+    used(f"{ctx.author.name}: .ping")
     await ctx.defer()
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 
 @bot.command(help="Shows the bot's profile picture.")
 async def perseverance(ctx):
-    await used(f"{ctx.author.name}: .perseverance")
+    used(f"{ctx.author.name}: .perseverance")
     await ctx.send("Profile Picture:")
     await ctx.send(file=discord.File('preservation.png'))
 
@@ -419,7 +419,7 @@ async def perseverance(ctx):
     description="Shows the profile picture of Perseverance",
 )
 async def _perseverance(ctx):
-    await used(f"{ctx.author.name}: /perseverance")
+    used(f"{ctx.author.name}: /perseverance")
     await ctx.send("Profile Picture:")
     await ctx.send(file=discord.File('preservation.png'))
 
