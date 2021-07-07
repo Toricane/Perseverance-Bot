@@ -5,8 +5,8 @@ def used(command=None, ctx=None, error=None):
         print(f"\n{ctx.author.name}#{ctx.author.discriminator}: {command} -> {error}")
     else:
         with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/commands.txt", "a") as f:
-            f.write(f"\n{command}")
-        print(f"\n{command}")
+            f.write(f"\n{command} -> {error}")
+        print(f"\n{command} -> {error}")
 
 def error(error=None, command=None, ctx=None):
     if not ctx == None:
@@ -15,5 +15,5 @@ def error(error=None, command=None, ctx=None):
         print(f"\n{ctx.author.name}#{ctx.author.discriminator}: {command} -> {error}")
     else:
         with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/errors.txt", "a") as f:
-            f.write(f"\n{error}")
-        print(f"\n{error}")
+            f.write(f"\n{command} -> {error}")
+        print(f"\n{command} -> {error}")
