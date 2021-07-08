@@ -23,7 +23,9 @@ from cogwatch import Watcher
 from cmds.feedback import create_feedback, list_feedback, delete_feedback
 from cmds.ytactivity import group_say
 
-from log import used, error
+from log import log
+
+l = log()
 
 ending_note = "Type \help command for more info on a command.\nYou can also type \help category for more info on a category.\nCategories are cAsE sEnSiTiVe.\n\nThe bot also has / commands, try them out!"
 
@@ -52,15 +54,11 @@ guild_ids = [824862561328562176]
 @bot.event
 async def on_ready():
     change_status.start()
-    print(f'We have logged in as {bot.user}')
-    used(f'We have logged in as {bot.user}')
+    l.log(f'We have logged in as {bot.user}')
     timestamp = datetime.datetime.now()
-    print(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
-    used(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
-    print(f"guild_ids={guild_ids}")
-    used(f"guild_ids={guild_ids}")
-    print(f"In {len(bot.guilds)} servers")
-    used(f"In {len(bot.guilds)} servers")
+    l.log(timestamp.strftime(r"%A, %b %d, %Y, %I:%M %p PDT"))
+    l.log(f"guild_ids={guild_ids}")
+    l.log(f"In {len(bot.guilds)} servers")
     with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "w") as f:
         f.write(f"{len(bot.guilds)}")
     with open("/home/pi/Desktop/DiscordBots/Perseverance-Bot/guilds.txt", "r") as f:
@@ -112,7 +110,7 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_member_join(member):
-    used(f'{member} has joined {member.guild.name}')
+    l.log(f'{member} has joined {member.guild.name}')
     if member.guild.id == 820419188866547712:
         role = "Shark"
         await member.add_roles(discord.utils.get(member.guild.roles,
@@ -121,13 +119,13 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-    used(f'{member} has left {member.guild.name}')
+    l.log(f'{member} has left {member.guild.name}')
 
 
 @bot.event
 async def on_slash_command_error(ctx, ex):
     if isinstance(ex, discord.ext.commands.errors.MissingPermissions):
-        perms_missing = error.missing_perms
+        perms_missing = ex.missing_perms
         perms_missing = f"{perms_missing}"
         perms_missing = perms_missing.strip("[]'")
         perms_missing = perms_missing.replace("_", " ")
@@ -154,7 +152,7 @@ async def on_command_error(ctx, ex):
         pass
     else:
         await ctx.send("There was an unexpected error, and the bot developer has been notified.")
-        error(ex)
+        l.error(ctx, ex)
         channel = await bot.fetch_channel('852959272399798323')
         guild = ctx.guild.name
         command = ctx.command
@@ -235,7 +233,7 @@ async def reload(ctx, extension=None):
 
 @bot.command(help="Run some code!\nRequires you to be Toricane#0818.")
 async def run(ctx, *, code):
-    used(f"{ctx.author.name}: .run {code}")
+    l.used(ctx)
     try:
         if ctx.author.id == 721093211577385020:
             res = eval(code)
@@ -248,7 +246,7 @@ async def run(ctx, *, code):
         else:
             await ctx.message.add_reaction('<:no:828741445069963274>')
     except Exception as e:
-        used(str(e))
+        l.error(ctx, e)
 
 
 @slash.slash(name="run",
@@ -260,7 +258,7 @@ async def run(ctx, *, code):
                                required=True)
              ])
 async def _run(ctx, code):
-    used(f"{ctx.author.name}: /run {code}")
+    l.used(ctx)
     try:
         if ctx.author.id == 721093211577385020:
             res = eval(code)
@@ -271,7 +269,7 @@ async def _run(ctx, code):
         else:
             await ctx.message.add_reaction('<:no:828741445069963274>')
     except Exception as e:
-        used(str(e))
+        l.error(ctx, e)
 
 
 @bot.command(aliases=["act"], help="Play games in the vc!")
@@ -336,7 +334,7 @@ async def _activities(ctx, activity_type):
 
 @bot.command(aliases=["fb"], help="Send feedback for the bot!")
 async def feedback(ctx, *, feedback):
-    used(f"{ctx.author.name}: .feedback {feedback}")
+    l.used(ctx)
     await create_feedback(ctx, feedback)
 
 
@@ -351,20 +349,20 @@ async def feedback(ctx, *, feedback):
     ],
 )
 async def _feedback(ctx, feedback):
-    used(f"{ctx.author.name}: /feedback {feedback}")
+    l.used(ctx)
     await create_feedback(ctx, feedback)
 
 
 @bot.command(aliases=["fblist"], help="List the feedback.")
 async def feedbacklist(ctx):
-    used(f"{ctx.author.name}: .feedbacklist")
+    l.used(ctx)
     await ctx.send("List of feedbacks:")
     await list_feedback(ctx)
 
 
 @slash.slash(name="feedbacklist", description="List feedback!")
 async def _feedbacklist(ctx):
-    used(f"{ctx.author.name}: /feedbacklist")
+    l.used(ctx)
     await ctx.defer()
     await ctx.send("List of feedbacks:")
     await list_feedback(ctx)
@@ -372,7 +370,7 @@ async def _feedbacklist(ctx):
 
 @bot.command(aliases=["fbclear"], help="Clear or delete feedback!\nRequires you to be Toricane#0818.\nTo find the number to delete, try using `/list` or `.list`.")
 async def feedbackclear(ctx, number=None):
-    used(f"{ctx.author.name}: /feedbackclear {number}")
+    l.used(ctx)
     await delete_feedback(ctx, number)
 
 
@@ -389,27 +387,27 @@ async def feedbackclear(ctx, number=None):
     ],
 )
 async def _feedbackclear(ctx, number=None):
-    used(f"{ctx.author.name}: /feedbackclear {number}")
+    l.used(ctx)
     await ctx.defer()
     await delete_feedback(ctx, number)
 
 
 @bot.command(help="Returns pong with the latency in milliseconds.")
 async def ping(ctx):
-    used(f"{ctx.author.name}: /ping")
+    l.used(ctx)
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 
 @slash.slash(name="ping", description="This returns the bot latency")
 async def _ping(ctx):
-    used(f"{ctx.author.name}: .ping")
+    l.used(ctx)
     await ctx.defer()
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms.')
 
 
 @bot.command(help="Shows the bot's profile picture.")
 async def perseverance(ctx):
-    used(f"{ctx.author.name}: .perseverance")
+    l.used(ctx)
     await ctx.send("Profile Picture:")
     await ctx.send(file=discord.File('preservation.png'))
 
@@ -419,129 +417,9 @@ async def perseverance(ctx):
     description="Shows the profile picture of Perseverance",
 )
 async def _perseverance(ctx):
-    used(f"{ctx.author.name}: /perseverance")
+    l.used(ctx)
     await ctx.send("Profile Picture:")
     await ctx.send(file=discord.File('preservation.png'))
-
-
-ytdl_format_options = {
-    'format': 'bestaudio/best',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'quiet': True,
-    'no_warnings': True,
-    'default_search': 'auto',
-    'source_address':
-    '0.0.0.0'  # bind to ipv4 since ipv6 addresses cause issues sometimes
-}
-
-ffmpeg_options = {'options': '-vn'}
-
-ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-
-
-class YTDLSource(discord.PCMVolumeTransformer):
-    def __init__(self, source, *, data, volume=0.5):
-        super().__init__(source, volume)
-
-        self.data = data
-
-        self.title = data.get('title')
-        self.url = data.get('url')
-
-    @classmethod
-    async def from_url(cls, url, *, loop=None, stream=False):
-        loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(
-            None, lambda: ytdl.extract_info(url, download=not stream))
-
-        if 'entries' in data:
-            # take first item from a playlist
-            data = data['entries'][0]
-
-        filename = data['url'] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options),
-                   data=data)
-
-
-@bot.command(help="Play a song in the VC!")
-async def play(ctx, *, url=None):
-    channel = ctx.message.author.voice.channel
-    if not channel:
-        await ctx.send("You are not connected to a voice channel")
-        return
-    voice = get(bot.voice_clients, guild=ctx.guild)
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect()
-    await voice.disconnect()
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect()
-
-    if url != None:
-        """Plays from a url (almost anything youtube_dl supports)"""
-
-        async with ctx.typing():
-            player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
-            ctx.voice_client.play(player,
-                                  after=lambda e: print('Player error: %s' % e)
-                                  if e else None)
-
-        url_thumb = f"https://i.ytimg.com/vi/{url.replace('https://www.youtube.com/watch?v=', '')}/maxresdefault.jpg"
-
-        embed = discord.Embed(colour=discord.Colour.orange())
-        embed.add_field(
-            name="▶️ Now playing",
-            value=
-            f"[{player.title}]({url}) [<@{ctx.author.id}>]\nJoin VC <#{channel.id}>",
-            inline=False)
-        if "https://www.youtube.com/watch?v=" in url:
-            embed.set_thumbnail(url=url_thumb)
-        embed.set_footer(
-            text=f"Requested by {ctx.author.name}#{ctx.author.discriminator}.")
-        await ctx.send(embed=embed)
-        while ctx.voice_client.is_playing() == True:
-            await asyncio.sleep(1)
-        await asyncio.sleep(1)
-        await voice.disconnect()
-
-        embed = discord.Embed(colour=discord.Colour.orange())
-        embed.add_field(name="⏹️ Stopped and left",
-                        value=f"<#{channel.id}>",
-                        inline=False)
-        embed.set_footer(
-            text=f"Requested by {ctx.author.name}#{ctx.author.discriminator}.")
-        await ctx.send(embed=embed)
-
-    else:
-        await ctx.send("Please send a URL in the command!")
-
-
-@bot.command(help="Stop a song from playing in the VC, and make the bot leave!")
-async def stop(ctx):
-    await ctx.send(ctx)
-    try:
-        channelid = ctx.message.author.voice.channel.id
-        await ctx.voice_client.disconnect()
-        embed = discord.Embed(colour=discord.Colour.orange())
-        embed.add_field(name="⏹️ Stopped and left",
-                        value=f"<#{channelid}>",
-                        inline=False)
-        embed.set_footer(
-            text=f"Requested by {ctx.author.name}#{ctx.author.discriminator}.")
-        await ctx.send(embed=embed)
-    except:
-        if ctx.author.voice == None:
-            await ctx.send("You are not in a voice channel!")
-        else:
-            await ctx.send("The bot is not in a voice channel!")
 
 
 @slash.slash(
@@ -549,6 +427,7 @@ async def stop(ctx):
     description="Shows all the possible commands and how to use them"
 )
 async def _help(ctx):
+    l.used(ctx)
     await ctx.send("Please use `\help` instead.")
 
 
@@ -558,15 +437,15 @@ try:
             if filename.endswith(".py"):
                 try:
                     bot.load_extension(f"cogs.{filename[:-3]}")
-                except Exception:
+                except Exception as e:
                     print("inside")
-                    raise Exception
-        except Exception:
+                    raise e
+        except Exception as e:
             print("middle")
-            raise Exception
-except Exception:
+            raise e
+except Exception as e:
     print("outside")
-    raise Exception
+    raise e
 
 bot.load_extension("jishaku")
 
