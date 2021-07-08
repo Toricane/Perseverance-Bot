@@ -496,7 +496,7 @@ async def play(ctx, *, url=None):
 
         url_thumb = f"https://i.ytimg.com/vi/{url.replace('https://www.youtube.com/watch?v=', '')}/maxresdefault.jpg"
 
-        embed = discord.Embed(colour=discord.Colour.blue())
+        embed = discord.Embed(colour=discord.Colour.orange())
         embed.add_field(
             name="▶️ Now playing",
             value=
@@ -512,7 +512,7 @@ async def play(ctx, *, url=None):
         await asyncio.sleep(1)
         await voice.disconnect()
 
-        embed = discord.Embed(colour=discord.Colour.blue())
+        embed = discord.Embed(colour=discord.Colour.orange())
         embed.add_field(name="⏹️ Stopped and left",
                         value=f"<#{channel.id}>",
                         inline=False)
@@ -530,7 +530,7 @@ async def stop(ctx):
     try:
         channelid = ctx.message.author.voice.channel.id
         await ctx.voice_client.disconnect()
-        embed = discord.Embed(colour=discord.Colour.blue())
+        embed = discord.Embed(colour=discord.Colour.orange())
         embed.add_field(name="⏹️ Stopped and left",
                         value=f"<#{channelid}>",
                         inline=False)
