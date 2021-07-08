@@ -7,16 +7,8 @@ from cmds.poll import create_poll
 from cmds.purge import purge_msgs
 from cmds.embed import create_embed
 
-import logging
-
-logger = logging.getLogger('discord')
-logger.setLevel(logging.ERROR)
-handler = logging.FileHandler(filename='errors.log',
-                              encoding='utf-8',
-                              mode='w')
-handler.setFormatter(
-    logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+from log import log
+l = log()
 
 class Utility(commands.Cog, description="Useful commands!"):
     def __init__(self, bot):
@@ -25,6 +17,7 @@ class Utility(commands.Cog, description="Useful commands!"):
     # poll:
     @commands.command(help="Create a quick and easy poll!\nSeparate the choices with \"/\".")
     async def poll(self, ctx, question, choices, mention=None):
+        l.used(ctx)
         await create_poll(ctx, question, choices, mention)
 
     @cog_ext.cog_slash(
@@ -47,6 +40,7 @@ class Utility(commands.Cog, description="Useful commands!"):
         ],
     )
     async def _poll(self, ctx, question, choices, mention=None):
+        l.used(ctx)
         try:
             await create_poll(ctx, question, choices, mention)
         except Exception:
@@ -55,6 +49,7 @@ class Utility(commands.Cog, description="Useful commands!"):
     # avatar:
     @commands.command(aliases=["pfp"], help="View someone's profile picture")
     async def avatar(self, ctx, member: discord.Member):
+        l.used(ctx)
         try:
             embed = discord.Embed(colour=discord.Colour.orange())
             url = member.avatar_url
@@ -63,7 +58,7 @@ class Utility(commands.Cog, description="Useful commands!"):
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send("There was an unexpected error, and the bot developer has been notified.")
-            logger.error(e)
+            l.error(ctx, e)
 
     @cog_ext.cog_slash(
         name="avatar",
@@ -76,19 +71,22 @@ class Utility(commands.Cog, description="Useful commands!"):
         ],
     )
     async def _avatar(self, ctx, member: discord.Member):
+        l.used(ctx)
         try:
             embed = discord.Embed(colour=discord.Colour.orange())
             url = member.avatar_url
             embed.add_field(name=f'{member}', value='Avatar:', inline=False)
             embed.set_image(url=url)
             await ctx.send(embed=embed)
-        except Exception:
+        except Exception as e:
+            l.error(ctx, e)
             await ctx.send("There was an unexpected error, and the bot developer has been notified.")
 
     # purge:
     @commands.command(help="Delete some messages!\nDefault 5.\nRequires Manage Messages permission to use.")
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, amount=5, user: discord.Member = None):
+        l.used(ctx)
         await purge_msgs(ctx, amount, usere=user, client=self.bot, method="dpy")
 
     @cog_ext.cog_slash(name="purge",
@@ -106,12 +104,14 @@ class Utility(commands.Cog, description="Useful commands!"):
                 ])
     @commands.has_permissions(manage_messages=True)
     async def _purge(self, ctx, amount=5, user=None):
+        l.used(ctx)
         await ctx.defer()
         await purge_msgs(ctx, amount, usere=user, client=self.bot, method="slash")
 
     # credits:
     @commands.command(aliases=["info", "about"], help="Displays the credits.")
     async def credits(self, ctx):
+        l.used(ctx)
         embed = discord.Embed(colour=discord.Colour.orange())
         embed.set_author(name='Credits')
         embed.add_field(name='Created by Toricane#0818',
@@ -147,6 +147,7 @@ class Utility(commands.Cog, description="Useful commands!"):
 
     @cog_ext.cog_slash(name="credits", description="Shows the credits")
     async def _credits(self, ctx):
+        l.used(ctx)
         embed = discord.Embed(colour=discord.Colour.orange())
         embed.set_author(name='Credits')
         embed.add_field(name='Created by Toricane#0818',
@@ -183,6 +184,7 @@ class Utility(commands.Cog, description="Useful commands!"):
     # embed:
     @commands.command(help="Create an embed using the bot!")
     async def embed(self, ctx, title, text, color="default"):
+        l.used(ctx)
         await create_embed(ctx, title, text, color)
 
     @cog_ext.cog_slash(
@@ -217,11 +219,13 @@ class Utility(commands.Cog, description="Useful commands!"):
         ],
     )
     async def _embed(self, ctx, title, text, color="default"):
+        l.used(ctx)
         await create_embed(ctx, title, text, color)
 
     # invite:
     @commands.command(help="Get the invite link for the bot!")
     async def invite(self, ctx):
+        l.used(ctx)
         embed = discord.Embed(colour=discord.Colour.orange())
         embed.add_field(
             name='Invite the bot!',
@@ -232,6 +236,7 @@ class Utility(commands.Cog, description="Useful commands!"):
 
     @cog_ext.cog_slash(name="invite", description="Shows the invite link for the bot")
     async def _invite(self, ctx):
+        l.used(ctx)
         embed = discord.Embed(colour=discord.Colour.orange())
         embed.add_field(
             name='Invite the bot!',

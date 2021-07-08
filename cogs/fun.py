@@ -1,9 +1,12 @@
 import discord
 from discord.ext import commands
-from discord_slash import cog_ext, SlashContext
+from discord_slash import cog_ext, SlashContext, context
 from discord_slash.utils.manage_commands import create_option
 from cmds.ai import get_a_joke, get_image, ai_response
 from cmds.inspire import inspired
+
+from log import log
+l = log()
 
 import random
 
@@ -27,6 +30,7 @@ class Fun(commands.Cog, description="Funny commands!"):
     # 8ball:
     @commands.command(name="8ball", help="Ask a question, and the bot tells your fortune.")
     async def a8ball(self, ctx, question):
+        l.used(ctx)
         await ctx.send(answer())
 
 
@@ -41,20 +45,24 @@ class Fun(commands.Cog, description="Funny commands!"):
         ],
     )
     async def _8ball(self, ctx: SlashContext, question):
+        l.used(ctx)
         await ctx.send(answer())
 
     # hi:
     @commands.command(help="The bot will say hello to you!")
     async def hi(self, ctx):
+        l.used(ctx)
         await ctx.send("Hello!")
 
     @cog_ext.cog_slash(name="hi", description="The bot will say hello to you")
     async def _hi(self, ctx: SlashContext):
+        l.used(ctx)
         await ctx.send('Hello!')
 
     # hello:
     @commands.command(help="Say hello to someone!")
     async def hello(self, ctx, *, name):
+        l.used(ctx)
         name = name.capitalize()
         if name == "There":
             await ctx.send("General Kenobi!")
@@ -74,6 +82,7 @@ class Fun(commands.Cog, description="Funny commands!"):
         ],
     )
     async def _hello(self, ctx: SlashContext, name):
+        l.used(ctx)
         name = name.capitalize()
         if name == "There":
             await ctx.send("General Kenobi!")
@@ -83,16 +92,19 @@ class Fun(commands.Cog, description="Funny commands!"):
     # bye:
     @commands.command(help="The bot will say bye to you.")
     async def bye(self, ctx):
+        l.used(ctx)
         await ctx.send("Bye!")
 
 
     @cog_ext.cog_slash(name="bye", description="The bot will say bye to you")
     async def _bye(self, ctx: SlashContext):
+        l.used(ctx)
         await ctx.send('Bye!')
 
     # joke:
     @commands.command(help="Gives a random joke.")
     async def joke(self, ctx, *, joke=None):
+        l.used(ctx)
         if joke == None:
             await get_a_joke(ctx, joke)
         else:
@@ -121,6 +133,7 @@ class Fun(commands.Cog, description="Funny commands!"):
 
     @cog_ext.cog_slash(name="joke", description="Gives you a joke")
     async def _joke(self, ctx: SlashContext, joke=None):
+        l.used(ctx)
         if joke == None:
             await get_a_joke(ctx, joke)
         else:
@@ -150,6 +163,7 @@ class Fun(commands.Cog, description="Funny commands!"):
     # image:
     @commands.command(help="Searches for an image!")
     async def image(self, ctx, *, text=None):
+        l.used(ctx)
         if text != None:
             if "aww" in text:
                 await get_image(ctx, text, "aww")
@@ -178,6 +192,7 @@ class Fun(commands.Cog, description="Funny commands!"):
     
     @cog_ext.cog_slash(name="image", description="Searches for an image")
     async def _image(self, ctx: SlashContext, text=None):
+        l.used(ctx)
         if text != None:
             if "aww" in text:
                 await get_image(ctx, text, "aww")
@@ -207,6 +222,7 @@ class Fun(commands.Cog, description="Funny commands!"):
     # ai:
     @commands.command(help="Get an AI response!")
     async def ai(self, ctx, *, msg):
+        l.used(ctx)
         if "shark" in msg:
             await ctx.send("Sharks are the BEST!")
         else:
@@ -222,6 +238,7 @@ class Fun(commands.Cog, description="Funny commands!"):
                                 required=True)
                 ])
     async def _ai(self, ctx, msg):
+        l.used(ctx)
         if "shark" in msg:
             await ctx.send("Sharks are the BEST!")
         else:
@@ -230,12 +247,14 @@ class Fun(commands.Cog, description="Funny commands!"):
     # inspire:
     @commands.command(help="Gives a random inspirational quote.")
     async def inspire(self, ctx):
+        l.used(ctx)
         quoted = await inspired(ctx)
         await ctx.send(quoted)
 
     @cog_ext.cog_slash(name="inspire",
                 description="The bot will send a random inspirational quote")
     async def _inspire(self, ctx: SlashContext):
+        l.used(ctx)
         quoted = await inspired(ctx)
         await ctx.send(quoted)
 

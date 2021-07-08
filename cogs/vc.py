@@ -5,6 +5,9 @@ from discord_slash.utils.manage_commands import create_option
 import youtube_dl, asyncio
 from discord.utils import get
 
+from log import log
+l = log()
+
 ytdl_format_options = {
     'format': 'bestaudio/best',
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
@@ -57,6 +60,7 @@ class VC(commands.Cog, description="Voice channel related commands!"):
     # commands: play, stop
     @commands.command(help="Play a song in the VC!")
     async def play(self, ctx, *, url=None):
+        l.used(ctx)
         channel = ctx.message.author.voice.channel
         if not channel:
             await ctx.send("You are not connected to a voice channel")
@@ -76,7 +80,7 @@ class VC(commands.Cog, description="Voice channel related commands!"):
             """Plays from a url (almost anything youtube_dl supports)"""
 
             async with ctx.typing():
-                player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
+                player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
                 ctx.voice_client.play(player,
                                     after=lambda e: print('Player error: %s' % e)
                                     if e else None)
@@ -113,6 +117,7 @@ class VC(commands.Cog, description="Voice channel related commands!"):
 
     @cog_ext.cog_slash(name="_play", description="Play a song in the VC!")
     async def _play(self, ctx, *, url=None):
+        l.used(ctx)
         channel = ctx.message.author.voice.channel
         if not channel:
             await ctx.send("You are not connected to a voice channel")
@@ -132,7 +137,7 @@ class VC(commands.Cog, description="Voice channel related commands!"):
             """Plays from a url (almost anything youtube_dl supports)"""
 
             async with ctx.typing():
-                player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
+                player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
                 ctx.voice_client.play(player,
                                     after=lambda e: print('Player error: %s' % e)
                                     if e else None)
@@ -169,7 +174,7 @@ class VC(commands.Cog, description="Voice channel related commands!"):
 
     @commands.command(help="Stop a song from playing in the VC, and make the bot leave!")
     async def stop(self, ctx):
-        await ctx.send(ctx)
+        l.used(ctx)
         try:
             channelid = ctx.message.author.voice.channel.id
             await ctx.voice_client.disconnect()
@@ -189,7 +194,7 @@ class VC(commands.Cog, description="Voice channel related commands!"):
 
     @cog_ext.cog_slash(name="stop", description="Stop a song from playing in the VC, and make the bot leave!")
     async def _stop(self, ctx):
-        await ctx.send(ctx)
+        l.used(ctx)
         try:
             channelid = ctx.message.author.voice.channel.id
             await ctx.voice_client.disconnect()

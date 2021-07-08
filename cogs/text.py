@@ -6,7 +6,8 @@ import string, random, requests
 
 from cmds.morse import encrypt, decrypt
 
-from log import used, error
+from log import log
+l = log()
 
 class Text(commands.Cog, description="Text related commands!"):
     def __init__(self, bot):
@@ -15,6 +16,7 @@ class Text(commands.Cog, description="Text related commands!"):
     # morsetotext:
     @commands.command(aliases=["mtt"], help="Get text from morse code.")
     async def morsetotext(self, ctx, *, message):
+        l.used(ctx)
         result = decrypt(message)
         await ctx.reply(f"```py\n{result}```")
 
@@ -27,12 +29,14 @@ class Text(commands.Cog, description="Text related commands!"):
                                 required=True)
                 ])
     async def _morsetotext(self, ctx, message):
+        l.used(ctx)
         result = decrypt(message)
         await ctx.send(f"```py\n{result.lower()}```")
 
     # texttomorse:
     @commands.command(aliases=["ttm"], help="Convert text to morse!")
     async def texttomorse(self, ctx, *, message):
+        l.used(ctx)
         result = encrypt(message.upper())
         await ctx.reply(f"```py\n{result}```")
 
@@ -45,12 +49,14 @@ class Text(commands.Cog, description="Text related commands!"):
                                 required=True)
                 ])
     async def _texttomorse(self, ctx, message):
+        l.used(ctx)
         result = encrypt(message.upper())
         await ctx.send(f"```py\n{result}```")
 
     # binarytotext:
     @commands.command(aliases=["btt"], help="Convert binary numbers to text.")
     async def binarytotext(self, ctx, *, text):
+        l.used(ctx)
         ascii_string = "".join([chr(int(binary, 2)) for binary in text.split(" ")])
         await ctx.reply(f"```py\n{ascii_string}```")
 
@@ -63,6 +69,7 @@ class Text(commands.Cog, description="Text related commands!"):
                                 required=True)
                 ])
     async def binaryToText(self, ctx, text):
+        l.used(ctx)
         await ctx.defer()
         ascii_string = "".join([chr(int(binary, 2)) for binary in text.split(" ")])
         await ctx.send(f"```py\n{ascii_string}```")
@@ -70,6 +77,7 @@ class Text(commands.Cog, description="Text related commands!"):
     # texttobinary:
     @commands.command(aliases=["ttb"], help="Convert text to binary!")
     async def texttobinary(self, ctx, *, text):
+        l.used(ctx)
         res = ' '.join(format(ord(i), '08b') for i in text)
         await ctx.reply(f"```py\n{res}```")
 
@@ -82,6 +90,7 @@ class Text(commands.Cog, description="Text related commands!"):
                                 required=True)
                 ])
     async def _texttobinary(self, ctx, text):
+        l.used(ctx)
         await ctx.defer()
         res = ' '.join(format(ord(i), '08b') for i in text)
         await ctx.send(f"```py\n{res}```")
@@ -89,7 +98,7 @@ class Text(commands.Cog, description="Text related commands!"):
     # say:
     @commands.command(help="Make the bot say anything!")
     async def say(self, ctx, *, text):
-        await used(f"{ctx.author.name}#{ctx.author.discriminator}: \\say {text}")
+        l.used(ctx)
         await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
         await ctx.message.delete()
 
@@ -104,7 +113,7 @@ class Text(commands.Cog, description="Text related commands!"):
         ],
     )
     async def _say(self, ctx, text):
-        used.info(f"{ctx.author.name}#{ctx.author.discriminator}: \\say {text}")
+        l.used(ctx)
         msg = await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
         await msg.delete()
         await ctx.channel.send(text,
@@ -113,6 +122,7 @@ class Text(commands.Cog, description="Text related commands!"):
     # password:
     @commands.command(aliases=["pw", "pass"], help="Generate a strong, random password.")
     async def password(self, ctx, length: int, dm=False):
+        l.used(ctx)
         if dm == "true" or dm == "yes":
             dm = True
         else:
@@ -144,6 +154,7 @@ class Text(commands.Cog, description="Text related commands!"):
                         required=False)
                 ])
     async def _password(self, ctx, length, dm=False):
+        l.used(ctx)
         password_characters = string.ascii_letters + string.digits + string.punctuation
         password = []
         for i in range(length):
@@ -160,6 +171,7 @@ class Text(commands.Cog, description="Text related commands!"):
     # reverse:
     @commands.command(aliases=["r", "rev"], help="Reverse your text!")
     async def reverse(self, ctx, *, text):
+        l.used(ctx)
         await ctx.send(text[::-1])
 
     @cog_ext.cog_slash(
@@ -173,6 +185,7 @@ class Text(commands.Cog, description="Text related commands!"):
         ],
     )
     async def _reverse(self, ctx, text):
+        l.used(ctx)
         await ctx.send(text[::-1])
 
 

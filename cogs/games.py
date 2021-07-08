@@ -9,6 +9,9 @@ from discord_slash.cog_ext import cog_component
 from cmds.uno import uno
 from cmds.tic import getComputerMove, create_board
 
+from log import log
+l = log()
+
 class Games(commands.Cog, description="Moderation tools for your server!"):
     def __init__(self, bot):
         self.bot = bot
@@ -19,6 +22,7 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
     # uno:
     @commands.command(help="Play UNO with a friend!")
     async def uno(self, ctx):
+        l.used(ctx)
         u = uno()
         u.deal_cards()
         content = u.show_cards(ctx.author.name, self.hand1)
@@ -28,6 +32,7 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
     
     @cog_ext.cog_slash(name="uno")
     async def _uno(self, ctx):
+        l.used(ctx)
         u = uno()
         u.deal_cards()
         content = u.show_cards(ctx.author.name, self.hand1)
@@ -42,11 +47,13 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
         description="Play Tic-Tac-Toe"
     )
     async def ttt_start(self, ctx: SlashContext):
+        l.used(ctx)
         await ctx.send(content=f"{ctx.author.mention}'s Tic-Tac-Toe game!",
                        components=create_board())
 
     @commands.command(aliases=["ttt"])
     async def tictactoe(self, ctx):
+        l.used(ctx)
         await ctx.send(content=f"{ctx.author.mention}'s Tic-Tac-Toe game!",
                        components=create_board())
 

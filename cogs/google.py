@@ -9,6 +9,9 @@ from cmds.define import pls_define
 import wikipedia as wiki
 import random
 
+from log import log
+l = log()
+
 class Google(commands.Cog, description="Google related commands!"):
     def __init__(self, bot):
         self.bot = bot
@@ -16,6 +19,7 @@ class Google(commands.Cog, description="Google related commands!"):
     # google:
     @commands.command(help="Google anything with this command!")
     async def google(self, ctx, *, text):
+        l.used(ctx)
         async with ctx.typing():
             await pls_google(ctx, text, 5)
 
@@ -30,6 +34,7 @@ class Google(commands.Cog, description="Google related commands!"):
         ]
     )
     async def _google(self, ctx: SlashContext, text):
+        l.used(ctx)
         await ctx.defer()
         await pls_google(ctx, text, 5)
 
@@ -58,12 +63,14 @@ class Google(commands.Cog, description="Google related commands!"):
         ],
     )
     async def _translate(self, ctx: SlashContext, text, output_lang="en", input_lang=None):
+        l.used(ctx)
         await ctx.defer()
         await pls_translate(ctx, text, output_lang, input_lang)
 
     # define:
     @commands.command(aliases=["def"], help="Define any word in English.")
     async def define(self, ctx, word):
+        l.used(ctx)
         await pls_define(ctx, word)
 
     @cog_ext.cog_slash(
@@ -77,6 +84,7 @@ class Google(commands.Cog, description="Google related commands!"):
         ],
     )
     async def _define(self, ctx: SlashContext, word):  # noqa: C901
+        l.used(ctx)
         await ctx.defer()
         await pls_define(ctx, word)
 
@@ -85,6 +93,7 @@ class Google(commands.Cog, description="Google related commands!"):
                 description="Searches for something on wikipedia",
                 help="Search anything on Wikipedia!\nResults is set to 1 as default.\nLines is set to 5 as default.\n\nMore than one result will make the bot choose one at random.")
     async def wikipedia(self, ctx, text: str, results: int = 1, lines: int = 5):
+        l.used(ctx)
         result = wiki.search(text, results)
         try:
             end = random.choice(result)
@@ -123,6 +132,7 @@ class Google(commands.Cog, description="Google related commands!"):
         ],
     )
     async def _wikipedia(self, ctx, text, results=1, lines=5):
+        l.used(ctx)
         await ctx.defer()
         result = wiki.search(text, results)
         try:
