@@ -10,6 +10,9 @@ from cmds.embed import create_embed
 from log import log
 l = log()
 
+from discord_slash.utils.manage_components import create_actionrow, create_button
+from discord_slash.model import ButtonStyle
+
 class Utility(commands.Cog, description="Useful commands!"):
     def __init__(self, bot):
         self.bot = bot
@@ -226,24 +229,22 @@ class Utility(commands.Cog, description="Useful commands!"):
     @commands.command(help="Get the invite link for the bot!")
     async def invite(self, ctx):
         l.used(ctx)
-        embed = discord.Embed(colour=discord.Colour.orange())
-        embed.add_field(
-            name='Invite the bot!',
-            value=
-            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)',
-            inline=False)
-        await ctx.send(embed=embed)
+        button = [create_button(
+            style=ButtonStyle.URL,
+            label="Click to invite bot",
+            url="https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2285333574&redirect_uri=https%3A%2F%2FPerseveranceBot.repl.co&scope=bot%20applications.commands"
+        )]
+        await ctx.send("Invite the bot!", components=[create_actionrow(*button)])
 
     @cog_ext.cog_slash(name="invite", description="Shows the invite link for the bot")
     async def _invite(self, ctx):
         l.used(ctx)
-        embed = discord.Embed(colour=discord.Colour.orange())
-        embed.add_field(
-            name='Invite the bot!',
-            value=
-            'Click [here](https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=3691244614&scope=bot%20applications.commands)',
-            inline=False)
-        await ctx.send(embed=embed)
+        button = [create_button(
+            style=ButtonStyle.URL,
+            label="Click to invite bot",
+            url="https://discord.com/api/oauth2/authorize?client_id=811277990913769523&permissions=2285333574&redirect_uri=https%3A%2F%2FPerseveranceBot.repl.co&scope=bot%20applications.commands"
+        )]
+        await ctx.send("Invite the bot!", components=[create_actionrow(*button)])
 
 
 def setup(bot):
