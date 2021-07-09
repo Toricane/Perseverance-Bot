@@ -8,6 +8,7 @@ from discord_slash.cog_ext import cog_component
 
 from cmds.uno import uno
 from cmds.tic import getComputerMove, create_board
+from cmds.ytactivity import group_say
 
 from log import log
 l = log()
@@ -149,6 +150,66 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
             if not winner else f"{winner} has won!",
             components=manage_components.spread_to_rows(*board, max_in_row=3),
         )
+    
+
+    @commands.command(aliases=["act"], help="Play games in the vc!")
+    async def activities(ctx, *, activity_type):
+        number = None
+        if activity_type.lower() in "youtube together":
+            number = "755600276941176913"
+            await group_say(ctx, number)
+        elif activity_type.lower() in "betrayal.io":
+            number = "773336526917861400"
+            await group_say(ctx, number)
+        elif activity_type.lower() in "poker night":
+            number = "755827207812677713"
+            await group_say(ctx, number)
+        elif activity_type.lower() in "fishington.io":
+            number = "814288819477020702"
+            await group_say(ctx, number)
+        elif activity_type.lower() in "chess":
+            number = "832012682520428625"
+            await group_say(ctx, number)
+        else:
+            await ctx.send("Invalid activity.")
+
+
+    @cog_ext.cog_slash(name="activities",
+                description="Do stuff",
+                options=[{
+                    "name":
+                    "activity_type",
+                    "description":
+                    "Type of activity.",
+                    "required":
+                    True,
+                    "type":
+                    3,
+                    "choices": [
+                        {
+                            "name": "YouTube Together",
+                            "value": "755600276941176913"
+                        },
+                        {
+                            "name": "Betrayal.io",
+                            "value": "773336526917861400"
+                        },
+                        {
+                            "name": "Poker Night",
+                            "value": "755827207812677713"
+                        },
+                        {
+                            "name": "Fishington.io",
+                            "value": "814288819477020702"
+                        },
+                        {
+                            "name": "Chess In The Park",
+                            "value": "832012682520428625"
+                        },
+                    ]
+                }])
+    async def _activities(ctx, activity_type):
+        await group_say(ctx, activity_type)
 
 
 def setup(bot):
