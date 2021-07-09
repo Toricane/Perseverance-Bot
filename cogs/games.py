@@ -153,7 +153,7 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
     
 
     @commands.command(aliases=["act"], help="Play games in the vc!")
-    async def activities(ctx, *, activity_type):
+    async def activities(self, ctx, *, activity_type):
         number = None
         if activity_type.lower() in "youtube together":
             number = "755600276941176913"
@@ -208,7 +208,7 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
                         },
                     ]
                 }])
-    async def _activities(ctx, activity_type):
+    async def _activities(self, ctx, activity_type):
         await group_say(ctx, activity_type)
 
 

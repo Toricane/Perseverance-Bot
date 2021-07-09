@@ -231,66 +231,6 @@ async def reload(ctx, extension=None):
         await ctx.message.add_reaction('<:no:828741445069963274>')
 
 
-@bot.command(aliases=["fb"], help="Send feedback for the bot!")
-async def feedback(ctx, *, feedback):
-    l.used(ctx)
-    await create_feedback(ctx, feedback)
-
-
-@slash.slash(
-    name="feedback",
-    description="Give feedback!",
-    options=[
-        create_option(name="feedback",
-                      description="Type member here",
-                      option_type=3,
-                      required=True)
-    ],
-)
-async def _feedback(ctx, feedback):
-    l.used(ctx)
-    await create_feedback(ctx, feedback)
-
-
-@bot.command(aliases=["fblist"], help="List the feedback.")
-async def feedbacklist(ctx):
-    l.used(ctx)
-    await ctx.send("List of feedbacks:")
-    await list_feedback(ctx)
-
-
-@slash.slash(name="feedbacklist", description="List feedback!")
-async def _feedbacklist(ctx):
-    l.used(ctx)
-    await ctx.defer()
-    await ctx.send("List of feedbacks:")
-    await list_feedback(ctx)
-
-
-@bot.command(aliases=["fbclear"], help="Clear or delete feedback!\nRequires you to be Toricane#0818.\nTo find the number to delete, try using `/list` or `.list`.")
-async def feedbackclear(ctx, number=None):
-    l.used(ctx)
-    await delete_feedback(ctx, number)
-
-
-@slash.slash(
-    name="feedbackclear",
-    description="Clears all of the feedback or the chosen one",
-    options=[
-        create_option(
-            name="number",
-            description=
-            "The feedback message position in the list that you want to clear, try /feedbacklist to see",
-            option_type=4,
-            required=False)
-    ],
-)
-async def _feedbackclear(ctx, number=None):
-    l.used(ctx)
-    await ctx.defer()
-    await delete_feedback(ctx, number)
-
-
 @bot.command(help="Returns pong with the latency in milliseconds.")
 async def ping(ctx):
     l.used(ctx)
