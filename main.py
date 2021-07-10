@@ -27,19 +27,10 @@ from log import log
 
 l = log()
 
-ending_note = "Type \help command for more info on a command.\nYou can also type \help category for more info on a category.\nCategories are cAsE sEnSiTiVe.\n\nThe bot also has / commands, try them out!"
 
 bot = commands.Bot(command_prefix="\\",
                    intents=Intents.all(),
-                   case_insensitive=True,
-                   help_command=PrettyHelp(
-                       color=discord.Colour.orange(),
-                       page_left="◀️",
-                       page_right="▶️",
-                       remove="❌",
-                       no_category="Miscellaneous",
-                       ending_note=ending_note
-                   ))
+                   case_insensitive=True)
 slash = SlashCommand(bot, sync_commands=True, sync_on_cog_reload=True)
 servers = len(bot.guilds)
 status = cycle([
@@ -268,6 +259,17 @@ async def _perseverance(ctx):
 async def _help(ctx):
     l.used(ctx)
     await ctx.send("Please use `\help` instead.")
+
+
+class MyHelpCommand(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        e = discord.Embed(color=discord.Color.orange(), description="")
+        for page in self.paginator.pages:
+            e.description += page
+        await destination.send(embed=e)
+
+bot.help_command = MyHelpCommand()
 
 
 try:
