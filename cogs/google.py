@@ -154,3 +154,4 @@ class Google(commands.Cog, description="Google related commands!"):
 
 def setup(bot):
     bot.add_cog(Google(bot))
+    l.log("Loaded google.py")

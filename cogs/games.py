@@ -137,7 +137,7 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
             style = (ButtonStyle.grey
                      if board[i] == ' ' else ButtonStyle.blurple
                      if board[i] == "player" else ButtonStyle.red)
-            label = ("X" if board[i] == "player" else "O" if board[i] == "enemy" else " ")
+            label = ("X" if board[i] == "player" else "O" if board[i] == "enemy" else ' ')
             board[i] = manage_components.create_button(
                 style=style,
                 label=label,
@@ -214,3 +214,4 @@ class Games(commands.Cog, description="Moderation tools for your server!"):
 
 def setup(bot):
     bot.add_cog(Games(bot))
+    l.log("Loaded games.py")

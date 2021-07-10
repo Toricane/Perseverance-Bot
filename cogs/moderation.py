@@ -150,3 +150,4 @@ class Moderation(commands.Cog, description="Moderation tools for your server!"):
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
+    l.log("Loaded moderation.py")

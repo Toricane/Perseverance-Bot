@@ -249,3 +249,4 @@ class Utility(commands.Cog, description="Useful commands!"):
 
 def setup(bot):
     bot.add_cog(Utility(bot))
+    l.log("Loaded utility.py")

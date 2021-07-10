@@ -214,3 +214,4 @@ class VC(commands.Cog, description="Voice channel related commands!"):
 
 def setup(bot):
     bot.add_cog(VC(bot))
+    l.log("Loaded vc.py")

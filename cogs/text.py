@@ -191,3 +191,4 @@ class Text(commands.Cog, description="Text related commands!"):
 
 def setup(bot):
     bot.add_cog(Text(bot))
+    l.log("Loaded text.py")

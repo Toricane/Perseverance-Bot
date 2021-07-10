@@ -75,3 +75,4 @@ class Feedback(commands.Cog, description="Give feedback for the bot!"):
 
 def setup(bot):
     bot.add_cog(Feedback(bot))
+    l.log("Loaded feedback.py")

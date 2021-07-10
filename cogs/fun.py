@@ -261,3 +261,4 @@ class Fun(commands.Cog, description="Funny commands!"):
 
 def setup(bot):
     bot.add_cog(Fun(bot))
+    l.log("Loaded fun.py")

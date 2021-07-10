@@ -24,7 +24,7 @@ def create_board():
         buttons.append(
             manage_components.create_button(
                 style=ButtonStyle.grey,
-                label="‎",
+                label=" ",
                 custom_id=f"tic_tac_toe_button||{i}"))
     action_rows = manage_components.spread_to_rows(*buttons, max_in_row=3)
     return action_rows
